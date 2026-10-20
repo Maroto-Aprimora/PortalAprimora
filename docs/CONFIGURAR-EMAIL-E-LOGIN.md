@@ -137,8 +137,6 @@ Usado no login por link ("Entrar com link") e no reenvio do acesso.
     <p style="text-align:center;margin:28px 0">
       <a href="{{ .ConfirmationURL }}" style="background:#e8833a;color:#fff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold">Acessar o portal</a>
     </p>
-    <p>Se preferir, digite este código na tela de login:</p>
-    <p style="text-align:center;margin:28px 0;font-size:28px;font-weight:bold;letter-spacing:6px;color:#24476f">{{ .Token }}</p>
     <p style="font-size:12px;color:#5b6573">O link vale por 1 hora e só pode ser usado uma vez. Se você não pediu isto, ignore este e-mail.</p>
     <p style="font-size:12px;color:#5b6573">Aprimora Consultoria · Diretoria Comercial</p>
   </div>
@@ -197,7 +195,7 @@ Usado em **Esqueci minha senha**.
 
 ### Reauthentication
 
-Pedido pelo Supabase antes de operações sensíveis. Só tem código (não tem link).
+Pedido pelo Supabase antes de operações sensíveis (hoje o portal não usa, mas fica pronto). Só tem código, não tem link.
 
 **Assunto:** `Seu código de confirmação do Portal Aprimora`
 
