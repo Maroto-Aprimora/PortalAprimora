@@ -43,6 +43,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
   const email = emailBruto as unknown as IndicadoresEmail | null;
   const r = ind.resumo;
   const maiorEtapa = Math.max(1, ...ind.funil.map((e) => e.quantidade));
+  const maiorMovimento = Math.max(1, ...ind.movimento.map((m) => m.quantidade));
 
   // Atividades da equipe (só o diretor): ligações, visitas, reuniões… do período
   const ehDiretor = usuario.ehDiretorDe("comercial");
@@ -83,7 +84,8 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
 
       <div className="mb-6 grid gap-6 xl:grid-cols-2">
         <Cartao>
-          <CabecalhoCartao titulo="Funil de conversão" descricao={`Lead → contrato: ${pct(r.conversaoLeadContrato)}. A porcentagem compara cada etapa com a anterior.`} />
+          <CabecalhoCartao titulo="Conversão da safra"
+            descricao={`Os ${r.leadsNovos} leads criados no período e até onde cada um chegou até hoje (pular uma fase conta como ter passado por ela). Lead → contrato: ${pct(r.conversaoLeadContrato)}${ind.safraEmAberto > 0 ? ` · ${ind.safraEmAberto} ainda em andamento` : ""}.`} />
           <ul className="space-y-3 px-5 py-4">
             {ind.funil.map((e) => (
               <li key={e.chave} className="grid grid-cols-[150px_1fr_44px_52px] items-center gap-3 text-sm">
@@ -92,12 +94,34 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
                   <div className={cn("h-full rounded-full", e.chave === "ganho" ? "bg-sucesso" : "bg-marca")} style={{ width: `${(e.quantidade / maiorEtapa) * 100}%` }} />
                 </div>
                 <span className="text-right font-semibold">{e.quantidade}</span>
-                <span className="text-right text-xs text-texto-suave">{e.conversao == null ? "" : pct(e.conversao)}</span>
+                <span className="text-right text-xs text-texto-suave" title={e.doTotal == null ? undefined : `${pct(e.doTotal)} dos leads da safra`}>
+                  {e.conversao == null ? "" : pct(e.conversao)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="border-t border-borda px-5 py-3 text-xs text-texto-suave">A porcentagem compara cada etapa com a anterior, dentro da mesma safra. Passe o mouse para ver a % sobre o total de leads.</p>
+        </Cartao>
+
+        <Cartao>
+          <CabecalhoCartao titulo="Movimento no período"
+            descricao="Quantos negócios entraram em cada fase dentro do período, venham de qualquer safra (cada negócio conta uma vez por fase). Mostra o volume de trabalho, por isso não tem porcentagem." />
+          <ul className="space-y-2 px-5 py-4">
+            {ind.movimento.map((m) => (
+              <li key={m.chave} className="grid grid-cols-[170px_1fr_44px] items-center gap-3 text-sm">
+                <span className={cn(m.quantidade === 0 ? "text-texto-suave/60" : "text-texto-suave")}>{m.fase}</span>
+                <div className="h-2.5 overflow-hidden rounded-full bg-superficie-2">
+                  <div className={cn("h-full rounded-full", m.tipo === "ganho" ? "bg-sucesso" : m.tipo === "perda" ? "bg-perigo" : m.tipo === "pausa" ? "bg-destaque" : "bg-marca")}
+                    style={{ width: `${(m.quantidade / maiorMovimento) * 100}%` }} />
+                </div>
+                <span className={cn("text-right", m.quantidade === 0 ? "text-texto-suave/60" : "font-semibold")}>{m.quantidade}</span>
               </li>
             ))}
           </ul>
         </Cartao>
+      </div>
 
+      <div className="mb-6">
         <Cartao>
           <CabecalhoCartao titulo="Tempo em cada fase, SLA e saídas" descricao="Quanto os negócios ficaram em cada fase antes de sair dela no período, quantos saíram dentro do SLA e para onde foram." />
           <Tabela

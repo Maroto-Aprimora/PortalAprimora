@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.20 |
+| Versão do documento | 1.21 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -498,8 +498,15 @@ deu resultado idêntico em 5 períodos, com e sem filtro por responsável, inclu
 - **Contratos e faturamento:** negócios com `ganho_em` no período; faturamento = soma de `valor`.
 - **Ticket médio:** faturamento ÷ contratos. **Taxa de ganho:** ganhos ÷ (ganhos + "Projeto não vendido").
 - **Ciclo de venda:** média de (`ganho_em` − `created_at`) dos ganhos.
-- **Funil de conversão:** Leads → Em cadência (E-mail ou Coldcall 1) → Oportunidade → Diagnóstico → Proposta →
-  Contrato; % sobre a etapa anterior. Como é um funil de **fluxo** (não de coorte), uma etapa pode passar de 100%.
+- **Conversão da safra** (`funil`, desde 20/10/2026): os leads criados no período e até onde cada um chegou **até
+  hoje**: Leads → Em cadência (E-mail, Coldcall 1 ou 2) → Oportunidade → Diagnóstico (ou Elaboração de escopo) →
+  Proposta → Contrato. Vale a etapa mais avançada que o negócio já teve no histórico (ou `ganho_em`), então pular uma
+  fase conta como ter passado por ela; Retornar futuro, Reciclagem e as perdas não sobem de etapa. % = etapa ÷ etapa
+  anterior, dentro da mesma safra (nunca passa de 100%); `doTotal` = etapa ÷ leads da safra; `safraEmAberto` = leads
+  da safra ainda não encerrados (safras recentes ainda estão amadurecendo). A conversão lead → contrato do resumo usa a
+  safra.
+- **Movimento no período** (`movimento`): entradas em cada fase do funil dentro do período, de qualquer safra, cada
+  negócio uma vez por fase; sem porcentagem. Os cartões do resumo (diagnósticos, propostas…) seguem esta regra.
 - **Tempo médio por fase:** intervalo entre a entrada na fase e a próxima movimentação do mesmo negócio, para saídas
   dentro do período.
 - **Por responsável:** usa o **responsável da época** (`negocio_historico.responsavel_id`, gravado a cada movimentação):
@@ -739,6 +746,7 @@ Escopo v1.0 (Seção 14).
 | 1.0 | 09/10/2026 | Primeira versão, descrevendo a `main` no commit `af20f1c` |
 | 1.1 | 12/10/2026 | Repositório transferido para `Maroto-Aprimora/PortalAprimora`; início da v2 (PE-PA-002) |
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
+| 1.21 | 20/10/2026 | Painel comercial com duas visões do funil: Conversão da safra e Movimento no período (migração `20261020150000`, também no Excel exportado e nos dados da R.I); "Retornar futuro" vindo da resposta de e-mail passa por aprovação e gera tarefa para quem aprova (migração `20261020120000`) |
 | 1.20 | 15/10/2026 | Fase 4: diagnóstico digital (checklist de 10 áreas e mapa de maturidade), precificação (preço mínimo e máximo no banco, preço final só do diretor), A9 Assistente de proposta (fluxo 12), A10 Passagem para Projetos e dossiê em PDF (migração `20261015120000`) |
 | 1.19 | 14/10/2026 | Edição compartilhada (migração `20261014150000`): todo membro do Comercial edita qualquer card e empresa, troca o responsável, registra atividades e envia/exclui anexos; "Participantes" sai do card; "Dores identificadas" vira o checklist da Carta de Serviços (sem valor por item; anotações dos agentes em "Detalhes das dores"); página da empresa com "Atividade" (linha do tempo do lead), atividades e anexos; Desempenho individual aberto a todo o time; aprovação de e-mail no pop-up do card do Funil (contador no menu Funil); cards sem iniciais |
 | 1.18 | 14/10/2026 | Fase 3: cadência de e-mail (migração `20261014120000`, guia Copy, Redator, Monitor de respostas, Organizador do dia, fluxos 10 e 11) |

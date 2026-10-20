@@ -6,8 +6,10 @@ import { limitesIso, type Periodo } from "@/lib/periodo";
 
 /**
  * Indicadores do funil comercial, calculados no banco (public.indicadores_comerciais e public.valor_indicador_meta).
- * Regra geral: um negócio "chegou" a uma fase no período quando há um registro de entrada nela dentro do período
- * (cada negócio conta uma vez por fase). Por pessoa, vale o responsável da época de cada movimentação.
+ * Duas visões do funil: `funil` é a conversão da safra (leads criados no período e até onde cada um chegou até hoje,
+ * pular fase conta como ter passado por ela); `movimento` são as entradas em cada fase dentro do período, de qualquer
+ * safra (cada negócio conta uma vez por fase). Os números do resumo seguem o movimento, menos conversaoLeadContrato
+ * (safra). Por pessoa, vale o responsável da época de cada movimentação.
  * A comparação com o cálculo anterior (em TypeScript) está em supabase/testes/comparar_indicadores.sh.
  */
 
@@ -17,7 +19,12 @@ export type Indicadores = {
     ticketMedio: number | null; taxaGanho: number | null; conversaoLeadContrato: number | null; cicloDias: number | null;
     perdidos: number; desqualificados: number; propostasRemarcadas: number; pipelinePonderado: number; negociosAtivos: number;
   };
-  funil: { chave: string; rotulo: string; quantidade: number; conversao: number | null }[];
+  /** Conversão da safra: conversao = ÷ etapa anterior; doTotal = ÷ leads da safra. */
+  funil: { chave: string; rotulo: string; quantidade: number; conversao: number | null; doTotal: number | null }[];
+  /** Leads da safra ainda não encerrados. */
+  safraEmAberto: number;
+  /** Entradas em cada fase no período (todas as fases do funil, em ordem). */
+  movimento: { chave: string; fase: string; tipo: "aberta" | "ganho" | "perda" | "pausa"; quantidade: number }[];
   tempoPorFase: {
     fase: string; sla: number | null; mediaDias: number | null; amostras: number; dentroSla: number | null;
     saidas: { destino: string; quantidade: number }[];
