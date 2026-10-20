@@ -18,7 +18,7 @@ export type ItemAprovacao = {
 
 /** Rótulos conhecidos; os demais saem do nome do campo. */
 const ROTULOS: Record<string, string> = {
-  para: "Para", assunto: "Assunto", corpo: "E-mail", motivo: "Motivo da desqualificação", comentario: "Comentário",
+  para: "Para", assunto: "Assunto", corpo: "E-mail", motivo: "Motivo da desqualificação", comentario: "Comentário", retorno_em: "Retornar em",
 };
 const rotuloCampo = (k: string) => ROTULOS[k] ?? (k.charAt(0).toUpperCase() + k.slice(1)).replace(/_/g, " ");
 
@@ -67,7 +67,8 @@ export function CartaoAprovacao({ item, mostrarResponsavel, resultados = [], aoD
           const texto = typeof valor === "string" ? valor : JSON.stringify(valor, null, 2);
           const longo = texto.length > 80 || texto.includes("\n");
           const mudar = (novo: string) => setConteudo((c) => ({ ...c, [chave]: typeof valor === "string" ? novo : tentarJson(novo, valor) }));
-          const especial = item.tipo === "resultado_ligacao" ? CAMPOS_LIGACAO[chave] : undefined;
+          const especial = item.tipo === "resultado_ligacao" ? CAMPOS_LIGACAO[chave]
+            : chave === "retorno_em" ? { rotulo: "Retornar em", tipo: "date" as const } : undefined;
           if (especial && chave === "resultado") {
             return (
               <Campo key={chave} rotulo={especial.rotulo} obrigatorio>
@@ -102,7 +103,7 @@ export function CartaoAprovacao({ item, mostrarResponsavel, resultados = [], aoD
 
       <div className="mt-4 flex justify-end gap-2">
         <Botao variante="secundario" onClick={() => decidir("descartada")} carregando={pendente}><X className="h-4 w-4" /> Descartar</Botao>
-        <Botao onClick={() => decidir("aprovada")} carregando={pendente}><Check className="h-4 w-4" /> {item.tipo === "email" ? "Aprovar e enviar" : item.tipo === "resposta_recusa" ? "Encerrar lead" : "Aprovar"}</Botao>
+        <Botao onClick={() => decidir("aprovada")} carregando={pendente}><Check className="h-4 w-4" /> {item.tipo === "email" ? "Aprovar e enviar" : item.tipo === "resposta_recusa" ? "Encerrar lead" : item.tipo === "resposta_retornar" ? "Mover para Retornar futuro" : "Aprovar"}</Botao>
       </div>
     </Cartao>
   );
