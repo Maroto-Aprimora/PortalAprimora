@@ -2,14 +2,14 @@ import Link from "next/link";
 import { BadgeDollarSign, ClipboardCheck, FileSignature, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Da oportunidade à venda (Fase 4): diagnóstico → precificação → proposta → dossiê de passagem. */
+/** Da oportunidade à venda (Fase 4): diagnóstico → escopo (e proposta) → precificação → dossiê de passagem. */
 export function JornadaVenda({ negocioId, diagnostico, precificacao, proposta, ganho }: {
   negocioId: string; diagnostico: string | null; precificacao: string | null; proposta: string | null; ganho: boolean;
 }) {
   const passos = [
     { href: "diagnostico", rotulo: "Diagnóstico", icone: ClipboardCheck, estado: diagnostico, vazio: "Começar no celular" },
+    { href: "proposta", rotulo: "Escopo", icone: FileSignature, estado: proposta, vazio: "Escopo e proposta" },
     { href: "precificacao", rotulo: "Precificação", icone: BadgeDollarSign, estado: precificacao, vazio: "Calcular preço" },
-    { href: "proposta", rotulo: "Proposta", icone: FileSignature, estado: proposta, vazio: "Escopo e proposta" },
     { href: "dossie", rotulo: "Dossiê", icone: FileText, estado: ganho ? "Passagem para Projetos" : null, vazio: "PDF com tudo do card" },
   ];
   return (

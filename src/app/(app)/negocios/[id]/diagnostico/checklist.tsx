@@ -95,11 +95,11 @@ export function ChecklistDiagnostico({ negocioId, areas, diagnostico, podeEditar
       {concluido && (
         <Cartao className="p-4 text-sm">
           {diagnostico.analiseStatus === "gerando" && <p className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin text-destaque" /> O Assistente de proposta está analisando o diagnóstico. Você recebe um aviso quando o rascunho ficar pronto.</p>}
-          {diagnostico.analiseStatus === "pronto" && <p>O rascunho da proposta está pronto para revisar.</p>}
+          {diagnostico.analiseStatus === "pronto" && <p>O rascunho do escopo está pronto para revisar.</p>}
           {diagnostico.analiseStatus === "erro" && <p className="text-perigo">O Assistente não conseguiu analisar: {diagnostico.analiseErro}</p>}
-          {!diagnostico.analiseStatus && <p>Diagnóstico concluído. O Assistente de proposta está desligado: escreva a proposta direto.</p>}
+          {!diagnostico.analiseStatus && <p>Diagnóstico concluído. O Assistente de proposta está desligado: escreva o escopo direto.</p>}
           <div className="mt-3 flex flex-wrap gap-2">
-            <Link href={`/negocios/${negocioId}/proposta`}><Botao tamanho="sm"><FileText className="h-4 w-4" /> Proposta</Botao></Link>
+            <Link href={`/negocios/${negocioId}/proposta`}><Botao tamanho="sm"><FileText className="h-4 w-4" /> Escopo</Botao></Link>
             {podeEditar && (
               <Botao tamanho="sm" variante="secundario" carregando={pendente} onClick={() => iniciar(async () => {
                 const r = await reabrirDiagnostico(diagnostico.id, negocioId);
