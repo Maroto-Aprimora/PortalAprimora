@@ -71,7 +71,7 @@ código ou e-mail na hora do envio.
 
 ### Confirm sign up
 
-Usado no **Primeiro acesso** (o membro pede o link na tela de login).
+Usado no **Primeiro acesso** e em **Membros → Enviar convite** (quem ainda não tem conta).
 
 **Assunto:** `Ative seu acesso ao Portal Aprimora`
 
@@ -96,7 +96,7 @@ Usado no **Primeiro acesso** (o membro pede o link na tela de login).
 
 ### Invite user
 
-Usado em **Membros → Enviar convite**.
+O portal hoje convida pelo "Confirm sign up"; este modelo fica pronto caso o convite passe a sair pelo painel do Supabase (*Invite user*).
 
 **Assunto:** `Você foi convidado(a) para o Portal Aprimora`
 
@@ -121,7 +121,7 @@ Usado em **Membros → Enviar convite**.
 
 ### Magic link or OTP
 
-Usado no login por link ("Entrar com link") e no reenvio do acesso.
+Usado em **Esqueci minha senha** e no reenvio do acesso (quem já tem conta): o link entra no portal e abre a tela de definir senha.
 
 **Assunto:** `Seu link de acesso ao Portal Aprimora`
 
@@ -133,7 +133,7 @@ Usado no login por link ("Entrar com link") e no reenvio do acesso.
   </div>
   <div style="border:1px solid #dde3ea;border-top:0;padding:24px;border-radius:0 0 8px 8px">
     <p>Olá!</p>
-    <p>Use o botão abaixo para entrar no Portal Aprimora.</p>
+    <p>Use o botão abaixo para entrar no Portal Aprimora. Em seguida, você pode definir uma nova senha.</p>
     <p style="text-align:center;margin:28px 0">
       <a href="{{ .ConfirmationURL }}" style="background:#e8833a;color:#fff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold">Acessar o portal</a>
     </p>
@@ -170,7 +170,7 @@ Enviado quando um membro troca o e-mail da conta.
 
 ### Reset password
 
-Usado em **Esqueci minha senha**.
+O portal hoje redefine a senha pelo link de acesso (modelo acima); este fica pronto caso a redefinição passe a sair pelo Supabase (*Reset password*).
 
 **Assunto:** `Redefinir sua senha do Portal Aprimora`
 
