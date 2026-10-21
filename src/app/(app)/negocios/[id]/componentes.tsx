@@ -8,6 +8,7 @@ import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { useMoverNegocio } from "@/components/crm/mover-negocio";
 import { NOME_AREA, type CampoFase, type Fase, type MembroResumo, type Motivo } from "@/lib/crm";
+import { valorParaCampo } from "@/lib/formatar";
 import type { Json } from "@/lib/supabase/database.types";
 import { enriquecerNegocio, excluirNegocio, salvarCamposFase, salvarNegocio } from "../acoes";
 
@@ -101,8 +102,8 @@ export function FormNegocio({
     <form action={enviar}>
       <fieldset disabled={!podeEditar || pendente} className="grid gap-4 px-5 py-4 sm:grid-cols-2">
         <Campo rotulo="Título" obrigatorio className="sm:col-span-2"><Entrada name="titulo" defaultValue={negocio.titulo} required /></Campo>
-        <Campo rotulo="Valor (R$)" dica="Valor da proposta, definido depois do diagnóstico e do escopo.">
-          <Entrada name="valor" inputMode="decimal" defaultValue={negocio.valor ?? ""} placeholder="0" />
+        <Campo rotulo="Valor (R$)" dica="Valor da proposta ou do contrato. Pode ser preenchido a qualquer momento.">
+          <Entrada name="valor" inputMode="decimal" defaultValue={valorParaCampo(negocio.valor)} placeholder="Ex.: 15.000,00" />
         </Campo>
         <Campo rotulo="Responsável" dica="Vazio = distribuído pelo rodízio ao entrar em E-mail.">
           <Selecao name="responsavel_id" defaultValue={negocio.responsavel_id ?? ""}>

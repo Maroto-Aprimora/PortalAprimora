@@ -9,7 +9,7 @@ import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
-import { formatarData, formatarMoeda } from "@/lib/formatar";
+import { formatarData, formatarMoeda, lerValor } from "@/lib/formatar";
 import { definirPrecoFinal, salvarPrecificacao } from "../venda-acoes";
 
 export type Fator = { chave: string; nome: string; opcoes: { rotulo: string; multiplicador: number }[] };
@@ -20,10 +20,7 @@ type Inicial = {
   observacoes: string; precoFinal: number | null; salvo: boolean;
 };
 
-const numero = (s: string) => {
-  const v = Number(String(s).replace(/\./g, "").replace(",", "."));
-  return Number.isFinite(v) ? v : 0;
-};
+const numero = (s: string) => lerValor(s) ?? 0;
 const pct = (v: number) => `${(v * 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
 
 /** A mesma conta do banco (public.calcular_precificacao), só para mostrar ao vivo. */
@@ -146,7 +143,6 @@ export function Calculadora({ negocioId, podeEditar, ehDiretor, parametros, inic
               <div className="flex gap-2">
                 <Entrada inputMode="decimal" value={precoFinal} onChange={(e) => setPrecoFinal(e.target.value)} placeholder="R$" className="h-9" />
                 <Botao tamanho="sm" variante="destaque" carregando={pendente} onClick={() => iniciar(async () => {
-                  if (!inicial.salvo) return void toast.error("Salve a precificação antes.");
                   const res = await definirPrecoFinal(negocioId, precoFinal.trim() ? numero(precoFinal) : null);
                   if (res.ok) { toast.success("Preço final registrado: é o valor do negócio."); router.refresh(); } else toast.error(res.erro);
                 })}>Registrar</Botao>
@@ -154,7 +150,7 @@ export function Calculadora({ negocioId, podeEditar, ehDiretor, parametros, inic
             ) : (
               <p className="text-sm">{inicial.precoFinal != null ? <strong>{formatarMoeda(inicial.precoFinal)}</strong> : "O Diretor Comercial registra o preço final."}</p>
             )}
-            {inicial.precoFinal != null && (inicial.precoFinal < r.minimo || inicial.precoFinal > r.maximo) && (
+            {inicial.precoFinal != null && r.maximo > 0 && (inicial.precoFinal < r.minimo || inicial.precoFinal > r.maximo) && (
               <Selo tom="destaque" className="mt-2">Fora da faixa calculada</Selo>
             )}
           </div>

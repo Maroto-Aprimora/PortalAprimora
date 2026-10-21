@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { lerValor } from "@/lib/formatar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/database.types";
 import { deHorarioLocal } from "@/lib/datas";
@@ -42,8 +43,8 @@ export async function moverNegocio(entrada: {
 
 const esquemaNegocio = z.object({
   titulo: z.string().trim().min(2, "Informe o título."),
-  valor: z.preprocess((v) => (v === "" || v == null ? null : Number(String(v).replace(/\./g, "").replace(",", "."))),
-    z.number().nonnegative("Valor inválido.").nullable()),
+  valor: z.preprocess((v) => (v === "" || v == null ? null : lerValor(v) ?? Number.NaN),
+    z.number({ message: "Valor inválido: use números, por exemplo 15.000,00." }).nonnegative("Valor inválido.").nullable()),
   responsavel_id: uuidOpcional,
   origem_id: uuidOpcional,
   origem_detalhe: textoOpcional,
@@ -62,7 +63,7 @@ export async function salvarNegocio(
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();
 
-  // Dores identificadas (serviços da Carta): só marca e desmarca; o valor vem depois do diagnóstico e do escopo
+  // Dores identificadas (serviços da Carta): só marca e desmarca
   const { data: atuaisServ } = await supabase.from("negocio_servicos").select("servico_id").eq("negocio_id", negocioId);
   const servAtuais = new Set((atuaisServ ?? []).map((s) => s.servico_id));
   const novosServ = servicos.filter((s) => !servAtuais.has(s));

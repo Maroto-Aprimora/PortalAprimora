@@ -88,13 +88,17 @@ export async function salvarPrecificacao(negocioId: string, dados: z.input<typeo
   return { ok: true };
 }
 
-/** Só o Diretor Comercial (regra no banco). Vira o valor do negócio. */
+/** Só o Diretor Comercial (regra no banco). Vira o valor do negócio. Não exige diagnóstico, escopo nem a calculadora. */
 export async function definirPrecoFinal(negocioId: string, preco: number | null): Promise<Resultado> {
   if (preco != null && (Number.isNaN(preco) || preco < 0)) return { ok: false, erro: "Informe um preço válido." };
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.from("precificacoes").update({ preco_final: preco }).eq("negocio_id", negocioId).select("id");
   if (error) return { ok: false, erro: mensagemDeErro(error) };
-  if (!data?.length) return { ok: false, erro: "Salve a precificação antes de registrar o preço final." };
+  // Sem precificação salva: o preço final pode ser registrado direto (a calculadora é opcional por enquanto)
+  if (!data?.length) {
+    const { error: e2 } = await supabase.from("precificacoes").insert({ negocio_id: negocioId, preco_final: preco });
+    if (e2) return { ok: false, erro: mensagemDeErro(e2) };
+  }
   revalidar(negocioId);
   return { ok: true };
 }
