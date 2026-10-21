@@ -141,7 +141,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
       {ehDiretor && (
         <Cartao className="mb-6">
           <CabecalhoCartao titulo="Desempenho por responsável"
-            descricao="Pelo responsável da época de cada movimentação (transferir a carteira não muda o passado). Atividades = visitas, ligações e reuniões realizadas. Visível só para o diretor." />
+            descricao="Diagnósticos, propostas e atividades contam para todos que participaram (responsável e participantes), uma vez por negócio; por isso a soma pode passar do total do time. Leads e contratos seguem o responsável da época. Visível só para o diretor." />
           <Tabela
             colunas={["Pessoa", "Leads", "Ligações", "Diagnósticos", "Propostas", "Contratos", "Faturamento", "Atividades"]}
             linhas={ind.pessoas.map((p) => [p.nome, p.leads, p.ligacoes, p.diagnosticos, p.propostas, p.contratos, formatarMoeda(p.faturamento), p.atividades].map(String))}
