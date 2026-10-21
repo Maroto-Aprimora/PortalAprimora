@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { CalendarDays, ChevronLeft, ChevronRight, List, MapPin, Plus } from "lucide-react";
 import { Botao, classeBotao } from "@/components/ui/botao";
 import { Entrada, Selecao } from "@/components/ui/campos";
-import { Cartao } from "@/components/ui/cartao";
+import { Cartao, TituloPagina } from "@/components/ui/cartao";
 import { Dialogo } from "@/components/ui/dialogo";
 import { Selo } from "@/components/ui/selo";
 import { DialogoAtividade, type AtividadeEditavel } from "@/components/agenda/form-atividade";
@@ -18,11 +18,13 @@ import { cn } from "@/lib/utils";
 import { mudarStatusAtividade, remarcarAtividade } from "./acoes";
 
 export function Agenda({
-  mes, visao, de, ate, hoje, itens, completas, tipos, membros, negocios, usuarioId, ehDiretorComercial,
+  mes, visao, de, ate, hoje, itens, completas, tipos, membros, negocios, usuarioId, ehDiretorComercial, acoes,
 }: {
   mes: string; visao: "mes" | "lista"; de: string; ate: string; hoje: string; itens: ItemAgenda[];
   completas: Record<string, AtividadeEditavel>; tipos: TipoAtividade[]; membros: MembroResumo[];
   negocios: { id: string; titulo: string }[]; usuarioId: string; ehDiretorComercial: boolean;
+  /** Botões do cabeçalho vindos da página (Google Agenda, Config) */
+  acoes?: React.ReactNode;
 }) {
   const router = useRouter();
   const caminho = usePathname();
@@ -56,6 +58,17 @@ export function Agenda({
 
   return (
     <>
+      <TituloPagina
+        titulo="Agenda"
+        acoes={<>
+          <div className="flex rounded-md border border-borda bg-superficie">
+            <button onClick={() => irPara({ visao: "" })} className={cn("flex items-center gap-1 rounded-l-md px-3 py-1.5 text-sm", visao === "mes" && "bg-marca text-marca-texto")}><CalendarDays className="h-4 w-4" /> Mês</button>
+            <button onClick={() => irPara({ visao: "lista" })} className={cn("flex items-center gap-1 rounded-r-md px-3 py-1.5 text-sm", visao === "lista" && "bg-marca text-marca-texto")}><List className="h-4 w-4" /> Lista</button>
+          </div>
+          <Botao variante="destaque" onClick={() => setCriando(hoje)}><Plus className="h-4 w-4" /> Nova atividade</Botao>
+          {acoes}
+        </>}
+      />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           {visao === "mes" && (
@@ -74,11 +87,6 @@ export function Agenda({
             <option value="eu">Minha agenda</option>
             {membros.filter((m) => m.id !== usuarioId).map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
           </Selecao>
-          <div className="flex rounded-md border border-borda">
-            <button onClick={() => irPara({ visao: "" })} className={cn("flex items-center gap-1 px-3 py-1.5 text-sm", visao === "mes" && "bg-marca text-marca-texto")}><CalendarDays className="h-4 w-4" /> Mês</button>
-            <button onClick={() => irPara({ visao: "lista" })} className={cn("flex items-center gap-1 px-3 py-1.5 text-sm", visao === "lista" && "bg-marca text-marca-texto")}><List className="h-4 w-4" /> Lista</button>
-          </div>
-          <Botao variante="destaque" onClick={() => setCriando(hoje)}><Plus className="h-4 w-4" /> Nova atividade</Botao>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Settings } from "lucide-react";
 import { classeBotao } from "@/components/ui/botao";
-import { TituloPagina } from "@/components/ui/cartao";
+import { GoogleAgenda } from "@/components/agenda/google-agenda";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { ocorrenciasRecorrentes, type ItemAgenda } from "@/lib/agenda";
 import { diaDaSemana, hojeBR, somarDias } from "@/lib/datas";
@@ -26,7 +26,7 @@ export default async function PaginaAgenda({ searchParams }: PageProps<"/agenda"
   const ate = visao === "lista" ? somarDias(hoje, 30) : somarDias(ultimo, 6 - diaDaSemana(ultimo));
 
   const [usuario, config, supabase] = await Promise.all([obterUsuario(), carregarConfiguracaoComercial(), criarClienteServidor()]);
-  const [{ data: tipos }, { data: reunioes }, { data: atividades }, { data: negocios }] = await Promise.all([
+  const [{ data: tipos }, { data: reunioes }, { data: atividades }, { data: negocios }, { data: linkAgenda }] = await Promise.all([
     supabase.from("tipos_atividade").select("*").eq("ativo", true).order("ordem"),
     supabase.from("reunioes_recorrentes").select("*").eq("ativa", true),
     supabase
@@ -36,6 +36,7 @@ export default async function PaginaAgenda({ searchParams }: PageProps<"/agenda"
       .lt("inicio", new Date(`${somarDias(ate, 1)}T00:00:00-03:00`).toISOString())
       .order("inicio"),
     supabase.from("negocios").select("id, titulo").eq("funil_id", config.funil.id).is("encerrado_em", null).order("titulo").limit(500),
+    supabase.from("agenda_links").select("created_at").eq("membro_id", usuario.id).maybeSingle(),
   ]);
 
   const doBanco: ItemAgenda[] = (atividades ?? []).map((a) => ({
@@ -59,12 +60,11 @@ export default async function PaginaAgenda({ searchParams }: PageProps<"/agenda"
 
   return (
     <>
-      <TituloPagina
-        titulo="Agenda"
-        descricao="Visitas, diagnósticos, ligações, eventos e as reuniões fixas (R.I e R.G) de toda a Aprimora."
-        acoes={usuario.ehDiretor && <Link href="/agenda/configuracoes" className={classeBotao("secundario")}><Settings className="h-4 w-4" /> Config</Link>}
-      />
       <Agenda
+        acoes={<>
+          <GoogleAgenda conectadoEm={linkAgenda?.created_at ?? null} />
+          {usuario.ehDiretor && <Link href="/agenda/configuracoes" className={classeBotao("secundario")}><Settings className="h-4 w-4" /> Config</Link>}
+        </>}
         mes={mes}
         visao={visao}
         de={de}

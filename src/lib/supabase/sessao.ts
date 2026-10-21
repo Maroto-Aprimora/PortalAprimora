@@ -4,7 +4,7 @@ import { SUPABASE_KEY, SUPABASE_URL } from "./env";
 
 /** Rotas acessíveis sem login. */
 // /api/n8n e /api/integracoes: chamadas de sistemas externos, protegidas por segredo/token (não pela sessão)
-const ROTAS_PUBLICAS = ["/entrar", "/primeiro-acesso", "/esqueci-senha", "/auth", "/api/push", "/api/n8n", "/api/integracoes"];
+const ROTAS_PUBLICAS = ["/entrar", "/primeiro-acesso", "/esqueci-senha", "/auth", "/api/push", "/api/n8n", "/api/integracoes", "/api/agenda"];
 
 /** Renova a sessão a cada requisição e manda para /entrar quem não está logado. */
 export async function atualizarSessao(request: NextRequest) {

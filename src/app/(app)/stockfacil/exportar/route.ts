@@ -1,6 +1,7 @@
 import { gerarCsv, gerarXlsx, type Planilha } from "@/lib/exportar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { hojeBR } from "@/lib/datas";
+import { buscarTudo } from "@/lib/paginar";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { consultarLeads, lerFiltros, NOME_SITUACAO } from "../dados";
 
@@ -12,13 +13,17 @@ export async function GET(request: Request) {
   const { data: sessao } = await supabase.auth.getClaims();
   if (!sessao?.claims?.sub) return new Response("Não autorizado", { status: 401 });
 
-  const [{ data: leads }, config] = await Promise.all([consultarLeads(supabase, lerFiltros(sp), 20000), carregarConfiguracaoComercial()]);
+  const filtros = lerFiltros(sp);
+  const [leads, config] = await Promise.all([
+    buscarTudo((de, ate) => consultarLeads(supabase, filtros).range(de, ate)),
+    carregarConfiguracaoComercial(),
+  ]);
   const nomeMembro = new Map(config.membrosComercial.map((m) => [m.id, m.nome]));
   const planilhas: Planilha[] = [{
     nome: "Leads StockFacil",
     colunas: ["Nome", "Categoria", "Situação", "Responsável", "Telefone", "WhatsApp", "Endereço", "Bairro", "Site", "E-mails", "Nota", "Avaliações",
       "Google Maps", "Observações", "Encontrado em"],
-    linhas: (leads ?? []).map((l) => {
+    linhas: leads.map((l) => {
       const dig = (l.telefone_digitos ?? "").replace(/^0+/, "");
       const celular = dig.length === 11 && dig[2] === "9";
       return [

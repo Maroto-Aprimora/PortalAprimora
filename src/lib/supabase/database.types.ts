@@ -14,6 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda_links: {
+        Row: {
+          created_at: string
+          membro_id: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          membro_id: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          membro_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_links_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: true
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agentes: {
         Row: {
           ativo: boolean
@@ -1944,6 +1970,62 @@ export type Database = {
           },
         ]
       }
+      ocorrencias: {
+        Row: {
+          chave: string | null
+          created_at: string
+          detalhes: Json
+          id: string
+          link: string | null
+          mensagem: string | null
+          origem: string | null
+          resolvida_em: string | null
+          resolvida_por: string | null
+          tipo: string
+          titulo: string
+          ultima_em: string
+          vezes: number
+        }
+        Insert: {
+          chave?: string | null
+          created_at?: string
+          detalhes?: Json
+          id?: string
+          link?: string | null
+          mensagem?: string | null
+          origem?: string | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
+          tipo: string
+          titulo: string
+          ultima_em?: string
+          vezes?: number
+        }
+        Update: {
+          chave?: string | null
+          created_at?: string
+          detalhes?: Json
+          id?: string
+          link?: string | null
+          mensagem?: string | null
+          origem?: string | null
+          resolvida_em?: string | null
+          resolvida_por?: string | null
+          tipo?: string
+          titulo?: string
+          ultima_em?: string
+          vezes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ocorrencias_resolvida_por_fkey"
+            columns: ["resolvida_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       origens: {
         Row: {
           ativo: boolean
@@ -3229,6 +3311,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      agenda_do_link: { Args: { _token: string }; Returns: Json }
       buscar_leads_stockfacil: {
         Args: { _cidade?: string; _termos: string[] }
         Returns: string
@@ -3256,6 +3339,7 @@ export type Database = {
         Args: { _destino?: string; _fase: string }
         Returns: Json
       }
+      gerar_link_agenda: { Args: never; Returns: string }
       gerar_relatorio_ri: {
         Args: { _ate?: string; _de?: string }
         Returns: string
@@ -3328,6 +3412,10 @@ export type Database = {
       plano_melhoria: { Args: { _membro: string }; Returns: Json }
       reabrir_diagnostico: {
         Args: { _diagnostico: string }
+        Returns: undefined
+      }
+      registrar_erro_app: {
+        Args: { _caminho?: string; _codigo?: string; _mensagem: string }
         Returns: undefined
       }
       registrar_evento_integracao: {

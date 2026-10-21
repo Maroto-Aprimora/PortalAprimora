@@ -42,12 +42,17 @@ const COR_BORDA: Record<string, string> = {
   perda: "border-l-perigo",
 };
 
+/** Cards por coluna antes do "Mostrar mais". */
+const POR_COLUNA = 100;
+
 export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio }: {
   fases: Fase[]; motivos: Motivo[]; resultados: ResultadoLigacao[]; cartoes: CartaoNegocio[]; dadosEnvio: string;
 }) {
   const [itens, setItens] = useState(cartoes);
   const [anteriores, setAnteriores] = useState(cartoes);
   const [sobre, setSobre] = useState<string | null>(null);
+  // Colunas muito cheias mostram os cards aos poucos (a página continua leve com milhares de negócios)
+  const [visiveis, setVisiveis] = useState<Record<string, number>>({});
   // Quando o servidor manda dados novos (filtro, revalidação), recomeça a partir deles.
   if (cartoes !== anteriores) {
     setAnteriores(cartoes);
@@ -98,7 +103,13 @@ export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio }: {
                   </div>
                 </header>
                 <div className="flex max-h-[calc(100vh-290px)] min-h-32 flex-col gap-2 overflow-y-auto p-2">
-                  {daFase.map((c) => <Cartao key={c.id} cartao={c} fase={fase} fases={fases} resultados={resultados} dadosEnvio={dadosEnvio} aoMover={(d) => mover(c.id, c.titulo, d)} />)}
+                  {daFase.slice(0, visiveis[fase.id] ?? POR_COLUNA).map((c) => <Cartao key={c.id} cartao={c} fase={fase} fases={fases} resultados={resultados} dadosEnvio={dadosEnvio} aoMover={(d) => mover(c.id, c.titulo, d)} />)}
+                  {daFase.length > (visiveis[fase.id] ?? POR_COLUNA) && (
+                    <button type="button" className="rounded-lg border border-dashed border-borda py-2 text-xs font-semibold text-texto-suave hover:border-destaque hover:text-destaque"
+                      onClick={() => setVisiveis((v) => ({ ...v, [fase.id]: (v[fase.id] ?? POR_COLUNA) + POR_COLUNA }))}>
+                      Mostrar mais ({daFase.length - (visiveis[fase.id] ?? POR_COLUNA)} restantes)
+                    </button>
+                  )}
                   {daFase.length === 0 && <p className="py-6 text-center text-xs text-texto-suave">Nenhum negócio</p>}
                 </div>
               </section>

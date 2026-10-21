@@ -98,3 +98,11 @@ export async function remarcarAtividade(id: string, novoInicio: string, motivo: 
   revalidar(data?.negocio_id);
   return { ok: true };
 }
+
+/** Cria (ou troca) o link pessoal da agenda para assinar no Google Agenda. O link antigo deixa de funcionar. */
+export async function gerarLinkAgenda(): Promise<{ ok: true; token: string } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc("gerar_link_agenda");
+  if (error || !data) return { ok: false, erro: mensagemDeErro(error) };
+  return { ok: true, token: data };
+}

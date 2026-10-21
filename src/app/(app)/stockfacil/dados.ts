@@ -22,9 +22,9 @@ export function lerFiltros(sp: Record<string, string | string[] | undefined>): F
   return { q: t("q"), situacao: t("situacao"), categoria: t("categoria"), bairro: t("bairro"), resp: t("resp") };
 }
 
-/** Consulta com os filtros da página (mesma usada na exportação). */
-export function consultarLeads(supabase: SupabaseClient<Database>, f: FiltrosLeads, limite = 5000) {
-  let q = supabase.from("stockfacil_leads").select("*").order("created_at", { ascending: false }).limit(limite);
+/** Consulta com os filtros da página (mesma usada na exportação). Sem limite: quem chama escolhe a faixa (range). */
+export function consultarLeads(supabase: SupabaseClient<Database>, f: FiltrosLeads) {
+  let q = supabase.from("stockfacil_leads").select("*").order("created_at", { ascending: false }).order("id");
   if (f.situacao) q = q.eq("situacao", f.situacao);
   if (f.categoria) q = q.eq("categoria", f.categoria);
   if (f.bairro) q = q.eq("bairro", f.bairro);

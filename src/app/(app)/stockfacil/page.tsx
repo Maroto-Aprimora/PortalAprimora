@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Download } from "lucide-react";
 import { classeBotao } from "@/components/ui/botao";
 import { TituloPagina } from "@/components/ui/cartao";
+import { buscarTudo } from "@/lib/paginar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
@@ -21,18 +22,19 @@ export default async function PaginaStockFacil({ searchParams }: PageProps<"/sto
   if (usuario.cargoEm("comercial") == null) redirect("/painel");
   const filtros = lerFiltros(sp);
   const supabase = await criarClienteServidor();
-  const [{ data: leads }, { data: buscas }, { data: todas }, { count: total }] = await Promise.all([
-    consultarLeads(supabase, filtros, 1000),
+  const [{ data: leads }, { data: buscas }, todas, { count: total }] = await Promise.all([
+    // A tabela mostra os 1.000 mais recentes do filtro; a exportação traz todos
+    consultarLeads(supabase, filtros).range(0, 999),
     supabase.from("stockfacil_buscas").select("id, termos, cidade, status, encontrados, novos, erro, created_at, concluida_em").order("created_at", { ascending: false }).limit(5),
-    supabase.from("stockfacil_leads").select("categoria, bairro, situacao").limit(20000),
+    buscarTudo((de, ate) => supabase.from("stockfacil_leads").select("categoria, bairro, situacao").order("id").range(de, ate), 50000),
     supabase.from("stockfacil_leads").select("id", { count: "exact", head: true }),
   ]);
   const contar = (campo: "categoria" | "bairro") => {
     const m = new Map<string, number>();
-    for (const l of todas ?? []) if (l[campo]) m.set(l[campo]!, (m.get(l[campo]!) ?? 0) + 1);
+    for (const l of todas) if (l[campo]) m.set(l[campo]!, (m.get(l[campo]!) ?? 0) + 1);
     return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([valor, n]) => ({ valor, n }));
   };
-  const porSituacao = Object.keys(NOME_SITUACAO).map((s) => ({ s, n: (todas ?? []).filter((l) => l.situacao === s).length }));
+  const porSituacao = Object.keys(NOME_SITUACAO).map((s) => ({ s, n: todas.filter((l) => l.situacao === s).length }));
   const qs = new URLSearchParams(Object.entries(filtros).filter(([, v]) => v) as [string, string][]).toString();
 
   return (

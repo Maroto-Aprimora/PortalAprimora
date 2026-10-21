@@ -13,7 +13,7 @@ export const INDICADORES_META = {
   oportunidades: { nome: "Oportunidades geradas", unidade: "un", regra: "Negócios que entraram em Oportunidade no período." },
   leads_novos: { nome: "Leads novos", unidade: "un", regra: "Negócios criados no período." },
   prospectday: { nome: "ProspectDays", unidade: "un", regra: "Atividades do tipo ProspectDay no período (não canceladas)." },
-  coldcalls: { nome: "Coldcalls registradas", unidade: "un", regra: "Atividades do tipo Coldcall realizadas no período." },
+  coldcalls: { nome: "Coldcalls registradas", unidade: "un", regra: "Ligações registradas no período (manuais e da API4COM), pela pessoa que ligou." },
 } as const;
 
 export type ChaveIndicador = keyof typeof INDICADORES_META;

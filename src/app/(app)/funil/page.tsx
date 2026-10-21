@@ -8,6 +8,7 @@ import { obterUsuario } from "@/lib/usuario";
 import { BarraFunil } from "./filtros";
 import { Kanban, type CartaoNegocio } from "./kanban";
 import { ListaNegocios } from "./lista";
+import { buscarTudo } from "@/lib/paginar";
 import type { ItemAprovacao } from "@/app/(app)/aprovacoes/item";
 
 export const metadata: Metadata = { title: "Funil" };
@@ -29,25 +30,28 @@ export default async function PaginaFunil({ searchParams }: PageProps<"/funil">)
 
   const [usuario, config, supabase] = await Promise.all([obterUsuario(), carregarConfiguracaoComercial(), criarClienteServidor()]);
 
-  let consulta = supabase
-    .from("negocios")
-    .select("id, titulo, fase_id, responsavel_id, contato_id, valor, entrou_na_fase_em, encerrado_em, ficticio, empresas!inner(nome, cidade, site, telefone, nome_normalizado, segmentos(nome)), contatos!negocios_contato_id_fkey(nome, cargo, telefone), negocio_servicos(servicos(nome)), ligacoes(inicio, resultados_ligacao(nome))")
-    .eq("funil_id", config.funil.id)
-    .or(`encerrado_em.is.null,encerrado_em.gte.${limiteEncerrados()}`)
-    .order("entrou_na_fase_em", { ascending: true })
-    // Só a última ligação de cada negócio (selo no card)
-    .order("inicio", { referencedTable: "ligacoes", ascending: false })
-    .limit(1, { referencedTable: "ligacoes" })
-    .limit(1000);
-  if (resp === "meus") consulta = consulta.eq("responsavel_id", usuario.id);
-  else if (resp === "sem") consulta = consulta.is("responsavel_id", null);
-  else if (resp) consulta = consulta.eq("responsavel_id", resp);
-  if (origem) consulta = consulta.eq("origem_id", origem);
-  if (segmento) consulta = consulta.eq("empresas.segmento_id", segmento);
-  if (busca) consulta = consulta.ilike("empresas.nome_normalizado", `%${busca.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")}%`);
-
+  // Busca em páginas de 1.000 (limite do banco por consulta) até trazer todos os cards
+  const montarConsulta = () => {
+    let consulta = supabase
+      .from("negocios")
+      .select("id, titulo, fase_id, responsavel_id, contato_id, valor, entrou_na_fase_em, encerrado_em, ficticio, empresas!inner(nome, cidade, site, telefone, nome_normalizado, segmentos(nome)), contatos!negocios_contato_id_fkey(nome, cargo, telefone), negocio_servicos(servicos(nome)), ligacoes(inicio, resultados_ligacao(nome))")
+      .eq("funil_id", config.funil.id)
+      .or(`encerrado_em.is.null,encerrado_em.gte.${limiteEncerrados()}`)
+      .order("entrou_na_fase_em", { ascending: true })
+      .order("id", { ascending: true })
+      // Só a última ligação de cada negócio (selo no card)
+      .order("inicio", { referencedTable: "ligacoes", ascending: false })
+      .limit(1, { referencedTable: "ligacoes" });
+    if (resp === "meus") consulta = consulta.eq("responsavel_id", usuario.id);
+    else if (resp === "sem") consulta = consulta.is("responsavel_id", null);
+    else if (resp) consulta = consulta.eq("responsavel_id", resp);
+    if (origem) consulta = consulta.eq("origem_id", origem);
+    if (segmento) consulta = consulta.eq("empresas.segmento_id", segmento);
+    if (busca) consulta = consulta.ilike("empresas.nome_normalizado", `%${busca.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")}%`);
+    return consulta;
+  };
   const [{ data }, { data: emailsPendentes }, { data: envio }] = await Promise.all([
-    consulta,
+    buscarTudo((de, ate) => montarConsulta().range(de, ate)).then((data) => ({ data })),
     // E-mails do Redator esperando aprovação: aparecem no pop-up do card (cada um vê os seus; o diretor vê todos)
     supabase.from("aprovacoes")
       .select("id, titulo, resumo, tipo, conteudo, created_at, negocio_id, agentes(nome), negocios(id, titulo), membros!aprovacoes_responsavel_id_fkey(nome)")

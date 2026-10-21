@@ -1,5 +1,6 @@
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { calcularIndicadores } from "@/lib/indicadores";
+import { buscarTudo } from "@/lib/paginar";
 import { obterUsuario } from "@/lib/usuario";
 import { gerarCsv, gerarXlsx, type Planilha } from "@/lib/exportar";
 import { periodoDosParametros } from "@/lib/periodo";
@@ -44,7 +45,6 @@ export async function GET(request: Request) {
           ["Ticket médio (R$)", arred(r.ticketMedio, 2)],
           ["Taxa de ganho (%)", arred(r.taxaGanho == null ? null : r.taxaGanho * 100)],
           ["Conversão lead → contrato da safra (%)", arred(r.conversaoLeadContrato == null ? null : r.conversaoLeadContrato * 100)],
-          ["Ciclo de venda (dias)", arred(r.cicloDias)],
           ["Projetos não vendidos", r.perdidos],
           ["Leads não qualificados", r.desqualificados],
           ["Propostas remarcadas", r.propostasRemarcadas],
@@ -80,18 +80,20 @@ export async function GET(request: Request) {
   } else {
     const config = await carregarConfiguracaoComercial();
     const { data: membros } = await supabase.from("membros").select("id, nome");
-    let consulta = supabase.from("negocios")
-      .select("titulo, valor, created_at, entrou_na_fase_em, ganho_em, encerrado_em, fase_id, responsavel_id, origem_id, motivo_id, ficticio, empresas(nome, cnpj, cidade, uf, telefone, email_principal)")
-      .eq("funil_id", config.funil.id).order("created_at", { ascending: false }).limit(5000);
-    if (responsavel) consulta = consulta.eq("responsavel_id", responsavel);
-    const { data: negocios } = await consulta;
+    const negocios = await buscarTudo((de, ate) => {
+      let consulta = supabase.from("negocios")
+        .select("titulo, valor, created_at, entrou_na_fase_em, ganho_em, encerrado_em, fase_id, responsavel_id, origem_id, motivo_id, ficticio, empresas(nome, cnpj, cidade, uf, telefone, email_principal)")
+        .eq("funil_id", config.funil.id).order("created_at", { ascending: false }).order("id");
+      if (responsavel) consulta = consulta.eq("responsavel_id", responsavel);
+      return consulta.range(de, ate);
+    }, 50000);
     const nome = (id: string | null, lista: { id: string; nome: string }[] | null) => (id && lista?.find((x) => x.id === id)?.nome) || "";
     const dia = (iso: string | null) => (iso ? diaBR(iso) : null);
     planilhas = [{
       nome: "Negócios",
       colunas: ["Negócio", "Empresa", "CNPJ", "Cidade", "UF", "Telefone", "E-mail", "Fase", "Responsável", "Origem", "Valor (R$)",
         "Criado em", "Na fase desde", "Ganho em", "Encerrado em", "Motivo", "Fictício"],
-      linhas: (negocios ?? []).map((n) => [
+      linhas: negocios.map((n) => [
         n.titulo, n.empresas?.nome ?? "", n.empresas?.cnpj ?? "", n.empresas?.cidade ?? "", n.empresas?.uf ?? "", n.empresas?.telefone ?? "",
         n.empresas?.email_principal ?? "", nome(n.fase_id, config.fases), nome(n.responsavel_id, membros), nome(n.origem_id, config.origens),
         n.valor, dia(n.created_at), dia(n.entrou_na_fase_em), dia(n.ganho_em), dia(n.encerrado_em), nome(n.motivo_id, config.motivos),

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
   BarChart3, Building2, CalendarDays, ChevronDown, Gauge, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
-  PackageSearch, Target, TrendingUp, Trophy, Users, X,
+  PackageSearch, ShieldAlert, Target, TrendingUp, Trophy, Users, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sair } from "@/app/acoes-sessao";
@@ -27,13 +27,15 @@ export type DadosMenu = {
   aprovacoesPendentes: number;
   /** E-mails do Redator esperando aprovação: aparecem no card do Funil */
   emailsPendentes: number;
+  /** Ocorrências abertas no Controle do App (só o diretor comercial) */
+  ocorrenciasAbertas: number;
 };
 
 /**
  * Menu da v2 (portal exclusivo do Comercial): seções gerais, o Comercial e o que permanece das outras diretorias
  * (Membros, Pontuação, Painel geral e Auditoria). Projetos e Marketing não têm telas.
  */
-function montarMenu({ ehDiretor, aprovacoesPendentes, emailsPendentes }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
+function montarMenu({ ehDiretor, diretorDe, aprovacoesPendentes, emailsPendentes, ocorrenciasAbertas }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
   return {
     gerais: [
       { href: "/painel", rotulo: "Início", icone: LayoutDashboard },
@@ -49,6 +51,8 @@ function montarMenu({ ehDiretor, aprovacoesPendentes, emailsPendentes }: DadosMe
         { href: "/metas", rotulo: "Metas", icone: Target },
         // Temporário: prospecção do SaaS StockFacil (todo o time)
         { href: "/stockfacil", rotulo: "Leads StockFacil", icone: PackageSearch },
+        // Erros de e-mail, fluxos do n8n, agentes e telas: só o diretor comercial
+        ...(diretorDe.includes("comercial") ? [{ href: "/controle", rotulo: "Controle do App", icone: ShieldAlert, contador: ocorrenciasAbertas }] : []),
       ] },
       { slug: "rh", itens: [
         { href: "/membros", rotulo: "Membros", icone: Users },

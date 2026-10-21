@@ -13,7 +13,7 @@ import type { Fase, Motivo } from "@/lib/crm";
 type Pedido = { negocioId: string; titulo: string; destino: Fase };
 
 /**
- * Controla a movimentação de fase. Se o destino exige motivo (perdas) ou data de retorno (reciclagem),
+ * Controla a movimentação de fase. Se o destino exige motivo (perdas) ou data de retorno (reciclagem, Retornar futuro),
  * abre uma janela para pedir a informação; senão, move direto. Erros do banco (ex.: campo obrigatório)
  * aparecem como aviso com atalho para abrir o negócio.
  */
@@ -43,7 +43,7 @@ export function useMoverNegocio(motivos: Motivo[], aoMover?: (negocioId: string,
 
   function mover(negocioId: string, titulo: string, destino: Fase) {
     const p = { negocioId, titulo, destino };
-    if (destino.exige_motivo || destino.tipo === "pausa") setPedido(p);
+    if (destino.exige_motivo || destino.tipo === "pausa" || destino.chave === "retornar") setPedido(p);
     else executar(p);
   }
 
@@ -77,6 +77,11 @@ export function useMoverNegocio(motivos: Motivo[], aoMover?: (negocioId: string,
         )}
         {pedido.destino.tipo === "pausa" && (
           <Campo rotulo="Retomar contato em" obrigatorio dica="Na data, o lead volta automaticamente para o funil.">
+            <Entrada type="date" name="retorno" required min={new Date().toISOString().slice(0, 10)} />
+          </Campo>
+        )}
+        {pedido.destino.chave === "retornar" && (
+          <Campo rotulo="Retornar em" obrigatorio dica="Na data, o responsável recebe a tarefa de retomar o contato.">
             <Entrada type="date" name="retorno" required min={new Date().toISOString().slice(0, 10)} />
           </Campo>
         )}

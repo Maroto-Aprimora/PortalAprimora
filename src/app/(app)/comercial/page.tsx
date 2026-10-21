@@ -78,7 +78,6 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
         <Numero rotulo="Contratos fechados" valor={String(r.contratos)} detalhe={formatarMoeda(r.faturamento)} />
         <Numero rotulo="Ticket médio" valor={r.ticketMedio == null ? "—" : formatarMoeda(r.ticketMedio)} />
         <Numero rotulo="Taxa de ganho" valor={pct(r.taxaGanho)} detalhe={`${r.contratos} ganhos × ${r.perdidos} não vendidos`} />
-        <Numero rotulo="Ciclo de venda" valor={dias(r.cicloDias)} detalhe="da criação ao contrato" />
         <Numero rotulo="Pipeline ponderado (hoje)" valor={formatarMoeda(r.pipelinePonderado)} detalhe={`${r.negociosAtivos} negócios ativos · valor × probabilidade da fase`} />
       </div>
 
