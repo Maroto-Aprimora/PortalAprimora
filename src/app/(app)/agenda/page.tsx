@@ -6,6 +6,7 @@ import { GoogleAgenda } from "@/components/agenda/google-agenda";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { ocorrenciasRecorrentes, type ItemAgenda } from "@/lib/agenda";
 import { diaDaSemana, hojeBR, somarDias } from "@/lib/datas";
+import { buscarTudo } from "@/lib/paginar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { Agenda } from "./agenda";
@@ -31,11 +32,13 @@ export default async function PaginaAgenda({ searchParams }: PageProps<"/agenda"
     supabase.from("reunioes_recorrentes").select("*").eq("ativa", true),
     supabase
       .from("atividades")
-      .select("*, atividade_participantes(membro_id), empresas(nome)")
+      .select("*, atividade_participantes(membro_id), empresas(nome), negocios(titulo)")
       .gte("inicio", new Date(`${de}T00:00:00-03:00`).toISOString())
       .lt("inicio", new Date(`${somarDias(ate, 1)}T00:00:00-03:00`).toISOString())
       .order("inicio"),
-    supabase.from("negocios").select("id, titulo").eq("funil_id", config.funil.id).is("encerrado_em", null).order("titulo").limit(500),
+    // Todos os negócios em andamento (o banco devolve no máximo 1.000 por consulta: busca em páginas)
+    buscarTudo((de, ate) => supabase.from("negocios").select("id, titulo").eq("funil_id", config.funil.id).is("encerrado_em", null)
+      .order("titulo").order("id").range(de, ate)).then((data) => ({ data })),
     supabase.from("agenda_links").select("created_at").eq("membro_id", usuario.id).maybeSingle(),
   ]);
 
@@ -54,7 +57,7 @@ export default async function PaginaAgenda({ searchParams }: PageProps<"/agenda"
   // Edição completa (com os dados que a lista resumida não traz)
   const completas = Object.fromEntries((atividades ?? []).map((a) => [a.id, {
     id: a.id, tipo_id: a.tipo_id, titulo: a.titulo, inicio: a.inicio, fim: a.fim, local: a.local, link_reuniao: a.link_reuniao,
-    negocio_id: a.negocio_id, responsavel_id: a.responsavel_id, stakeholder: a.stakeholder, resumo: a.resumo,
+    negocio_id: a.negocio_id, negocio_titulo: a.negocios?.titulo ?? null, responsavel_id: a.responsavel_id, stakeholder: a.stakeholder, resumo: a.resumo,
     proximos_passos: a.proximos_passos, participantes: a.atividade_participantes.map((p) => p.membro_id),
   }]));
 

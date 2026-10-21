@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { TituloPagina } from "@/components/ui/cartao";
 import { carregarConfiguracaoComercial, carregarTodosMembros } from "@/lib/crm-servidor";
 import { hojeBR, somarDias } from "@/lib/datas";
+import { buscarTudo } from "@/lib/paginar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { PainelTarefas, type Aprovacao } from "./painel";
@@ -17,7 +18,9 @@ export default async function PaginaTarefas() {
     supabase.from("tarefas").select("*, tarefa_responsaveis(membro_id), negocios(id, titulo, contato_id, encerrado_em)")
       .or(`status.neq.concluida,concluida_em.gte.${desde}`)
       .order("prazo", { ascending: true, nullsFirst: false }).limit(800),
-    supabase.from("negocios").select("id, titulo").eq("funil_id", config.funil.id).is("encerrado_em", null).order("titulo").limit(500),
+    // Todos os negócios em andamento (o banco devolve no máximo 1.000 por consulta: busca em páginas)
+    buscarTudo((de, ate) => supabase.from("negocios").select("id, titulo").eq("funil_id", config.funil.id).is("encerrado_em", null)
+      .order("titulo").order("id").range(de, ate)).then((data) => ({ data })),
     supabase.from("diretorias").select("slug, nome").order("ordem"),
     supabase.from("aprovacoes")
       .select("id, titulo, resumo, tipo, conteudo, created_at, responsavel_id, agentes(nome), negocios(id, titulo), membros!aprovacoes_responsavel_id_fkey(nome)")

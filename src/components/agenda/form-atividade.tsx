@@ -20,6 +20,8 @@ export type AtividadeEditavel = {
   local: string | null;
   link_reuniao: string | null;
   negocio_id: string | null;
+  /** Título do negócio atual, para mantê-lo na lista mesmo encerrado (vendido ou não vendido) */
+  negocio_titulo?: string | null;
   responsavel_id: string | null;
   stakeholder: string | null;
   resumo: string | null;
@@ -82,6 +84,10 @@ export function DialogoAtividade({
           <Campo rotulo="Negócio (lead)" className="sm:col-span-2">
             <Selecao name="negocio_id" defaultValue={a?.negocio_id ?? ""}>
               <option value="">—</option>
+              {/* Negócio encerrado não está na lista de abertos: mantém o vínculo ao editar */}
+              {a?.negocio_id && !negocios.some((n) => n.id === a.negocio_id) && (
+                <option value={a.negocio_id}>{a.negocio_titulo ?? "Negócio atual"} (encerrado)</option>
+              )}
               {negocios.map((n) => <option key={n.id} value={n.id}>{n.titulo}</option>)}
             </Selecao>
           </Campo>
