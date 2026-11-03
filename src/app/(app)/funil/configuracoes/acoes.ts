@@ -326,13 +326,14 @@ export async function excluirCopy(id: string): Promise<Resultado> {
 }
 
 export async function salvarParametrosEmail(dados: {
-  remetente_nome: string; envio_hora_inicio: number; envio_hora_fim: number; follow_up_proposta_dias: number;
+  remetente_nome: string; envio_hora_inicio: number; envio_hora_fim: number; follow_up_proposta_dias: number; leads_email_por_dia: number;
 }): Promise<Resultado> {
   const v = z.object({
     remetente_nome: z.string().trim().min(2, "Informe o nome do remetente."),
     envio_hora_inicio: z.number().int().min(0).max(23),
     envio_hora_fim: z.number().int().min(1).max(24),
     follow_up_proposta_dias: z.number().int().min(1, "O follow-up precisa de ao menos 1 dia.").max(30),
+    leads_email_por_dia: z.number().int().min(0, "Use 0 a 200 leads por dia.").max(200, "Use 0 a 200 leads por dia."),
   }).refine((d) => d.envio_hora_fim > d.envio_hora_inicio, "O fim do horário de envio precisa ser depois do início.").safeParse(dados);
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();

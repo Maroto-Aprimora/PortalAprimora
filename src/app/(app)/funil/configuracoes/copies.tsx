@@ -272,6 +272,7 @@ function ParametrosEnvio({ parametros }: { parametros: Tables<"parametros_comerc
             remetente_nome: String(form.get("remetente_nome") ?? ""),
             envio_hora_inicio: Number(form.get("envio_hora_inicio")), envio_hora_fim: Number(form.get("envio_hora_fim")),
             follow_up_proposta_dias: Number(form.get("follow_up_proposta_dias")),
+            leads_email_por_dia: Number(form.get("leads_email_por_dia")),
           });
           if (r.ok) toast.success("Envio salvo.");
           else toast.error(r.erro);
@@ -287,6 +288,9 @@ function ParametrosEnvio({ parametros }: { parametros: Tables<"parametros_comerc
         </Campo>
         <Campo rotulo="Follow-up da proposta após (dias úteis)">
           <Entrada name="follow_up_proposta_dias" type="number" min={1} max={30} defaultValue={parametros.follow_up_proposta_dias} className="h-9 w-28" />
+        </Campo>
+        <Campo rotulo="Leads novos por dia (Coleta → E-mail)" dica="Em dias úteis, às 7h, os mais antigos da Coleta com e-mail entram em E-mail (o rodízio escolhe o responsável). 0 = pausa.">
+          <Entrada name="leads_email_por_dia" type="number" min={0} max={200} defaultValue={parametros.leads_email_por_dia} className="h-9 w-28" />
         </Campo>
         <Botao type="submit" tamanho="sm" variante="secundario" carregando={pendente}>Salvar envio</Botao>
       </form>

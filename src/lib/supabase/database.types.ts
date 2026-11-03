@@ -2068,6 +2068,7 @@ export type Database = {
           envio_hora_fim: number
           envio_hora_inicio: number
           follow_up_proposta_dias: number
+          leads_email_por_dia: number
           reciclagem_retorno_dias: number
           remetente_nome: string
           updated_at: string
@@ -2078,6 +2079,7 @@ export type Database = {
           envio_hora_fim?: number
           envio_hora_inicio?: number
           follow_up_proposta_dias?: number
+          leads_email_por_dia?: number
           reciclagem_retorno_dias?: number
           remetente_nome?: string
           updated_at?: string
@@ -2088,6 +2090,7 @@ export type Database = {
           envio_hora_fim?: number
           envio_hora_inicio?: number
           follow_up_proposta_dias?: number
+          leads_email_por_dia?: number
           reciclagem_retorno_dias?: number
           remetente_nome?: string
           updated_at?: string
@@ -3389,6 +3392,14 @@ export type Database = {
           _mensagem?: string
           _segredo: string
         }
+        Returns: Json
+      }
+      n8n_leitura_fim: {
+        Args: { _ate: string; _fonte: string; _segredo: string }
+        Returns: Json
+      }
+      n8n_leitura_inicio: {
+        Args: { _fonte: string; _segredo: string }
         Returns: Json
       }
       n8n_registrar_chamadas: {
