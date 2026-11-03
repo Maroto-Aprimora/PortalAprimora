@@ -143,3 +143,18 @@ chama uma função `n8n_*` do banco, que confere o segredo de novo (hash em `pri
 - **Gmail**: contas Google Workspace enviam até ~2.000 e-mails por dia; o fluxo envia no máximo 1 a cada 30 s.
 - **Atualizar o n8n**: `docker compose -p n8n-aprimora pull && docker compose -p n8n-aprimora up -d`
   (faça backup do volume antes).
+
+## Grok (xAI) e marca d'água (03/11/2026)
+
+- **Grok** entra pelos nós `Grok: …` (HTTP para `https://api.x.ai/v1/chat/completions`, formato OpenAI, `response_format: json_object`)
+  com a credencial **Header Auth "xAI Grok"** (Name `Authorization`, Value `Bearer <chave>`). O modelo vem de `XAI_MODELO`
+  (padrão `grok-4-fast-non-reasoning`). O nó "Normalizar resposta do Grok" converte a resposta para o formato do Gemini,
+  então os nós seguintes não mudam.
+  - A1 Enriquecedor e A6 Monitor (classificação): **Grok primeiro, Gemini de reserva** (erro ou resposta vazia do Grok → Gemini).
+  - A5 Redator: **Gemini primeiro, Grok de reserva** (o texto vai para o lead).
+  - A2 Ligação (áudio), A4 Analista e A9 Assistente: só Gemini.
+  - Sem a credencial, o nó do Grok falha e o Gemini assume (comportamento anterior).
+- **Marca d'água**: A6 (caixa da comercial@) e "Buscar chamadas da API4COM" chamam `POST /api/n8n/leituras/inicio`
+  (`{fonte}` → `desde`) antes de ler e `POST /api/n8n/leituras/fim` (`{fonte, ate}`) depois de entregar. Se o n8n ficar fora
+  do ar, a próxima execução lê desde a última leitura concluída (até 30 dias). Gmail com paginação (até 10 páginas de 100);
+  API4COM com paginação por `skip` (até 15 páginas de 100).

@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.24 |
+| Versão do documento | 1.25 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -746,6 +746,7 @@ Escopo v1.0 (Seção 14).
 | 1.0 | 09/10/2026 | Primeira versão, descrevendo a `main` no commit `af20f1c` |
 | 1.1 | 12/10/2026 | Repositório transferido para `Maroto-Aprimora/PortalAprimora`; início da v2 (PE-PA-002) |
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
+| 1.25 | 03/11/2026 | Funil destravado: enriquecido com e-mail novo vai sozinho para Coleta (no bounce, o e-mail novo vira o principal); Coleta → E-mail às 7h dos dias úteis com teto diário (`leads_email_por_dia`, Config. do funil → Copy); aprovação do decisor é só conferência. Leituras com marca d'água no n8n (Gmail e API4COM, rotas `/api/n8n/leituras/inicio` e `/fim`): dias sem leitura são recuperados; leitura parada vira ocorrência. Grok (xAI) nos fluxos: principal no A1 (segmento e dores) e no A6 (classificação), reserva do Gemini no A5; Gemini continua no A2, A4 e A9. Novas tentativas nos fluxos A5 e A6; o A1 não revela de novo no Apollo empresa que já tem decisor; Monitor da fila conta só o que venceu (migração `20261103120000`) |
 | 1.24 | 22/10/2026 | Indicadores por pessoa (painel, Desempenho individual e metas individuais) contam diagnósticos, propostas e atividades para todos os participantes da atividade, uma vez por negócio (migração `20261022120000`); valor do negócio sem depender de diagnóstico, escopo ou calculadora |
 | 1.23 | 22/10/2026 | Importação do Pipefy e da Gestão de Conhecimento (835 negócios + contratos 2021–2026, um card por empresa para o que não foi vendido); vendas alinhadas à lista de contratos; Funil mostra todos os vendidos (qualquer data) na coluna Projetos Aprimora; Agenda e Tarefas carregam todos os negócios abertos no seletor (antes paravam em 500) e a edição de uma atividade mantém o negócio encerrado ligado a ela |
 | 1.22 | 21/10/2026 | Controle do App (`/controle`, só o diretor comercial: ocorrências de fluxos do n8n, agentes, e-mails, Gemini no limite, fila e erros de tela, com aviso no sino); Agenda sem descrição, botões no cabeçalho e link pessoal para o Google Agenda (assinatura iCalendar em `/api/agenda/<código>.ics`, código guardado só como hash); diagnóstico agendado com 120 min; KPI "Ciclo de venda" removido do painel e do Excel; correções: avisos para várias pessoas, Retornar futuro (data sincronizada com o campo "Retornar em", pedida ao mover e tarefa "Retomar contato" na data), ligação salva mesmo quando o card não pode ser movido (tarefa "Mover para…"), funil, exportações e StockFacil sem o corte de 1.000 linhas (busca em páginas; kanban com "Mostrar mais"), meta coldcalls contando ligações; agentes Teste, A11 e A12 desligados (migração `20261021120000`). Limpeza semanal preparada em `20261021130000`, ainda não aplicada |
