@@ -8,6 +8,12 @@ links dos e-mails podem apontar para o endereço errado.
 
 ---
 
+> **Situação atual (04/11/2026):** o SMTP do Supabase usa o Gmail com a conta **`contato@aprimoraej.com`**
+> (Username e Sender email). A senha de app "Supabase Portal" foi criada nessa conta. Ela não expira, mas é revogada
+> se a senha da `contato@` for trocada, se a verificação em duas etapas for desligada ou se a senha de app for apagada;
+> nesses casos os convites param com o erro `535 Username and Password not accepted` (gere outra senha de app na
+> `contato@` e cole no Supabase). O DNS do domínio fica no Squarespace, acessado pela conta do e-mail de marketing.
+
 ## 1. Criar a conta que vai enviar os e-mails (Google Workspace)
 
 1. Em [admin.google.com](https://admin.google.com) → **Diretório → Usuários → Adicionar novo usuário**,
