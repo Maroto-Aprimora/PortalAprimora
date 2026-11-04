@@ -144,16 +144,22 @@ chama uma função `n8n_*` do banco, que confere o segredo de novo (hash em `pri
 - **Atualizar o n8n**: `docker compose -p n8n-aprimora pull && docker compose -p n8n-aprimora up -d`
   (faça backup do volume antes).
 
-## Grok (xAI) e marca d'água (03/11/2026)
+## IA em cascata e marca d'água (03/11 e 04/11/2026)
 
-- **Grok** entra pelos nós `Grok: …` (HTTP para `https://api.x.ai/v1/chat/completions`, formato OpenAI, `response_format: json_object`)
-  com a credencial **Header Auth "xAI Grok"** (Name `Authorization`, Value `Bearer <chave>`). O modelo vem de `XAI_MODELO`
-  (padrão `grok-4-fast-non-reasoning`). O nó "Normalizar resposta do Grok" converte a resposta para o formato do Gemini,
-  então os nós seguintes não mudam.
-  - A1 Enriquecedor e A6 Monitor (classificação): **Grok primeiro, Gemini de reserva** (erro ou resposta vazia do Grok → Gemini).
-  - A5 Redator: **Gemini primeiro, Grok de reserva** (o texto vai para o lead).
+- **IA em cascata (04/11/2026)**: o Grok era pago e foi trocado por duas IAs com plano gratuito, no formato OpenAI
+  (`/chat/completions`, `response_format: json_object`, esquema do Gemini no system):
+  1. **IA 1 Groq** — `https://api.groq.com/openai/v1/chat/completions`, modelo `llama-3.3-70b-versatile`.
+     Credencial **Header Auth "Groq"** (Name `Authorization`, Value `Bearer <chave>`), chave em console.groq.com.
+  2. **IA 2 Cerebras** — `https://api.cerebras.ai/v1/chat/completions`, modelo `gpt-oss-120b`.
+     Credencial **Header Auth "Cerebras"** (mesmo formato), chave em cloud.cerebras.ai.
+  3. **Gemini** (`gemini-3.8-flash`, `GEMINI_API_KEY`), como última reserva.
+  - Vale para A1 (segmento e dores), A6 (classificação) e A5 (redação da copy). Erro, limite (429) ou JSON inválido
+    numa IA → a próxima. O nó "Normalizar resposta da IA" converte a resposta para o formato do Gemini.
+  - Sem a credencial, o nó falha na hora e a cascata segue para a próxima IA.
+  - Para trocar o modelo, edite o campo `model` no corpo do nó (os modelos gratuitos mudam com frequência).
   - A2 Ligação (áudio), A4 Analista e A9 Assistente: só Gemini.
-  - Sem a credencial, o nó do Grok falha e o Gemini assume (comportamento anterior).
+  - Dados: os planos gratuitos têm limites por minuto e por dia e podem guardar os pedidos por um tempo. Não enviamos
+    senhas nem dados pessoais sensíveis; vai o nome da empresa, o site, o CNPJ público, a resposta do lead e a copy.
 - **Marca d'água**: A6 (caixa da comercial@) e "Buscar chamadas da API4COM" chamam `POST /api/n8n/leituras/inicio`
   (`{fonte}` → `desde`) antes de ler e `POST /api/n8n/leituras/fim` (`{fonte, ate}`) depois de entregar. Se o n8n ficar fora
   do ar, a próxima execução lê desde a última leitura concluída (até 30 dias). Gmail com paginação (até 10 páginas de 100);

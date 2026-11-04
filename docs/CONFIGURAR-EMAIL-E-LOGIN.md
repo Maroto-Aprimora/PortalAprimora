@@ -39,6 +39,57 @@ Supabase → projeto **portal-aprimora** → **Authentication → Emails → SMT
 Salve. Depois, em **Authentication → Rate Limits**, ajuste *Rate limit for sending emails* para **60 por hora**.
 (O Google Workspace permite cerca de 2.000 envios por dia por conta.)
 
+## 2B. Recomendado: Resend no lugar do Gmail (04/11/2026)
+
+**Por que os convites não chegam.** Os registros do Supabase (*Authentication → Logs*) de 04/11/2026 mostram o erro
+`535 5.7.8 Username and Password not accepted` (servidor `gsmtp`) toda vez que o portal tenta enviar o link de primeiro
+acesso. Ou seja: o SMTP configurado é o do Gmail e o **Google está recusando o usuário ou a senha de app**. As causas
+mais comuns são: senha de app revogada (ela some quando a verificação em duas etapas é desligada ou a senha da conta
+é trocada), senha de app gerada em outra conta que não a do campo *Username*, ou espaços colados junto com a senha.
+
+Há duas saídas:
+
+- **Rápida**: gerar uma nova senha de app na conta `comercial@aprimoraej.com` (passo 1.3) e colar de novo no passo 2.
+- **Recomendada**: usar o **Resend** só para os e-mails do login. Ele não depende da caixa da comercial@ (que o n8n
+  usa para a cadência) e o plano gratuito basta: **100 e-mails por dia e 3.000 por mês, 1 domínio**, sem cartão.
+
+### Passo a passo do Resend
+
+1. Crie a conta em [resend.com](https://resend.com) com o e-mail da Diretoria.
+2. **Domains → Add domain** → `aprimoraej.com`, região **São Paulo (sa-east-1)** se aparecer.
+3. O Resend mostra 3 ou 4 registros DNS. Adicione-os onde o DNS do `aprimoraej.com` é administrado
+   (o mesmo lugar onde estão os registros do Google Workspace):
+
+   | Tipo | Nome | Valor |
+   |---|---|---|
+   | TXT | `resend._domainkey` | a chave DKIM que o Resend mostrar (`p=MIGf...`) |
+   | MX | `send` | `feedback-smtp.sa-east-1.amazonses.com` (prioridade 10; copie o valor exato do Resend) |
+   | TXT | `send` | `v=spf1 include:amazonses.com ~all` (copie o valor exato do Resend) |
+   | TXT | `_dmarc` (opcional, se ainda não existir) | `v=DMARC1; p=none;` |
+
+   Os registros ficam no subdomínio `send`, então **não mexem no MX do Google Workspace**: a caixa de e-mail
+   continua igual.
+4. Clique em **Verify DNS records** e espere ficar *Verified* (de minutos a algumas horas).
+5. **API Keys → Create API key** → nome "Supabase Auth", permissão **Sending access**, domínio `aprimoraej.com`.
+   Copie a chave (começa com `re_`). Ela só aparece uma vez; guarde com a diretoria e **não** coloque no código.
+6. No Supabase → **Authentication → Emails → SMTP Settings**, troque os campos:
+
+   | Campo | Valor |
+   |---|---|
+   | Sender email | `portal@aprimoraej.com` (não precisa existir como caixa; qualquer endereço do domínio verificado serve) |
+   | Sender name | `Portal Aprimora` |
+   | Host | `smtp.resend.com` |
+   | Port | `465` |
+   | Username | `resend` |
+   | Password | a chave `re_...` do passo 5 |
+   | Minimum interval between emails | `10` segundos |
+
+7. Em **Authentication → Rate Limits**, deixe *Rate limit for sending emails* em **30 por hora** (cabe no plano gratuito).
+8. Teste pelo passo 6 deste guia. No Resend, a aba **Emails** mostra cada envio (entregue, recusado ou na caixa de spam).
+
+Se quiser respostas dos membros, os modelos podem dizer "dúvidas: comercial@aprimoraej.com"; o endereço do remetente
+não recebe e-mails.
+
 ## 3. Endereços do portal (URL Configuration)
 
 Supabase → **Authentication → URL Configuration**:
@@ -228,5 +279,6 @@ Pedido pelo Supabase antes de operações sensíveis (hoje o portal não usa, ma
 |---|---|
 | "Muitas tentativas" | Limite de envio do Supabase. Confira o passo 2 (SMTP) e os Rate Limits. |
 | E-mail não chega | Veja o spam; confira usuário e senha de app no SMTP; veja *Authentication → Logs*. |
+| Logs com `535 Username and Password not accepted` | Senha de app do Gmail inválida: gere outra (passo 1.3) ou use o Resend (passo 2B). |
 | Link abre a página errada / "redirect not allowed" | Passo 3: adicione a URL nas Redirect URLs. |
 | "Este e-mail não está pré-cadastrado" | O diretor precisa pré-cadastrar a pessoa na tela **Membros**. |

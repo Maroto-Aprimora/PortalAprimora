@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.25 |
+| Versão do documento | 1.26 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -746,6 +746,7 @@ Escopo v1.0 (Seção 14).
 | 1.0 | 09/10/2026 | Primeira versão, descrevendo a `main` no commit `af20f1c` |
 | 1.1 | 12/10/2026 | Repositório transferido para `Maroto-Aprimora/PortalAprimora`; início da v2 (PE-PA-002) |
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
+| 1.26 | 04/11/2026 | IA em cascata no A1, A5 e A6: Groq (`llama-3.3-70b-versatile`) → Cerebras (`gpt-oss-120b`) → Gemini, todas com plano gratuito (o Grok era pago e saiu); A5 passa a usar a cascata antes do Gemini. E-mails do login: diagnóstico do convite que não chega (SMTP do Gmail recusando usuário e senha, erro 535) e guia do Resend como SMTP do Supabase em `docs/CONFIGURAR-EMAIL-E-LOGIN.md` |
 | 1.25 | 03/11/2026 | Funil destravado: enriquecido com e-mail novo vai sozinho para Coleta (no bounce, o e-mail novo vira o principal); Coleta → E-mail às 7h dos dias úteis com teto diário (`leads_email_por_dia`, Config. do funil → Copy); aprovação do decisor é só conferência. Leituras com marca d'água no n8n (Gmail e API4COM, rotas `/api/n8n/leituras/inicio` e `/fim`): dias sem leitura são recuperados; leitura parada vira ocorrência. Grok (xAI) nos fluxos: principal no A1 (segmento e dores) e no A6 (classificação), reserva do Gemini no A5; Gemini continua no A2, A4 e A9. Novas tentativas nos fluxos A5 e A6; o A1 não revela de novo no Apollo empresa que já tem decisor; Monitor da fila conta só o que venceu (migração `20261103120000`) |
 | 1.24 | 22/10/2026 | Indicadores por pessoa (painel, Desempenho individual e metas individuais) contam diagnósticos, propostas e atividades para todos os participantes da atividade, uma vez por negócio (migração `20261022120000`); valor do negócio sem depender de diagnóstico, escopo ou calculadora |
 | 1.23 | 22/10/2026 | Importação do Pipefy e da Gestão de Conhecimento (835 negócios + contratos 2021–2026, um card por empresa para o que não foi vendido); vendas alinhadas à lista de contratos; Funil mostra todos os vendidos (qualquer data) na coluna Projetos Aprimora; Agenda e Tarefas carregam todos os negócios abertos no seletor (antes paravam em 500) e a edição de uma atividade mantém o negócio encerrado ligado a ela |
