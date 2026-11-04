@@ -11,7 +11,7 @@ const tons = {
 export function Selo({ tom = "neutro", className, ...props }: React.HTMLAttributes<HTMLSpanElement> & { tom?: keyof typeof tons }) {
   return (
     <span
-      className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap", tons[tom], className)}
+      className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-semibold whitespace-nowrap", tons[tom], className)}
       {...props}
     />
   );
@@ -21,7 +21,7 @@ export function Avatar({ nome, iniciais, className }: { nome?: string | null; in
   return (
     <span
       title={nome ?? undefined}
-      className={cn("inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-[11px] font-bold text-marca-texto", className)}
+      className={cn("inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-2xs font-bold text-marca-texto", className)}
     >
       {iniciais}
     </span>

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { CalendarPlus, Copy, ExternalLink, RefreshCw } from "lucide-react";
+import { CalendarPlus, Copy, ExternalLink, RefreshCw } from "@/components/ui/icones";
 import { Botao, classeBotao } from "@/components/ui/botao";
 import { Entrada } from "@/components/ui/campos";
 import { Dialogo } from "@/components/ui/dialogo";
@@ -47,7 +47,7 @@ export function GoogleAgenda({ conectadoEm }: { conectadoEm: string | null }) {
             </>
           ) : (
             <>
-              <a href={noGoogle} target="_blank" rel="noreferrer" className={classeBotao("destaque")}>
+              <a href={noGoogle} target="_blank" rel="noreferrer" className={classeBotao()}>
                 <ExternalLink className="h-4 w-4" /> Adicionar ao meu Google Agenda
               </a>
               <div className="space-y-1">

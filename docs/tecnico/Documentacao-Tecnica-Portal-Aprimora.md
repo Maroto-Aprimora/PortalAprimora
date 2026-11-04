@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.26 |
+| Versão do documento | 1.27 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -169,10 +169,11 @@ Pipefy) e foi estruturado para receber as demais diretorias.
 | Framework | Next.js (App Router) | 16.3.8 | Usa `src/proxy.ts` (antigo *middleware*), `params`/`searchParams` assíncronos e `PageProps<"/rota">` gerado por `next typegen` |
 | UI | React | 19.2.8 | Server Components + Server Actions |
 | Linguagem | TypeScript | ^5 | `tsc --noEmit` no CI |
-| Estilo | Tailwind CSS | ^4 | Tokens semânticos em `src/app/globals.css` (`bg-marca`, `text-texto-suave`, `bg-destaque`…) |
+| Estilo | Tailwind CSS | ^4 | Tokens em `src/app/globals.css`: cores neutras + `marca`/`destaque`, 2 sombras (`shadow-suave`, `shadow-elevada`), 2 raios (`rounded-controle`, `rounded-cartao`) e escala fechada de texto (`text-2xs`…`text-3xl`). Regras em `docs/DESENVOLVIMENTO.md` (Sistema de design) |
 | Banco/Auth/Storage | Supabase (`@supabase/supabase-js`, `@supabase/ssr`) | ^2.117 / ^0.12 | Postgres com `pg_cron`, `pg_net`, `pg_trgm`, `unaccent` |
 | Validação | Zod | ^4.6 | Em todas as Server Actions |
-| Ícones | lucide-react | ^1.52 | — |
+| Ícones | @tabler/icons-react | ^3.50 | Sempre via `src/components/ui/icones.tsx` (ponto único, traço 1.75) |
+| Animações | lottie-react (lottie-web) | ^3.1 | `src/components/ui/animacao.tsx`: estados vazios e confirmação de sucesso; arquivos em `src/components/ui/animacoes` |
 | Tema | next-themes | ^0.4 | Claro (padrão) e escuro |
 | Avisos na tela | sonner | ^2.0 | *Toasts* |
 | Push | web-push | ^3.6 | Chaves VAPID |
@@ -746,6 +747,7 @@ Escopo v1.0 (Seção 14).
 | 1.0 | 09/10/2026 | Primeira versão, descrevendo a `main` no commit `af20f1c` |
 | 1.1 | 12/10/2026 | Repositório transferido para `Maroto-Aprimora/PortalAprimora`; início da v2 (PE-PA-002) |
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
+| 1.27 | 04/11/2026 | Sistema de design: ícones trocados de Lucide para Tabler Icons (ponto único `src/components/ui/icones.tsx`); micro-interações em Lottie (`<Animacao>`: vazio e sucesso); base neutra (fundo, superfícies e menu lateral em cinza, sem gradiente; azul só em ações principais e item ativo, laranja só em sinais de atenção, botão `destaque` removido); 2 sombras, 2 raios, escala fechada de texto e de espaçamento, bordas de 1px; estados vazios padronizados com `<Vazio>` (bloco com animação/ícone ou linha compacta); painel do login sem formas coloridas |
 | 1.26 | 04/11/2026 | IA em cascata no A1, A5 e A6: Groq (`llama-3.3-70b-versatile`) → Cerebras (`gpt-oss-120b`) → Gemini, todas com plano gratuito (o Grok era pago e saiu); A5 passa a usar a cascata antes do Gemini. E-mails do login: diagnóstico do convite que não chega (SMTP do Gmail recusando usuário e senha, erro 535) e guia do Resend como SMTP do Supabase em `docs/CONFIGURAR-EMAIL-E-LOGIN.md`. SMTP do login refeito com senha de app da conta `contato@aprimoraej.com` (convites voltaram a chegar) |
 | 1.25 | 03/11/2026 | Funil destravado: enriquecido com e-mail novo vai sozinho para Coleta (no bounce, o e-mail novo vira o principal); Coleta → E-mail às 7h dos dias úteis com teto diário (`leads_email_por_dia`, Config. do funil → Copy); aprovação do decisor é só conferência. Leituras com marca d'água no n8n (Gmail e API4COM, rotas `/api/n8n/leituras/inicio` e `/fim`): dias sem leitura são recuperados; leitura parada vira ocorrência. Grok (xAI) nos fluxos: principal no A1 (segmento e dores) e no A6 (classificação), reserva do Gemini no A5; Gemini continua no A2, A4 e A9. Novas tentativas nos fluxos A5 e A6; o A1 não revela de novo no Apollo empresa que já tem decisor; Monitor da fila conta só o que venceu (migração `20261103120000`) |
 | 1.24 | 22/10/2026 | Indicadores por pessoa (painel, Desempenho individual e metas individuais) contam diagnósticos, propostas e atividades para todos os participantes da atividade, uma vez por negócio (migração `20261022120000`); valor do negócio sem depender de diagnóstico, escopo ou calculadora |

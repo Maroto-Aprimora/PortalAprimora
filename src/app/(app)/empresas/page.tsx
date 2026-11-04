@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
 import { Cartao, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
@@ -54,7 +54,7 @@ export default async function PaginaEmpresas({ searchParams }: PageProps<"/empre
       <h1 className="mb-1 text-2xl font-bold text-texto">Empresas e leads</h1>
       <p className="mb-3 max-w-2xl text-sm text-texto-suave">Toda a base da diretoria. Antes de prospectar, busque aqui para ver se a empresa já foi contatada e por quem.</p>
       <BarraEmpresas segmentos={config.segmentos} cidades={listaCidades} membros={config.membrosComercial}
-        acoes={<Link href="/empresas/novo" className={classeBotao("destaque", "sm")}><Plus className="h-4 w-4" /> Novo lead</Link>} />
+        acoes={<Link href="/empresas/novo" className={classeBotao("primario", "sm")}><Plus className="h-4 w-4" /> Novo lead</Link>} />
       <Cartao className="overflow-hidden">
         {(empresas ?? []).length === 0 ? (
           <Vazio titulo="Nenhuma empresa encontrada" descricao={q ? "Ela ainda não foi cadastrada. Que tal cadastrar agora?" : undefined}
@@ -78,7 +78,7 @@ export default async function PaginaEmpresas({ searchParams }: PageProps<"/empre
                   return (
                     <tr key={e.id} className="hover:bg-superficie-2/60">
                       <td className="px-4 py-3">
-                        <Link href={`/empresas/${e.id}`} className="font-semibold hover:text-destaque">{e.nome}</Link>
+                        <Link href={`/empresas/${e.id}`} className="font-semibold hover:text-marca">{e.nome}</Link>
                         {e.ficticio && <Selo className="ml-2 opacity-70">fictício</Selo>}
                         {e.cnpj && <p className="text-xs text-texto-suave">{e.cnpj}</p>}
                       </td>

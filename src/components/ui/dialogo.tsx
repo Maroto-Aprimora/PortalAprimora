@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+import { X } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
 
 /** Janela modal acessível baseada no <dialog> nativo do navegador. */
@@ -25,22 +25,22 @@ export function Dialogo({
       onClose={aoFechar}
       onClick={(e) => e.target === ref.current && aoFechar()}
       className={cn(
-        "m-auto w-[min(92vw,560px)] rounded-2xl border border-borda bg-dialogo p-0 text-texto shadow-2xl ring-1 ring-white/10",
+        "m-auto w-[min(92vw,560px)] rounded-cartao border border-borda bg-dialogo p-0 text-texto shadow-elevada",
         className,
       )}
     >
       {aberto && (
         <div className="flex max-h-[85vh] flex-col">
-          <div className="flex items-start justify-between gap-4 border-b border-borda px-5 py-4">
+          <div className="flex items-start justify-between gap-4 border-b border-borda px-6 py-4">
             <div>
               <h2 className="text-lg font-bold">{titulo}</h2>
               {descricao && <p className="mt-0.5 text-sm text-texto-suave">{descricao}</p>}
             </div>
-            <button onClick={aoFechar} className="rounded p-1 text-texto-suave hover:bg-superficie-2" aria-label="Fechar">
+            <button onClick={aoFechar} className="rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-texto" aria-label="Fechar">
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="overflow-y-auto px-5 py-4">{children}</div>
+          <div className="overflow-y-auto px-6 py-4">{children}</div>
         </div>
       )}
     </dialog>

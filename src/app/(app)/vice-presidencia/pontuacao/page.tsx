@@ -47,14 +47,14 @@ export default async function PaginaPontuacao({ searchParams }: PageProps<"/vice
             <CabecalhoCartao titulo="Membros" descricao="Clique para ver o histórico." />
             <ul className="divide-y divide-borda">
               <li>
-                <Link href="/vice-presidencia/pontuacao" className={cn("block px-5 py-2 text-sm hover:bg-superficie-2", !foco && "font-semibold text-marca")}>Todos os lançamentos</Link>
+                <Link href="/vice-presidencia/pontuacao" className={cn("block px-6 py-2 text-sm hover:bg-superficie-2", !foco && "font-semibold text-marca")}>Todos os lançamentos</Link>
               </li>
               {ranking.map((m) => {
                 const s = situacaoPontos(m.total);
                 return (
                   <li key={m.id}>
                     <Link href={`/vice-presidencia/pontuacao?membro=${m.id}`}
-                      className={cn("flex items-center justify-between gap-2 px-5 py-2 text-sm hover:bg-superficie-2", foco === m.id && "bg-superficie-2 font-semibold")}>
+                      className={cn("flex items-center justify-between gap-2 px-6 py-2 text-sm hover:bg-superficie-2", foco === m.id && "bg-superficie-2 font-semibold")}>
                       <span className="flex min-w-0 items-center gap-2"><Avatar iniciais={iniciais(m.nome)} nome={m.nome} /><span className="truncate">{m.nome}</span></span>
                       <Selo tom={s === "marco" ? "perigo" : s === "atencao" ? "destaque" : "neutro"}>{m.total}/12</Selo>
                     </Link>
@@ -67,7 +67,7 @@ export default async function PaginaPontuacao({ searchParams }: PageProps<"/vice
 
         <div className="space-y-6">
           {foco && (
-            <Cartao className="p-5">
+            <Cartao className="p-6">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-texto-suave">{foco === usuario.id ? "Minha pontuação" : nome(foco)}</p>
               <MedidorPontos total={totalPontos(doFoco)} />
             </Cartao>
@@ -79,7 +79,7 @@ export default async function PaginaPontuacao({ searchParams }: PageProps<"/vice
             ) : (
               <ul className="divide-y divide-borda">
                 {doFoco.map((l) => (
-                  <li key={l.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">
+                  <li key={l.id} className="flex flex-wrap items-center justify-between gap-3 px-6 py-3 text-sm">
                     <div className={cn("min-w-0", l.cancelado_em && "opacity-50 line-through")}>
                       <p className="font-semibold">
                         <Selo tom={l.pontos > 0 ? "perigo" : "sucesso"} className="mr-2">{l.pontos > 0 ? `+${l.pontos}` : l.pontos}</Selo>

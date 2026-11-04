@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { EditorProposta, type Sugestao } from "./editor";
@@ -24,11 +24,11 @@ export default async function PaginaProposta({ params }: PageProps<"/negocios/[i
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href={`/negocios/${id}`} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href={`/negocios/${id}`} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> {negocio.titulo}
       </Link>
       <h1 className="text-2xl font-bold">Proposta</h1>
-      <p className="mb-5 text-sm text-texto-suave">{negocio.empresas?.nome}. Rascunho do Assistente de proposta a partir do diagnóstico: revise antes de usar.</p>
+      <p className="mb-6 text-sm text-texto-suave">{negocio.empresas?.nome}. Rascunho do Assistente de proposta a partir do diagnóstico: revise antes de usar.</p>
       <EditorProposta
         negocioId={id}
         podeEditar={usuario.cargoEm("comercial") != null}

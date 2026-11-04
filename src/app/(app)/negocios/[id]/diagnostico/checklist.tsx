@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, ChevronDown, ClipboardCheck, FileText, Loader2, MessageSquare, RotateCcw } from "lucide-react";
+import { Check, ChevronDown, ClipboardCheck, FileText, Loader2, MessageSquare, RotateCcw } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
@@ -31,9 +31,9 @@ export function IniciarDiagnostico({ negocioId }: { negocioId: string }) {
   const router = useRouter();
   return (
     <Cartao className="p-6 text-center">
-      <ClipboardCheck className="mx-auto mb-2 h-8 w-8 text-destaque" />
+      <ClipboardCheck className="mx-auto mb-2 h-8 w-8 text-texto-suave" />
       <p className="mb-4 text-sm text-texto-suave">Abra o checklist no celular durante a visita e responda área por área.</p>
-      <Botao variante="destaque" carregando={pendente} onClick={() => iniciar(async () => {
+      <Botao carregando={pendente} onClick={() => iniciar(async () => {
         const r = await iniciarDiagnostico(negocioId);
         if (r.ok) router.refresh(); else toast.error(r.erro);
       })}>Começar diagnóstico</Botao>
@@ -89,12 +89,12 @@ export function ChecklistDiagnostico({ negocioId, areas, diagnostico, podeEditar
         </span>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-superficie-2">
-        <div className="h-full bg-destaque transition-all" style={{ width: `${total ? (respondidas / total) * 100 : 0}%` }} />
+        <div className="h-full bg-marca transition-all" style={{ width: `${total ? (respondidas / total) * 100 : 0}%` }} />
       </div>
 
       {concluido && (
         <Cartao className="p-4 text-sm">
-          {diagnostico.analiseStatus === "gerando" && <p className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin text-destaque" /> O Assistente de proposta está analisando o diagnóstico. Você recebe um aviso quando o rascunho ficar pronto.</p>}
+          {diagnostico.analiseStatus === "gerando" && <p className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin text-marca" /> O Assistente de proposta está analisando o diagnóstico. Você recebe um aviso quando o rascunho ficar pronto.</p>}
           {diagnostico.analiseStatus === "pronto" && <p>O rascunho do escopo está pronto para revisar.</p>}
           {diagnostico.analiseStatus === "erro" && <p className="text-perigo">O Assistente não conseguiu analisar: {diagnostico.analiseErro}</p>}
           {!diagnostico.analiseStatus && <p>Diagnóstico concluído. O Assistente de proposta está desligado: escreva o escopo direto.</p>}
@@ -112,7 +112,7 @@ export function ChecklistDiagnostico({ negocioId, areas, diagnostico, podeEditar
 
       <Cartao>
         <CabecalhoCartao titulo="Mapa de maturidade" descricao="Média das notas de cada área (1 a 4)." />
-        <ul className="space-y-2 px-5 py-4">
+        <ul className="space-y-2 px-6 py-4">
           {mapa.map((a) => (
             <li key={a.id} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_2.5rem] items-center gap-3 text-sm">
               <span className="truncate">{a.nome}</span>
@@ -154,10 +154,10 @@ export function ChecklistDiagnostico({ negocioId, areas, diagnostico, podeEditar
                         {[1, 2, 3, 4].map((n) => (
                           <button key={n} type="button" disabled={!editavel} title={ROTULO_NOTA[n]}
                             onClick={() => mudar(p.id, { nota: r?.nota === n ? null : n })}
-                            className={cn("flex h-11 flex-col items-center justify-center rounded-lg border text-sm font-bold transition",
+                            className={cn("flex h-11 flex-col items-center justify-center rounded-controle border text-sm font-bold transition",
                               r?.nota === n ? "border-marca bg-marca text-marca-texto" : "border-borda bg-superficie hover:border-marca/50",
                               !editavel && "cursor-default")}>
-                            {n}<span className="text-[9px] font-normal opacity-80">{ROTULO_NOTA[n]}</span>
+                            {n}<span className="text-2xs font-normal opacity-80">{ROTULO_NOTA[n]}</span>
                           </button>
                         ))}
                       </div>
@@ -166,7 +166,7 @@ export function ChecklistDiagnostico({ negocioId, areas, diagnostico, podeEditar
                             onChange={(e) => mudar(p.id, { comentario: e.target.value })} className="mt-2 min-h-16 text-sm" />
                         : editavel && (
                           <button type="button" onClick={() => setComentando((s) => new Set(s).add(p.id))}
-                            className="mt-2 flex items-center gap-1 text-xs text-texto-suave hover:text-destaque">
+                            className="mt-2 flex items-center gap-1 text-xs text-texto-suave hover:text-marca">
                             <MessageSquare className="h-3.5 w-3.5" /> Comentário
                           </button>
                         )}
@@ -186,7 +186,7 @@ export function ChecklistDiagnostico({ negocioId, areas, diagnostico, podeEditar
 
       {editavel && (
         <div className="flex justify-end pb-6">
-          <Botao variante="destaque" carregando={pendente} onClick={() => {
+          <Botao carregando={pendente} onClick={() => {
             if (!respondidas) return void toast.error("Responda ao menos uma pergunta.");
             if (respondidas < total && !confirm(`Faltam ${total - respondidas} perguntas. Concluir mesmo assim?`)) return;
             iniciar(async () => {

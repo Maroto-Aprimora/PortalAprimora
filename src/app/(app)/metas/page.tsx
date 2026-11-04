@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Settings } from "lucide-react";
+import { Settings } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
 import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
@@ -62,13 +62,13 @@ export default async function PaginaMetas({ searchParams }: PageProps<"/metas">)
         <Cartao><Vazio titulo="Nenhuma meta cadastrada" /></Cartao>
       ) : (
         <>
-          <Cartao className="mb-6 flex flex-wrap items-center gap-6 p-5">
+          <Cartao className="mb-6 flex flex-wrap items-center gap-6 p-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-texto-suave">Alcance geral do trimestre</p>
               <p className="font-titulo text-3xl font-bold text-marca">{Math.round(geral * 100)}%</p>
             </div>
             <div className="h-3 min-w-48 flex-1 overflow-hidden rounded-full bg-superficie-2">
-              <div className="h-full rounded-full bg-destaque" style={{ width: `${Math.round(geral * 100)}%` }} />
+              <div className="h-full rounded-full bg-marca" style={{ width: `${Math.round(geral * 100)}%` }} />
             </div>
           </Cartao>
           <div className="space-y-6">
@@ -79,7 +79,7 @@ export default async function PaginaMetas({ searchParams }: PageProps<"/metas">)
                   {doTrimestre.filter((m) => m.objetivo === obj).map((m) => {
                     const p = progresso(m);
                     return (
-                      <li key={m.id} className="grid gap-2 px-5 py-3 sm:grid-cols-[1fr_220px_90px] sm:items-center">
+                      <li key={m.id} className="grid gap-2 px-6 py-3 sm:grid-cols-[1fr_220px_90px] sm:items-center">
                         <div>
                           <p className="font-semibold">{m.codigo && <span className="mr-2 text-xs text-texto-suave">{m.codigo}</span>}{m.titulo}</p>
                           <p className="text-xs text-texto-suave">

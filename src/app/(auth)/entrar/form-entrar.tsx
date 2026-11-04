@@ -38,8 +38,8 @@ export function FormEntrar({ voltar }: { voltar: string }) {
       </Campo>
       <Botao type="submit" className="w-full" carregando={carregando}>Entrar</Botao>
       <div className="flex justify-between text-sm">
-        <Link href="/primeiro-acesso" className="font-semibold text-marca hover:text-destaque">Primeiro acesso</Link>
-        <Link href="/esqueci-senha" className="text-texto-suave hover:text-destaque">Esqueci minha senha</Link>
+        <Link href="/primeiro-acesso" className="font-semibold text-marca underline-offset-4 hover:underline">Primeiro acesso</Link>
+        <Link href="/esqueci-senha" className="text-texto-suave hover:text-marca">Esqueci minha senha</Link>
       </div>
     </form>
   );

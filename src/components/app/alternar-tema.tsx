@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "@/components/ui/icones";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 
@@ -14,7 +14,7 @@ export function AlternarTema() {
   return (
     <button
       onClick={() => setTheme(escuro ? "light" : "dark")}
-      className="rounded-md border border-white/20 p-1.5 hover:bg-white/10"
+      className="rounded-controle border border-borda p-1.5 hover:bg-superficie-2 hover:text-texto"
       aria-label={escuro ? "Usar tema claro" : "Usar tema escuro"}
       title={escuro ? "Tema claro" : "Tema escuro"}
     >

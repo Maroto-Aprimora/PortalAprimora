@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Selecao } from "@/components/ui/campos";
 import { Cartao, Vazio } from "@/components/ui/cartao";
@@ -46,7 +46,7 @@ export function ListaTarefas({
               const atrasada = t.prazo && t.prazo < hoje && t.status !== "concluida";
               const podeMudar = t.podeGerir || t.responsaveis.includes(usuarioId);
               return (
-                <li key={t.id} className="flex flex-wrap items-start gap-3 px-5 py-3">
+                <li key={t.id} className="flex flex-wrap items-start gap-3 px-6 py-3">
                   <input type="checkbox" className="mt-1 h-4 w-4" checked={t.status === "concluida"} disabled={!podeMudar || pendente}
                     aria-label="Concluir tarefa"
                     onChange={(e) => iniciar(async () => {
@@ -54,7 +54,7 @@ export function ListaTarefas({
                       if (!r.ok) toast.error(r.erro);
                     })} />
                   <div className="min-w-0 flex-1">
-                    <button type="button" onClick={() => aoAbrir(t)} className={cn("text-left font-semibold hover:text-destaque", t.status === "concluida" && "text-texto-suave line-through")}>{t.titulo}</button>
+                    <button type="button" onClick={() => aoAbrir(t)} className={cn("text-left font-semibold hover:text-marca", t.status === "concluida" && "text-texto-suave line-through")}>{t.titulo}</button>
                     {t.descricao && <p className="text-sm text-texto-suave">{t.descricao}</p>}
                     <div className="mt-1 flex flex-wrap items-center gap-1.5">
                       {t.prazo && <Selo tom={atrasada ? "perigo" : t.prazo === hoje ? "destaque" : "neutro"}>{atrasada ? "Atrasada · " : t.prazo === hoje ? "Hoje · " : ""}{formatarData(t.prazo)}</Selo>}

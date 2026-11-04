@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { Download } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Entrada, Selecao } from "@/components/ui/campos";
 import { cn } from "@/lib/utils";
@@ -68,7 +68,7 @@ export function Exportar() {
     <div className="relative">
       <Botao variante="secundario" onClick={() => setAberto((v) => !v)} aria-expanded={aberto}><Download className="h-4 w-4" /> Exportar</Botao>
       {aberto && (
-        <div className="absolute right-0 z-20 mt-2 w-64 overflow-hidden rounded-xl border border-borda bg-superficie text-sm shadow-xl" onClick={() => setAberto(false)}>
+        <div className="absolute right-0 z-20 mt-2 w-64 overflow-hidden rounded-cartao border border-borda bg-superficie text-sm shadow-elevada" onClick={() => setAberto(false)}>
           <p className="px-4 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-texto-suave">Indicadores do período</p>
           <a className="block px-4 py-2 hover:bg-superficie-2" href={link("indicadores", "xlsx")}>Planilha Excel (.xlsx)</a>
           <a className="block px-4 py-2 hover:bg-superficie-2" href={link("indicadores", "csv")}>CSV</a>

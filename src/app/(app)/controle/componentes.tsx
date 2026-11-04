@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, RotateCcw } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { marcarResolvida } from "./acoes";
 

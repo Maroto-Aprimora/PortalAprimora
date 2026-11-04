@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BadgeDollarSign, ClipboardCheck, FileSignature, FileText } from "lucide-react";
+import { BadgeDollarSign, ClipboardCheck, FileSignature, FileText } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
 
 /** Da oportunidade à venda (Fase 4): diagnóstico → escopo (e proposta) → precificação → dossiê de passagem. */
@@ -16,10 +16,10 @@ export function JornadaVenda({ negocioId, diagnostico, precificacao, proposta, g
     <nav aria-label="Da oportunidade à venda" className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
       {passos.map((p, i) => (
         <Link key={p.href} href={`/negocios/${negocioId}/${p.href}`}
-          className={cn("group flex items-center gap-3 rounded-xl border bg-superficie px-3 py-2.5 shadow-sm transition hover:border-destaque",
+          className={cn("group flex items-center gap-3 rounded-cartao border bg-superficie px-3 py-3 shadow-suave transition hover:border-marca/40",
             p.estado ? "border-marca/30" : "border-borda")}>
-          <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-            p.estado ? "bg-marca text-marca-texto" : "bg-superficie-2 text-texto-suave group-hover:text-destaque")}>
+          <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-controle",
+            p.estado ? "bg-marca text-marca-texto" : "bg-superficie-2 text-texto-suave group-hover:text-marca")}>
             <p.icone className="h-4 w-4" />
           </span>
           <span className="min-w-0">

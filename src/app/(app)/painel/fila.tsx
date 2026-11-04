@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { Check, ExternalLink } from "lucide-react";
+import { Check, ExternalLink } from "@/components/ui/icones";
 import { Selo } from "@/components/ui/selo";
 import { RegistrarLigacao } from "@/components/crm/registrar-ligacao";
 import type { ResultadoLigacao } from "@/lib/crm";
@@ -23,10 +23,10 @@ export function LinhaFila({ item, hoje, resultados }: { item: ItemFila; hoje: st
   const atrasada = item.prazo != null && item.prazo < hoje;
 
   return (
-    <li className={cn("flex items-start gap-3 px-5 py-3", pendente && "opacity-60")}>
+    <li className={cn("flex items-start gap-3 px-6 py-3", pendente && "opacity-60")}>
       <button
         aria-label="Concluir tarefa" title="Concluir" disabled={pendente}
-        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-borda text-transparent hover:border-sucesso hover:text-sucesso"
+        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-texto-suave/50 text-transparent hover:border-sucesso hover:text-sucesso"
         onClick={() => iniciar(async () => {
           const r = await mudarStatusTarefa(item.id, "concluida");
           if (r.ok) toast.success("Tarefa concluída.");
@@ -55,7 +55,7 @@ export function LinhaFila({ item, hoje, resultados }: { item: ItemFila; hoje: st
               contatoPadrao={item.negocio.contatoId} className="p-1.5" />
           )}
           <Link href={`/negocios/${item.negocio.id}`} title="Abrir o negócio" aria-label="Abrir o negócio"
-            className="rounded p-1.5 text-texto-suave opacity-70 hover:bg-superficie-2 hover:opacity-100">
+            className="rounded-controle p-1.5 text-texto-suave opacity-70 hover:bg-superficie-2 hover:opacity-100">
             <ExternalLink className="h-3.5 w-3.5" />
           </Link>
         </div>

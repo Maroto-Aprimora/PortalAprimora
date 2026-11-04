@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
@@ -22,7 +22,7 @@ export function ConfigDiagnostico({ areas, servicos }: { areas: Area[]; servicos
       <div className="divide-y divide-borda">
         {areas.map((a) => (
           <div key={a.id}>
-            <button type="button" onClick={() => setAberta(aberta === a.id ? null : a.id)} className="flex w-full items-center gap-3 px-5 py-3 text-left">
+            <button type="button" onClick={() => setAberta(aberta === a.id ? null : a.id)} className="flex w-full items-center gap-3 px-6 py-3 text-left">
               <ChevronDown className={cn("h-4 w-4 text-texto-suave transition-transform", aberta !== a.id && "-rotate-90")} />
               <span className={cn("flex-1 font-semibold", !a.ativo && "text-texto-suave line-through")}>{a.nome}</span>
               <span className="text-xs text-texto-suave">{a.perguntas.filter((p) => p.ativo).length} perguntas</span>
@@ -38,7 +38,7 @@ export function ConfigDiagnostico({ areas, servicos }: { areas: Area[]; servicos
 function EditorArea({ area, servicos }: { area: Area; servicos: { id: string; nome: string }[] }) {
   const [pendente, iniciar] = useTransition();
   return (
-    <div className="space-y-3 border-t border-borda bg-superficie-2/40 px-5 py-4">
+    <div className="space-y-3 border-t border-borda bg-superficie-2/40 px-6 py-4">
       <form className="grid items-end gap-2 sm:grid-cols-[1fr_260px_auto_auto]"
         action={(f) => iniciar(async () => {
           const r = await salvarAreaDiagnostico(area.id, { nome: String(f.get("nome")), servico_id: String(f.get("servico_id") || "") || null, ativo: f.get("ativo") === "on" });
@@ -103,17 +103,17 @@ export function ConfigPrecificacao({ parametros }: { parametros: ParamPreco }) {
     <Cartao className="mb-6">
       <CabecalhoCartao titulo="Precificação"
         descricao="Preço mínimo = custo do projeto × fatores × (1 + margem mínima) ÷ (1 − imposto); o máximo usa a margem máxima. Custo do projeto = horas × valor da hora + custos lançados. Só o diretor registra o preço final." />
-      <div className="grid gap-3 px-5 py-4 sm:grid-cols-5">
+      <div className="grid gap-3 px-6 py-4 sm:grid-cols-5">
         <Campo rotulo="Hora consultor (R$)"><Entrada inputMode="decimal" value={p.hc} onChange={(e) => setP({ ...p, hc: e.target.value })} className="h-9" /></Campo>
         <Campo rotulo="Hora gerente (R$)"><Entrada inputMode="decimal" value={p.hg} onChange={(e) => setP({ ...p, hg: e.target.value })} className="h-9" /></Campo>
         <Campo rotulo="Margem mínima (%)"><Entrada inputMode="decimal" value={p.mmin} onChange={(e) => setP({ ...p, mmin: e.target.value })} className="h-9" /></Campo>
         <Campo rotulo="Margem máxima (%)"><Entrada inputMode="decimal" value={p.mmax} onChange={(e) => setP({ ...p, mmax: e.target.value })} className="h-9" /></Campo>
         <Campo rotulo="Imposto (%)"><Entrada inputMode="decimal" value={p.imp} onChange={(e) => setP({ ...p, imp: e.target.value })} className="h-9" /></Campo>
       </div>
-      <div className="space-y-3 border-t border-borda px-5 py-4">
+      <div className="space-y-3 border-t border-borda px-6 py-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-texto-suave">Fatores multiplicativos</p>
         {fatores.map((f, i) => (
-          <div key={i} className="rounded-xl border border-borda p-3">
+          <div key={i} className="rounded-cartao border border-borda p-3">
             <div className="mb-2 flex items-center gap-2">
               <Entrada value={f.nome} onChange={(e) => mudarFator(i, { nome: e.target.value })} className="h-9 font-semibold" aria-label="Nome do fator" />
               <button type="button" aria-label="Excluir fator" className="p-1 text-texto-suave hover:text-perigo"
@@ -121,7 +121,7 @@ export function ConfigPrecificacao({ parametros }: { parametros: ParamPreco }) {
             </div>
             <div className="flex flex-wrap gap-2">
               {f.opcoes.map((o, k) => (
-                <div key={k} className="flex items-center gap-1 rounded-lg bg-superficie-2 p-1">
+                <div key={k} className="flex items-center gap-1 rounded-controle bg-superficie-2 p-1">
                   <Entrada value={o.rotulo} onChange={(e) => mudarFator(i, { opcoes: f.opcoes.map((x, m) => (m === k ? { ...x, rotulo: e.target.value } : x)) })}
                     className="h-8 w-32" aria-label="Opção" />
                   <span className="text-xs text-texto-suave">×</span>
@@ -144,7 +144,7 @@ export function ConfigPrecificacao({ parametros }: { parametros: ParamPreco }) {
           <Plus className="h-3.5 w-3.5" /> Fator
         </Botao>
       </div>
-      <div className="flex justify-end border-t border-borda px-5 py-3">
+      <div className="flex justify-end border-t border-borda px-6 py-3">
         <Botao carregando={pendente} onClick={() => iniciar(async () => {
           const r = await salvarParametrosPrecificacao({
             valor_hora_consultor: num(p.hc), valor_hora_gerente: num(p.hg),

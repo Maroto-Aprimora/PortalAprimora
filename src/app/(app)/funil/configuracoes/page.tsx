@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { redirect } from "next/navigation";
 import { BarraVisoes } from "@/components/app/barra-visoes";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
@@ -58,7 +58,7 @@ export default async function PaginaConfiguracoes({ searchParams }: PageProps<"/
 
   return (
     <>
-      <Link href="/funil" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href="/funil" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> Funil
       </Link>
       <h1 className="mb-3 text-2xl font-bold text-texto">Configurações do funil</h1>
@@ -96,7 +96,7 @@ export default async function PaginaConfiguracoes({ searchParams }: PageProps<"/
 
       <Cartao className="mb-6">
         <CabecalhoCartao titulo="Campos de cada fase" descricao="Campos obrigatórios precisam estar preenchidos para o negócio avançar para uma fase seguinte." />
-        <div className="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-3">
           {listaFases.filter((f) => f.tipo !== "perda").map((f) => (
             <CamposDaFase key={f.id} fase={{ id: f.id, nome: f.nome }} campos={(campos ?? []).filter((c) => c.fase_id === f.id)} />
           ))}

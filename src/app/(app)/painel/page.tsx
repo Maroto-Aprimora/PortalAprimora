@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, ListChecks } from "lucide-react";
-import { Cartao, CabecalhoCartao, TituloPagina } from "@/components/ui/cartao";
+import { CalendarDays, CalendarOff, ListChecks } from "@/components/ui/icones";
+import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { COR_TIPO } from "@/lib/agenda";
 import { hojeBR, horaBR, somarDias } from "@/lib/datas";
@@ -63,7 +63,7 @@ export default async function PaginaInicio() {
           <CabecalhoCartao titulo="Minhas tarefas" acoes={<LinkCartao href="/tarefas" icone={ListChecks}>Todas</LinkCartao>} />
           {grupos.filter((g) => g.itens.length > 0).map((g) => (
             <section key={g.titulo}>
-              <h2 className={cn("border-y border-borda bg-superficie-2 px-5 py-1.5 text-xs font-bold uppercase tracking-wider",
+              <h2 className={cn("border-y border-borda bg-superficie-2 px-6 py-1.5 text-xs font-bold uppercase tracking-wider",
                 g.tom === "perigo" ? "text-perigo" : "text-texto-suave")}>
                 {g.titulo} · {g.itens.length}
               </h2>
@@ -72,10 +72,10 @@ export default async function PaginaInicio() {
               </ul>
             </section>
           ))}
-          {fila.length === 0 && <p className="px-5 py-6 text-sm text-texto-suave">Nenhuma tarefa aberta com você.</p>}
+          {fila.length === 0 && <Vazio animacao="sucesso" titulo="Tudo em dia" descricao="Nenhuma tarefa aberta com você." className="py-8" />}
           {depois > 0 && (
-            <p className="border-t border-borda px-5 py-3 text-sm text-texto-suave">
-              E mais {depois} com prazo depois de 7 dias. <Link href="/tarefas" className="font-semibold text-marca hover:text-destaque">Ver todas</Link>
+            <p className="border-t border-borda px-6 py-3 text-sm text-texto-suave">
+              E mais {depois} com prazo depois de 7 dias. <Link href="/tarefas" className="font-semibold text-marca underline-offset-4 hover:underline">Ver todas</Link>
             </p>
           )}
         </Cartao>
@@ -84,16 +84,16 @@ export default async function PaginaInicio() {
           <CabecalhoCartao titulo="Hoje na agenda" acoes={<LinkCartao href="/agenda?pessoa=eu" icone={CalendarDays}>Agenda</LinkCartao>} />
           <ul className="divide-y divide-borda">
             {minhasAtividades.map((a) => (
-              <li key={a.id} className="flex items-center gap-3 px-5 py-2.5 text-sm">
+              <li key={a.id} className="flex items-center gap-3 px-6 py-3 text-sm">
                 <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", COR_TIPO[corDe(a.tipo_id)])} />
                 <span className="w-12 shrink-0 font-semibold">{horaBR(a.inicio)}</span>
-                {a.negocio_id ? <Link href={`/negocios/${a.negocio_id}`} className="min-w-0 flex-1 truncate hover:text-destaque">{a.titulo}</Link>
+                {a.negocio_id ? <Link href={`/negocios/${a.negocio_id}`} className="min-w-0 flex-1 truncate hover:text-marca">{a.titulo}</Link>
                   : <span className="min-w-0 flex-1 truncate">{a.titulo}</span>}
                 {a.status === "pendente" && <Selo>a confirmar</Selo>}
                 {a.status === "realizada" && <Selo tom="sucesso">realizada</Selo>}
               </li>
             ))}
-            {minhasAtividades.length === 0 && <li className="px-5 py-3 text-sm text-texto-suave">Nenhum compromisso seu hoje.</li>}
+            {minhasAtividades.length === 0 && <Vazio compacto elemento="li" icone={CalendarOff} titulo="Nenhum compromisso seu hoje." />}
           </ul>
         </Cartao>
       </div>
@@ -103,7 +103,7 @@ export default async function PaginaInicio() {
 
 function LinkCartao({ href, icone: Icone, children }: { href: string; icone: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-marca hover:text-destaque">
+    <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-marca underline-offset-4 hover:underline">
       <Icone className="h-4 w-4" />{children}
     </Link>
   );

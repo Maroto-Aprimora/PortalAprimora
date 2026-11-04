@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { TituloPagina } from "@/components/ui/cartao";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { hojeBR } from "@/lib/datas";
@@ -24,7 +24,7 @@ export default async function PaginaConfiguracoesAgenda() {
 
   return (
     <>
-      <Link href="/agenda" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href="/agenda" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> Agenda
       </Link>
       <TituloPagina titulo="Configurações da agenda" descricao="Reuniões fixas e tipos de atividade. As mudanças valem na hora para toda a equipe." />

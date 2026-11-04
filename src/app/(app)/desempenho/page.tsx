@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Cartao, CabecalhoCartao, TituloPagina } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { hojeBR, somarDias } from "@/lib/datas";
@@ -11,6 +11,7 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { cn } from "@/lib/utils";
 import { FiltrosDesempenho } from "./filtros";
+import { PhoneOff } from "@/components/ui/icones";
 
 export const metadata: Metadata = { title: "Desempenho individual" };
 
@@ -81,7 +82,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
       <div className="mb-6 grid gap-6 xl:grid-cols-2">
         <Cartao>
           <CabecalhoCartao titulo="Rubrica por critério" descricao="Média de 1 a 4 nas ligações avaliadas do período (Avaliador de ligações)." />
-          <ul className="space-y-3 px-5 py-4">
+          <ul className="space-y-3 px-6 py-4">
             {porCriterio.map((cr) => (
               <li key={cr.chave} className="grid grid-cols-[130px_1fr_44px] items-center gap-3 text-sm" title={cr.descricao}>
                 <span className="text-texto-suave">{cr.nome}</span>
@@ -107,7 +108,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
             {(ligacoes ?? []).map((l) => {
               const av = l.avaliacoes_ligacao;
               return (
-                <li key={l.id} className="px-5 py-3 text-sm">
+                <li key={l.id} className="px-6 py-3 text-sm">
                   <details>
                     <summary className="flex cursor-pointer flex-wrap items-center gap-2">
                       <span className="font-semibold">{l.negocios?.titulo ?? "Negócio"}</span>
@@ -120,7 +121,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
                     <div className="mt-3 space-y-3">
                       {l.resumo && <p className="text-texto-suave">{l.resumo}</p>}
                       {av && (
-                        <div className="rounded-lg border border-borda p-3">
+                        <div className="rounded-controle border border-borda p-3">
                           <ul className="space-y-1.5">
                             {((av.notas ?? []) as Nota[]).map((n) => (
                               <li key={n.chave} className="flex gap-2"><Selo className="shrink-0">{n.nota}</Selo><span><strong>{n.nome}:</strong> {n.comentario}</span></li>
@@ -129,24 +130,24 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
                           {av.comentario && <p className="mt-2 border-t border-borda pt-2 text-texto-suave">{av.comentario}</p>}
                         </div>
                       )}
-                      {l.transcricao && <p className="max-h-72 overflow-y-auto whitespace-pre-line rounded-lg bg-superficie-2 p-3 text-xs">{l.transcricao}</p>}
+                      {l.transcricao && <p className="max-h-72 overflow-y-auto whitespace-pre-line rounded-controle bg-superficie-2 p-3 text-xs">{l.transcricao}</p>}
                       <div className="flex gap-4 text-xs">
-                        {l.gravacao_url && <a href={l.gravacao_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-marca hover:text-destaque">Ouvir a gravação</a>}
-                        <Link href={`/negocios/${l.negocio_id}`} className="font-semibold text-marca hover:text-destaque">Abrir o negócio</Link>
+                        {l.gravacao_url && <a href={l.gravacao_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-marca underline-offset-4 hover:underline">Ouvir a gravação</a>}
+                        <Link href={`/negocios/${l.negocio_id}`} className="font-semibold text-marca underline-offset-4 hover:underline">Abrir o negócio</Link>
                       </div>
                     </div>
                   </details>
                 </li>
               );
             })}
-            {(ligacoes ?? []).length === 0 && <li className="px-5 py-4 text-sm text-texto-suave">Nenhuma ligação no período.</li>}
+            {(ligacoes ?? []).length === 0 && <Vazio compacto elemento="li" icone={PhoneOff} titulo="Nenhuma ligação no período." />}
           </ul>
         </Cartao>
 
         <div className="space-y-6">
           <Cartao>
             <CabecalhoCartao titulo="Ligações por resultado" />
-            <ul className="space-y-2 px-5 py-4 text-sm">
+            <ul className="space-y-2 px-6 py-4 text-sm">
               {c.porResultado.map((x) => (
                 <li key={x.resultado} className="flex items-center justify-between gap-2">
                   <span className="text-texto-suave">{x.resultado}</span><span className="font-semibold">{x.quantidade} · {pct(x.pct)}</span>
@@ -159,7 +160,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
             <CabecalhoCartao titulo="Plano de melhoria"
               descricao={p ? `Da R.I de ${formatarData(p.de)} a ${formatarData(p.ate)}, revisado pelo diretor.` : "Aparece aqui depois que o diretor revisa o relatório da R.I."} />
             {p && (
-              <div className="space-y-3 px-5 py-4 text-sm">
+              <div className="space-y-3 px-6 py-4 text-sm">
                 <ListaPlano titulo="Pontos fortes" itens={p.plano.pontos_fortes} />
                 <ListaPlano titulo="Melhorias" itens={p.plano.melhorias} />
                 <ListaPlano titulo="Ações" itens={p.plano.acoes} />
@@ -175,7 +176,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
 function Numero({ rotulo, valor, detalhe }: { rotulo: string; valor: string; detalhe?: string }) {
   return (
     <Cartao className="px-4 py-4">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-texto-suave">{rotulo}</p>
+      <p className="text-2xs font-semibold uppercase tracking-wide text-texto-suave">{rotulo}</p>
       <p className="mt-1 font-titulo text-2xl font-bold text-marca">{valor}</p>
       {detalhe && <p className="text-xs text-texto-suave">{detalhe}</p>}
     </Cartao>
@@ -187,31 +188,31 @@ function ListaPlano({ titulo, itens }: { titulo: string; itens?: string[] }) {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-wide text-texto-suave">{titulo}</p>
-      <ul className="mt-1 list-disc space-y-1 pl-5">{itens.map((i, k) => <li key={k}>{i}</li>)}</ul>
+      <ul className="mt-1 list-disc space-y-1 pl-6">{itens.map((i, k) => <li key={k}>{i}</li>)}</ul>
     </div>
   );
 }
 
 /** Linha da média semanal (escala de 1 a 4). */
 function Evolucao({ pontos }: { pontos: { semana: string; media: number; qt: number }[] }) {
-  if (pontos.length === 0) return <p className="px-5 py-4 text-sm text-texto-suave">Ainda não há ligações avaliadas.</p>;
+  if (pontos.length === 0) return <Vazio compacto icone={PhoneOff} titulo="Ainda não há ligações avaliadas." />;
   const L = 560, A = 160, M = 28;
   const x = (i: number) => (pontos.length === 1 ? L / 2 : M + (i * (L - 2 * M)) / (pontos.length - 1));
   const y = (v: number) => A - 20 - ((v - 1) / 3) * (A - 40);
   return (
-    <div className="px-5 py-4">
+    <div className="px-6 py-4">
       <svg viewBox={`0 0 ${L} ${A}`} className="h-auto w-full" role="img" aria-label="Evolução da nota média por semana">
         {[1, 2, 3, 4].map((v) => (
           <g key={v}>
             <line x1={M} x2={L - M} y1={y(v)} y2={y(v)} className="stroke-borda" strokeDasharray="3 4" />
-            <text x={4} y={y(v) + 4} className="fill-texto-suave text-[11px]">{v}</text>
+            <text x={4} y={y(v) + 4} className="fill-texto-suave text-2xs">{v}</text>
           </g>
         ))}
         <polyline points={pontos.map((p, i) => `${x(i)},${y(p.media)}`).join(" ")} fill="none" className="stroke-marca" strokeWidth={2.5} strokeLinejoin="round" />
         {pontos.map((p, i) => (
           <g key={p.semana}>
             <circle cx={x(i)} cy={y(p.media)} r={4} className="fill-marca"><title>{`Semana de ${formatarData(p.semana)}: ${nota(p.media)} (${p.qt} ligações)`}</title></circle>
-            <text x={x(i)} y={A - 4} textAnchor="middle" className="fill-texto-suave text-[10px]">{formatarData(p.semana).slice(0, 5)}</text>
+            <text x={x(i)} y={A - 4} textAnchor="middle" className="fill-texto-suave text-2xs">{formatarData(p.semana).slice(0, 5)}</text>
           </g>
         ))}
       </svg>

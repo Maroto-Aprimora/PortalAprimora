@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Cartao, CabecalhoCartao, TituloPagina } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Avatar, Selo } from "@/components/ui/selo";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { formatarData, iniciais, NOME_CARGO } from "@/lib/formatar";
 import { obterUsuario } from "@/lib/usuario";
 import { AcoesMembro, AcoesPreCadastro, DataEntrada, NovoPreCadastro, ProcessosSeletivos, TransferirCarteira } from "./componentes";
+import { UserOff } from "@/components/ui/icones";
 
 export const metadata: Metadata = { title: "Membros" };
 
@@ -40,7 +41,7 @@ export default async function PaginaMembros() {
           />
           <ul className="divide-y divide-borda">
             {(pre ?? []).map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 px-6 py-3">
                 <div className="min-w-0">
                   <p className="font-semibold">{p.nome}</p>
                   <p className="truncate text-sm text-texto-suave">{p.email}</p>
@@ -78,11 +79,11 @@ export default async function PaginaMembros() {
             <Cartao key={d.slug}>
               <CabecalhoCartao titulo={d.nome} descricao={`${daDiretoria.length} ${daDiretoria.length === 1 ? "pessoa" : "pessoas"} com acesso`} />
               {daDiretoria.length === 0 ? (
-                <p className="px-5 py-6 text-sm text-texto-suave">Ninguém ativou o acesso nesta diretoria ainda.</p>
+                <Vazio compacto icone={UserOff} titulo="Ninguém ativou o acesso nesta diretoria ainda." />
               ) : (
                 <ul className="divide-y divide-borda">
                   {daDiretoria.map((c) => (
-                    <li key={c.membro_id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                    <li key={c.membro_id} className="flex flex-wrap items-center justify-between gap-3 px-6 py-3">
                       <div className="flex min-w-0 items-center gap-3">
                         <Avatar iniciais={iniciais(c.membro!.nome)} nome={c.membro!.nome} className={c.membro!.ativo ? "" : "opacity-40"} />
                         <div className="min-w-0">

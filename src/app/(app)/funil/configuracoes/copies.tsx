@@ -2,10 +2,10 @@
 
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ChevronDown, Mail, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, FileOff, Mail, Plus, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
-import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import type { Tables } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
@@ -65,14 +65,14 @@ export function Copies({ copies, passos, segmentos, origens, desempenho, paramet
   return (
     <>
       {!redatorAtivo && (
-        <p className="mb-4 rounded-lg border border-destaque/40 bg-destaque-suave px-4 py-3 text-sm text-texto">
+        <p className="mb-4 rounded-controle border border-destaque/40 bg-destaque-suave px-4 py-3 text-sm text-texto">
           O <strong>Redator</strong> está desligado: os toques de e-mail continuam chegando como tarefa manual. Ligue-o em
           <strong> Agentes</strong> quando a conta da comercial@ estiver conectada no n8n.
         </p>
       )}
 
       <Cartao className="mb-6">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-borda px-5 py-4">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-borda px-6 py-4">
           <div>
             <h2 className="text-base font-bold text-texto">Copies do playbook</h2>
             <p className="mt-0.5 max-w-3xl text-sm text-texto-suave">
@@ -81,15 +81,15 @@ export function Copies({ copies, passos, segmentos, origens, desempenho, paramet
               e o lead fica com a mesma copy a cadência inteira.
             </p>
           </div>
-          <Botao variante="destaque" tamanho="sm" onClick={() => { setNova(true); setAberta(null); }}>
+          <Botao tamanho="sm" onClick={() => { setNova(true); setAberta(null); }}>
             <Plus className="h-4 w-4" /> Nova copy
           </Botao>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-borda bg-superficie-2/60 px-5 py-3">
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-borda bg-superficie-2/60 px-6 py-3">
           <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-texto-suave">Variáveis</span>
           {VARIAVEIS.map((v) => (
             <button key={v.chave} type="button" title={v.dica} onMouseDown={(e) => e.preventDefault()} onClick={() => inserirVariavel(v.chave)}
-              className="rounded-full border border-marca/25 bg-marca/10 px-2 py-0.5 font-mono text-[11px] text-marca hover:bg-marca/20 dark:text-marca-forte">
+              className="rounded-full border border-marca/25 bg-marca/10 px-2 py-0.5 font-mono text-2xs text-marca hover:bg-marca/20 dark:text-marca-forte">
               {`{{${v.chave}}}`}
             </button>
           ))}
@@ -104,8 +104,8 @@ export function Copies({ copies, passos, segmentos, origens, desempenho, paramet
 
         {porUso.map(({ uso, itens }) => (
           <div key={uso}>
-            <p className="bg-superficie-2 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-texto-suave">{NOME_USO[uso]}</p>
-            {!itens.length && <p className="px-5 py-3 text-sm text-texto-suave">Nenhuma copy. Sem copy, o toque vira tarefa manual.</p>}
+            <p className="bg-superficie-2 px-6 py-1.5 text-2xs font-semibold uppercase tracking-wide text-texto-suave">{NOME_USO[uso]}</p>
+            {!itens.length && <Vazio compacto icone={FileOff} titulo="Nenhuma copy." descricao="Sem copy, o toque vira tarefa manual." />}
             <div className="divide-y divide-borda">
               {itens.map((c) => (
                 <LinhaCopy key={c.id} copy={c} aberta={aberta === c.id} aoAlternar={() => setAberta(aberta === c.id ? null : c.id)}
@@ -135,10 +135,10 @@ function LinhaCopy({ copy, aberta, aoAlternar, passos, segmentos, origens, ultim
   const [pendente, iniciar] = useTransition();
   return (
     <div className={cn(!copy.ativo && "bg-superficie-2/40")}>
-      <div className="flex flex-wrap items-center gap-3 px-5 py-3">
+      <div className="flex flex-wrap items-center gap-3 px-6 py-3">
         <button type="button" onClick={aoAlternar} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-expanded={aberta}>
           <ChevronDown className={cn("h-4 w-4 shrink-0 text-texto-suave transition-transform", !aberta && "-rotate-90")} />
-          <span className="shrink-0 rounded-md bg-marca px-2 py-0.5 text-[11px] font-bold text-marca-texto">Copy V{copy.versao}</span>
+          <span className="shrink-0 rounded-controle bg-marca px-2 py-0.5 text-2xs font-bold text-marca-texto">Copy V{copy.versao}</span>
           <span className={cn("truncate font-semibold", copy.ativo ? "text-texto" : "text-texto-suave")}>{copy.nome}</span>
           <Selo tom="destaque" className="hidden sm:inline-flex">{rotuloRegra(copy, segmentos, origens)}</Selo>
           <span className="hidden text-xs text-texto-suave md:inline">
@@ -155,7 +155,7 @@ function LinhaCopy({ copy, aberta, aoAlternar, passos, segmentos, origens, ultim
           <span className={cn("relative inline-flex h-5 w-9 items-center rounded-full transition-colors", copy.ativo ? "bg-sucesso" : "bg-borda")}>
             <input type="checkbox" className="peer sr-only" checked={copy.ativo} disabled={pendente}
               onChange={(e) => iniciar(async () => { const r = await alternarCopy(copy.id, e.target.checked); if (!r.ok) toast.error(r.erro); })} />
-            <span className={cn("absolute h-4 w-4 rounded-full bg-white shadow transition-transform", copy.ativo ? "translate-x-4.5" : "translate-x-0.5")} />
+            <span className={cn("absolute h-4 w-4 rounded-full bg-white shadow-suave transition-transform", copy.ativo ? "translate-x-4.5" : "translate-x-0.5")} />
           </span>
           {copy.ativo ? "Ativa" : "Desativada"}
         </label>
@@ -189,7 +189,7 @@ function EditorCopy({ copy, passos, segmentos, origens, ultimoCampoRef, aoTermin
   const mensagemDe = (passoId: string | null) => copy?.mensagens.find((m) => (m.passo_id ?? null) === passoId);
 
   return (
-    <form className="space-y-4 px-5 py-4"
+    <form className="space-y-4 px-6 py-4"
       action={(form) => iniciar(async () => {
         const r = await salvarCopy(copy?.id ?? null, {
           nome: String(form.get("nome") ?? ""), uso, regra,
@@ -235,9 +235,9 @@ function EditorCopy({ copy, passos, segmentos, origens, ultimoCampoRef, aoTermin
         {slots.map((s) => {
           const m = mensagemDe(s.passo?.id ?? null);
           return (
-            <div key={s.chave} className="rounded-xl border border-borda bg-superficie p-3">
+            <div key={s.chave} className="rounded-cartao border border-borda bg-superficie p-3">
               <div className="mb-2 flex items-center gap-2">
-                {s.passo && <span className="rounded-md bg-destaque px-2 py-0.5 text-[11px] font-bold text-white">D{s.passo.dia}</span>}
+                {s.passo && <span className="rounded-controle bg-marca/10 px-2 py-0.5 text-2xs font-bold text-marca">D{s.passo.dia}</span>}
                 <span className="text-sm font-semibold text-texto">{s.passo ? s.passo.titulo : NOME_USO[uso]}</span>
               </div>
               <Entrada name={`assunto_${s.chave}`} defaultValue={m?.assunto ?? ""} placeholder="Assunto" onFocus={focar} className="mb-2 h-9" />
@@ -254,7 +254,7 @@ function EditorCopy({ copy, passos, segmentos, origens, ultimoCampoRef, aoTermin
       <div className="flex flex-wrap items-center justify-end gap-3">
         {!copy && <label className="mr-auto flex items-center gap-2 text-sm"><input type="checkbox" name="ativo" defaultChecked /> Ativar ao salvar</label>}
         <Botao type="button" variante="fantasma" tamanho="sm" onClick={aoTerminar}>Cancelar</Botao>
-        <Botao type="submit" variante="destaque" tamanho="sm" carregando={pendente}>{copy ? "Salvar copy" : "Criar copy"}</Botao>
+        <Botao type="submit" tamanho="sm" carregando={pendente}>{copy ? "Salvar copy" : "Criar copy"}</Botao>
       </div>
     </form>
   );
@@ -266,7 +266,7 @@ function ParametrosEnvio({ parametros }: { parametros: Tables<"parametros_comerc
     <Cartao className="mb-6">
       <CabecalhoCartao titulo="Envio pela comercial@"
         descricao="Os e-mails aprovados saem só em dias úteis, dentro do horário abaixo; fora dele, esperam a próxima abertura. Os toques da mesma cadência seguem no mesmo fio." />
-      <form className="flex flex-wrap items-end gap-3 px-5 py-4 text-sm"
+      <form className="flex flex-wrap items-end gap-3 px-6 py-4 text-sm"
         action={(form) => iniciar(async () => {
           const r = await salvarParametrosEmail({
             remetente_nome: String(form.get("remetente_nome") ?? ""),

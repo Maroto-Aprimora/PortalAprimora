@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { ChecklistDiagnostico, IniciarDiagnostico, type AreaDiagnostico } from "./checklist";
@@ -27,11 +27,11 @@ export default async function PaginaDiagnostico({ params }: PageProps<"/negocios
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href={`/negocios/${id}`} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href={`/negocios/${id}`} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> {negocio.titulo}
       </Link>
       <h1 className="text-2xl font-bold">Diagnóstico</h1>
-      <p className="mb-5 text-sm text-texto-suave">
+      <p className="mb-6 text-sm text-texto-suave">
         {negocio.empresas?.nome}. Nota de 1 (não existe) a 4 (estruturado e funcionando). Tudo é salvo sozinho enquanto você responde.
       </p>
       {diagnostico

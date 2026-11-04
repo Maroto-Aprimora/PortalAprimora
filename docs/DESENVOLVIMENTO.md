@@ -39,6 +39,24 @@ npm run build
 | `supabase/testes` | Banco local que imita o Supabase, roteiros de teste das migrações e comparação dos indicadores |
 | `docs/` | Escopo, guias, decisões e roteiros de teste dos portões (`docs/testes/`) |
 
+## Sistema de design
+
+Tokens em `src/app/globals.css`; componentes básicos em `src/components/ui`. Não use cores, raios, sombras ou tamanhos
+de texto soltos (`#24476f`, `rounded-[12px]`, `text-[13px]`): se faltar algo, crie o token.
+
+| Tema | Regra |
+|---|---|
+| Cores | Base neutra: `bg-fundo`, `bg-superficie`, `bg-superficie-2`, `text-texto`, `text-texto-suave`, `border-borda`. `marca` (azul) só em ações principais, links e item ativo. `destaque` (laranja) só em sinais de atenção (SLA, pendências, contadores, `Selo tom="destaque"`); não é cor de botão. Sem gradientes |
+| Sombras (2) | `shadow-suave` (cartões, botões, campos) e `shadow-elevada` (menus suspensos, janelas). `shadow-sm/md/lg…` apontam para elas |
+| Raios (2) | `rounded-controle` 6px (botões, campos, itens de menu) e `rounded-cartao` 10px (cartões, janelas, painéis). `rounded-full` só para pílulas e avatares |
+| Bordas | Sempre 1px (`border`, `border-borda`). Linha tracejada para áreas vazias de colunas (`border-dashed`) |
+| Texto | Escala fechada: `text-2xs` 11 · `xs` 12 · `sm` 14 · `base` 16 · `lg` 18 · `xl` 20 · `2xl` 24 · `3xl` 30. Hierarquia por tamanho e peso, não por cor |
+| Espaçamento | Base 4px. Passos em `p-*`, `m-*`, `gap-*`, `space-*`: 0.5 · 1 · 1.5 · 2 · 3 · 4 · 6 · 8 · 12 · 16 (2 a 64px). Cartões: `px-6 py-4` nas linhas, `p-6` no corpo; título da página com `mb-8` |
+| Ícones | Tabler Icons, sempre por `@/components/ui/icones` (nunca direto do pacote). Traço 1.75; `h-4 w-4` no texto, `h-5 w-5` em botões só de ícone. Ícone novo: acrescente em `icones.tsx` |
+| Animações | Lottie via `<Animacao nome="vazio" \| "sucesso" />` (`src/components/ui/animacao.tsx`). Arquivos em `src/components/ui/animacoes`, gerados por `node scripts/gerar-animacoes-lottie.mjs src/components/ui/animacoes`; a cor vem dos tokens por CSS (`.animacao-lottie`). Respeitam "reduzir movimento". Hover, foco e abrir/fechar ficam em CSS (`transition-*`) |
+| Estados vazios | Sempre `<Vazio>` (`@/components/ui/cartao`): diga o que falta e o próximo passo (`acao`). Bloco centralizado (animação ou `icone`) para página/cartão inteiro; `compacto` (com `elemento="li"` dentro de `<ul>`) para listas dentro de cartões; `animacao="sucesso"` quando vazio é bom ("Tudo em dia") |
+| Carregando | `Botao carregando` ou `<Loader2 className="animate-spin" />`; nada de spinners feitos com borda |
+
 ## Banco de dados (Supabase)
 
 - **Toda mudança de banco é uma migração** em `supabase/migrations`, com data no nome. Nunca altere o banco de

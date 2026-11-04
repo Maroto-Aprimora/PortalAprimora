@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Sparkles, Trash2 } from "lucide-react";
+import { Sparkles, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { useMoverNegocio } from "@/components/crm/mover-negocio";
@@ -27,7 +27,7 @@ export function AcoesTopoNegocio({
       {podeEditar && (
         <>
           <select
-            className="h-10 rounded-md border border-borda bg-superficie px-3 text-sm"
+            className="h-10 rounded-controle border border-borda bg-superficie px-3 text-sm"
             value={destino}
             onChange={(e) => setDestino(e.target.value)}
             aria-label="Mover para a fase"
@@ -100,7 +100,7 @@ export function FormNegocio({
 
   return (
     <form action={enviar}>
-      <fieldset disabled={!podeEditar || pendente} className="grid gap-4 px-5 py-4 sm:grid-cols-2">
+      <fieldset disabled={!podeEditar || pendente} className="grid gap-4 px-6 py-4 sm:grid-cols-2">
         <Campo rotulo="Título" obrigatorio className="sm:col-span-2"><Entrada name="titulo" defaultValue={negocio.titulo} required /></Campo>
         <Campo rotulo="Valor (R$)" dica="Valor da proposta ou do contrato. Pode ser preenchido a qualquer momento.">
           <Entrada name="valor" inputMode="decimal" defaultValue={valorParaCampo(negocio.valor)} placeholder="Ex.: 15.000,00" />
@@ -144,7 +144,7 @@ export function FormNegocio({
         </Campo>
       </fieldset>
       {podeEditar && (
-        <div className="flex justify-end border-t border-borda px-5 py-3">
+        <div className="flex justify-end border-t border-borda px-6 py-3">
           <Botao type="submit" carregando={pendente}>Salvar</Botao>
         </div>
       )}
@@ -175,7 +175,7 @@ export function FormCamposFase({
 
   return (
     <form action={enviar}>
-      <fieldset disabled={!podeEditar || pendente} className="grid gap-4 px-5 py-4 sm:grid-cols-2">
+      <fieldset disabled={!podeEditar || pendente} className="grid gap-4 px-6 py-4 sm:grid-cols-2">
         {campos.map((c) => {
           const valor = valores[c.chave];
           const longo = c.tipo === "texto_longo" || c.tipo === "membros";
@@ -214,7 +214,7 @@ export function FormCamposFase({
         })}
       </fieldset>
       {podeEditar && (
-        <div className="flex justify-end border-t border-borda px-5 py-3">
+        <div className="flex justify-end border-t border-borda px-6 py-3">
           <Botao type="submit" variante="secundario" carregando={pendente}>Salvar campos</Botao>
         </div>
       )}

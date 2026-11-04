@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Plus } from "lucide-react";
+import { CalendarOff, CircleCheck, FileText, Inbox, Plus } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
-import { Cartao, CabecalhoCartao, TituloPagina } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { formatarMoeda, formatarNumero } from "@/lib/formatar";
 import { calcularIndicadores, carregarAtividadesEquipe } from "@/lib/indicadores";
@@ -66,7 +66,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
         acoes={<>
           <Exportar />
           {ehDiretor && <Link href="/comercial/relatorios" className={classeBotao("secundario")}><FileText className="h-4 w-4" /> Relatórios da R.I</Link>}
-          {usuario.cargoEm("comercial") && <Link href="/empresas/novo" className={classeBotao("destaque")}><Plus className="h-4 w-4" /> Novo lead</Link>}
+          {usuario.cargoEm("comercial") && <Link href="/empresas/novo" className={classeBotao()}><Plus className="h-4 w-4" /> Novo lead</Link>}
         </>}
       />
       <FiltrosPainel periodo={periodo.chave} de={periodo.de} ate={periodo.ate} responsavel={responsavel} membros={dados.config.membrosComercial} />
@@ -85,7 +85,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
         <Cartao>
           <CabecalhoCartao titulo="Conversão da safra"
             descricao={`Os ${r.leadsNovos} leads criados no período e até onde cada um chegou até hoje (pular uma fase conta como ter passado por ela). Lead → contrato: ${pct(r.conversaoLeadContrato)}${ind.safraEmAberto > 0 ? ` · ${ind.safraEmAberto} ainda em andamento` : ""}.`} />
-          <ul className="space-y-3 px-5 py-4">
+          <ul className="space-y-3 px-6 py-4">
             {ind.funil.map((e) => (
               <li key={e.chave} className="grid grid-cols-[150px_1fr_44px_52px] items-center gap-3 text-sm">
                 <span className="text-texto-suave">{e.rotulo}</span>
@@ -99,13 +99,13 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
               </li>
             ))}
           </ul>
-          <p className="border-t border-borda px-5 py-3 text-xs text-texto-suave">A porcentagem compara cada etapa com a anterior, dentro da mesma safra. Passe o mouse para ver a % sobre o total de leads.</p>
+          <p className="border-t border-borda px-6 py-3 text-xs text-texto-suave">A porcentagem compara cada etapa com a anterior, dentro da mesma safra. Passe o mouse para ver a % sobre o total de leads.</p>
         </Cartao>
 
         <Cartao>
           <CabecalhoCartao titulo="Movimento no período"
             descricao="Quantos negócios entraram em cada fase dentro do período, venham de qualquer safra (cada negócio conta uma vez por fase). Mostra o volume de trabalho, por isso não tem porcentagem." />
-          <ul className="space-y-2 px-5 py-4">
+          <ul className="space-y-2 px-6 py-4">
             {ind.movimento.map((m) => (
               <li key={m.chave} className="grid grid-cols-[170px_1fr_44px] items-center gap-3 text-sm">
                 <span className={cn(m.quantidade === 0 ? "text-texto-suave/60" : "text-texto-suave")}>{m.fase}</span>
@@ -220,12 +220,12 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
           <CabecalhoCartao titulo="SLA estourado (agora)" descricao="Negócios parados além do prazo da fase." />
           <ul className="divide-y divide-borda">
             {atual.estourados.slice(0, 8).map((n) => (
-              <li key={n.id} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm">
-                <Link href={`/negocios/${n.id}`} className="font-semibold hover:text-destaque">{n.titulo}</Link>
+              <li key={n.id} className="flex items-center justify-between gap-3 px-6 py-3 text-sm">
+                <Link href={`/negocios/${n.id}`} className="font-semibold hover:text-marca">{n.titulo}</Link>
                 <Selo tom="destaque">{n.fase.nome} · {n.dias} dias</Selo>
               </li>
             ))}
-            {atual.estourados.length === 0 && <li className="px-5 py-4 text-sm text-texto-suave">Nenhum negócio com SLA estourado.</li>}
+            {atual.estourados.length === 0 && <Vazio compacto elemento="li" icone={CircleCheck} titulo="Nenhum negócio com SLA estourado." />}
           </ul>
         </Cartao>
         <Cartao>
@@ -237,7 +237,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
             vazio="Nenhum e-mail enviado no período."
           />
           {(email?.porClassificacao ?? []).length > 0 && (
-            <div className="flex flex-wrap gap-2 border-t border-borda px-5 py-3 text-xs">
+            <div className="flex flex-wrap gap-2 border-t border-borda px-6 py-3 text-xs">
               {email!.porClassificacao.map((c) => (
                 <Selo key={c.classificacao}>{NOME_CLASSIFICACAO[c.classificacao] ?? c.classificacao}: {c.quantidade}</Selo>
               ))}
@@ -254,7 +254,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
             acoes={<FiltroAtividades membro={filtroMembro} tipo={filtroTipo} membros={dados.config.membrosComercial} tipos={dados.tipos.map((t) => ({ id: t.id, nome: t.nome }))} />}
           />
           {atividadesEquipe.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-texto-suave">Nenhuma atividade com esses filtros no período.</p>
+            <Vazio compacto icone={CalendarOff} titulo="Nenhuma atividade com esses filtros no período." />
           ) : (
             <div className="max-h-[560px] overflow-auto">
               <table className="w-full min-w-[760px] text-sm">
@@ -267,7 +267,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
                       <td className="whitespace-nowrap px-4 py-2">{diaBR(a.inicio).split("-").reverse().join("/")} {horaBR(a.inicio)}</td>
                       <td className="px-4 py-2">{nomeTipo.get(a.tipo_id) ?? "—"}</td>
                       <td className="px-4 py-2">
-                        {a.negocio_id ? <Link href={`/negocios/${a.negocio_id}`} className="font-semibold hover:text-destaque">{a.titulo}</Link> : <span className="font-semibold">{a.titulo}</span>}
+                        {a.negocio_id ? <Link href={`/negocios/${a.negocio_id}`} className="font-semibold hover:text-marca">{a.titulo}</Link> : <span className="font-semibold">{a.titulo}</span>}
                         {(a.empresas?.nome || a.local) && <p className="text-xs text-texto-suave">{[a.empresas?.nome, a.local].filter(Boolean).join(" · ")}</p>}
                         {a.resumo && <p className="mt-0.5 text-xs">{a.resumo}</p>}
                       </td>
@@ -298,7 +298,7 @@ function SeloStatus({ status }: { status: keyof typeof NOME_STATUS }) {
 function Numero({ rotulo, valor, detalhe }: { rotulo: string; valor: string; detalhe?: string }) {
   return (
     <Cartao className="px-4 py-4">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-texto-suave">{rotulo}</p>
+      <p className="text-2xs font-semibold uppercase tracking-wide text-texto-suave">{rotulo}</p>
       <p className="mt-1 font-titulo text-2xl font-bold text-marca">{valor}</p>
       {detalhe && <p className="text-xs text-texto-suave">{detalhe}</p>}
     </Cartao>
@@ -306,7 +306,7 @@ function Numero({ rotulo, valor, detalhe }: { rotulo: string; valor: string; det
 }
 
 function Tabela({ colunas, linhas, vazio }: { colunas: string[]; linhas: React.ReactNode[][]; vazio?: string }) {
-  if (linhas.length === 0) return <p className="px-5 py-4 text-sm text-texto-suave">{vazio ?? "Sem dados no período."}</p>;
+  if (linhas.length === 0) return <Vazio compacto icone={Inbox} titulo={vazio ?? "Sem dados no período."} />;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -325,14 +325,14 @@ function Tabela({ colunas, linhas, vazio }: { colunas: string[]; linhas: React.R
 
 function ListaMotivos({ itens }: { itens: { motivo: string; quantidade: number }[] }) {
   const maior = Math.max(1, ...itens.map((i) => i.quantidade));
-  if (itens.length === 0) return <p className="px-5 py-4 text-sm text-texto-suave">Nenhum no período.</p>;
+  if (itens.length === 0) return <Vazio compacto icone={Inbox} titulo="Nenhum no período." />;
   return (
-    <ul className="space-y-2.5 px-5 py-4">
+    <ul className="space-y-3 px-6 py-4">
       {itens.map((i) => (
         <li key={i.motivo} className="grid grid-cols-[1fr_120px_30px] items-center gap-3 text-sm">
           <span className="truncate">{i.motivo}</span>
           <div className="h-2.5 overflow-hidden rounded-full bg-superficie-2">
-            <div className="h-full rounded-full bg-destaque" style={{ width: `${(i.quantidade / maior) * 100}%` }} />
+            <div className="h-full rounded-full bg-marca" style={{ width: `${(i.quantidade / maior) * 100}%` }} />
           </div>
           <span className="text-right font-semibold">{i.quantidade}</span>
         </li>

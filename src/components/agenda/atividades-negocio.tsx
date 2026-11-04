@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { CalendarPlus, Check, Pencil } from "lucide-react";
+import { CalendarOff, CalendarPlus, Check, Pencil } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
-import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { mudarStatusAtividade } from "@/app/(app)/agenda/acoes";
 import { COR_TIPO, NOME_STATUS, type StatusAtividade, type TipoAtividade } from "@/lib/agenda";
@@ -43,7 +43,7 @@ export function AtividadesDoNegocio({
           const tipo = tipos.find((t) => t.id === a.tipo_id);
           const minha = a.responsavel_id === usuarioId || a.participantes.includes(usuarioId);
           return (
-            <li key={a.id} className="flex items-start gap-3 px-5 py-3 text-sm">
+            <li key={a.id} className="flex items-start gap-3 px-6 py-3 text-sm">
               <span className={cn("mt-1 h-2.5 w-2.5 shrink-0 rounded-full", COR_TIPO[tipo?.cor ?? "marca"])} />
               <div className="min-w-0 flex-1">
                 <p className={cn("font-semibold", (a.status === "cancelada" || a.status === "remarcada") && "line-through opacity-60")}>{a.titulo}</p>
@@ -57,7 +57,7 @@ export function AtividadesDoNegocio({
                   {NOME_STATUS[a.status]}
                 </Selo>
                 {(podeEditar || minha) && a.status === "pendente" && tipo?.exige_confirmacao && (
-                  <button className="rounded p-1 text-texto-suave hover:bg-superficie-2 hover:text-sucesso" title="Confirmar com o cliente" disabled={pendente}
+                  <button className="rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-sucesso" title="Confirmar com o cliente" disabled={pendente}
                     onClick={() => iniciar(async () => {
                       const r = await mudarStatusAtividade(a.id, "confirmada");
                       if (r.ok) toast.success("Atividade confirmada.");
@@ -67,7 +67,7 @@ export function AtividadesDoNegocio({
                   </button>
                 )}
                 {(podeEditar || minha) && (
-                  <button className="rounded p-1 text-texto-suave hover:bg-superficie-2 hover:text-destaque" title="Editar" onClick={() => setEditando(a)}>
+                  <button className="rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-marca" title="Editar" onClick={() => setEditando(a)}>
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                 )}
@@ -75,7 +75,7 @@ export function AtividadesDoNegocio({
             </li>
           );
         })}
-        {atividades.length === 0 && <li className="px-5 py-3 text-sm text-texto-suave">Nenhuma atividade agendada para este negócio.</li>}
+        {atividades.length === 0 && <Vazio compacto elemento="li" icone={CalendarOff} titulo="Nenhuma atividade agendada para este negócio." />}
       </ul>
       {(criando || editando) && (
         <DialogoAtividade

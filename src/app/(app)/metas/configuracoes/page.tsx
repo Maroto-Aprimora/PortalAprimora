@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { TituloPagina } from "@/components/ui/cartao";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
@@ -25,7 +25,7 @@ export default async function PaginaConfigurarMetas({ searchParams }: PageProps<
 
   return (
     <>
-      <Link href={atual ? `/metas?t=${atual}` : "/metas"} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href={atual ? `/metas?t=${atual}` : "/metas"} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> Metas
       </Link>
       <TituloPagina

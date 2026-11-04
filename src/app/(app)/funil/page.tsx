@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus, Settings } from "lucide-react";
+import { Plus, Settings } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -101,7 +101,7 @@ export default async function PaginaFunil({ searchParams }: PageProps<"/funil">)
           <Settings className="h-4 w-4" />
         </Link>
       )}
-      <Link href="/empresas/novo" className={classeBotao("destaque", "sm")}><Plus className="h-4 w-4" /> Novo lead</Link>
+      <Link href="/empresas/novo" className={classeBotao("primario", "sm")}><Plus className="h-4 w-4" /> Novo lead</Link>
     </>
   );
 

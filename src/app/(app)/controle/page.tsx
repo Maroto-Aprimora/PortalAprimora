@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from "@/components/ui/icones";
 import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { formatarDataHora } from "@/lib/formatar";
@@ -72,9 +72,9 @@ export default async function PaginaControle({ searchParams }: PageProps<"/contr
         <Link href={filtro({ ver: "" })} className={cn("rounded-full border px-3 py-1", !verResolvidas ? "border-marca bg-marca text-marca-texto" : "border-borda")}>Abertas</Link>
         <Link href={filtro({ ver: "resolvidas" })} className={cn("rounded-full border px-3 py-1", verResolvidas ? "border-marca bg-marca text-marca-texto" : "border-borda")}>Resolvidas</Link>
         <span className="mx-1 h-5 w-px bg-borda" />
-        <Link href={filtro({ tipo: "" })} className={cn("rounded-full border px-3 py-1", !tipo ? "border-destaque text-destaque" : "border-borda text-texto-suave")}>Todos os tipos</Link>
+        <Link href={filtro({ tipo: "" })} className={cn("rounded-full border px-3 py-1", !tipo ? "border-marca bg-marca/5 text-marca" : "border-borda text-texto-suave")}>Todos os tipos</Link>
         {Object.entries(TIPOS).map(([chave, t]) => (
-          <Link key={chave} href={filtro({ tipo: chave })} className={cn("rounded-full border px-3 py-1", tipo === chave ? "border-destaque text-destaque" : "border-borda text-texto-suave")}>
+          <Link key={chave} href={filtro({ tipo: chave })} className={cn("rounded-full border px-3 py-1", tipo === chave ? "border-marca bg-marca/5 text-marca" : "border-borda text-texto-suave")}>
             {t.rotulo}{porTipo.get(chave) ? ` (${porTipo.get(chave)})` : ""}
           </Link>
         ))}
@@ -84,13 +84,13 @@ export default async function PaginaControle({ searchParams }: PageProps<"/contr
         <CabecalhoCartao titulo={verResolvidas ? "Resolvidas" : "Para corrigir"}
           descricao="A mesma falha repetida soma na mesma linha. Marque como resolvido depois de corrigir: se voltar a acontecer, abre de novo e você é avisado." />
         {!ocorrencias?.length ? (
-          <Vazio titulo={verResolvidas ? "Nada resolvido ainda" : "Tudo certo"} descricao={verResolvidas ? undefined : "Nenhum erro ou alerta aberto."} />
+          <Vazio animacao={verResolvidas ? "vazio" : "sucesso"} titulo={verResolvidas ? "Nada resolvido ainda" : "Tudo certo"} descricao={verResolvidas ? undefined : "Nenhum erro ou alerta aberto."} />
         ) : (
           <ul className="divide-y divide-borda">
             {ocorrencias.map((o) => {
               const t = TIPOS[o.tipo] ?? { rotulo: o.tipo, tom: "neutro" as const };
               return (
-                <li key={o.id} className="flex flex-wrap items-start gap-3 px-5 py-4">
+                <li key={o.id} className="flex flex-wrap items-start gap-3 px-6 py-4">
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Selo tom={t.tom}>{t.rotulo}</Selo>
@@ -107,8 +107,8 @@ export default async function PaginaControle({ searchParams }: PageProps<"/contr
                   <div className="flex items-center gap-2">
                     {o.link && (
                       o.link.startsWith("/")
-                        ? <Link href={o.link} className="inline-flex items-center gap-1 text-sm text-destaque hover:underline"><ExternalLink className="h-4 w-4" /> Abrir</Link>
-                        : <a href={o.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-destaque hover:underline"><ExternalLink className="h-4 w-4" /> Execução no n8n</a>
+                        ? <Link href={o.link} className="inline-flex items-center gap-1 text-sm text-marca hover:underline"><ExternalLink className="h-4 w-4" /> Abrir</Link>
+                        : <a href={o.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-marca hover:underline"><ExternalLink className="h-4 w-4" /> Execução no n8n</a>
                     )}
                     <BotaoResolver id={o.id} resolvida={!!o.resolvida_em} />
                   </div>

@@ -36,13 +36,13 @@ export function FormLinkEmail({ criarConta, textoBotao }: { criarConta: boolean;
 
   if (enviadoPara) {
     return (
-      <div className="mt-8 rounded-lg border border-borda bg-superficie-2 p-4 text-sm">
+      <div className="mt-8 rounded-controle border border-borda bg-superficie-2 p-4 text-sm">
         <p className="font-semibold">Verifique seu e-mail</p>
         <p className="mt-1 text-texto-suave">
           Se <strong>{enviadoPara}</strong> puder acessar o portal, você receberá um link em instantes. Abra o link
           neste ou em outro dispositivo para definir sua senha. Confira também a caixa de spam.
         </p>
-        <Link href="/entrar" className="mt-3 inline-block font-semibold text-marca hover:text-destaque">Voltar para o login</Link>
+        <Link href="/entrar" className="mt-3 inline-block font-semibold text-marca underline-offset-4 hover:underline">Voltar para o login</Link>
       </div>
     );
   }
@@ -53,7 +53,7 @@ export function FormLinkEmail({ criarConta, textoBotao }: { criarConta: boolean;
         <Entrada id="email" name="email" type="email" autoComplete="email" placeholder="nome@aprimoraej.com" required />
       </Campo>
       <Botao type="submit" className="w-full" carregando={carregando}>{textoBotao}</Botao>
-      <Link href="/entrar" className="block text-center text-sm text-texto-suave hover:text-destaque">Voltar para o login</Link>
+      <Link href="/entrar" className="block text-center text-sm text-texto-suave hover:text-marca">Voltar para o login</Link>
     </form>
   );
 }

@@ -2,11 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { CalendarOff, Plus, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Dialogo } from "@/components/ui/dialogo";
-import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import type { Tables } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
@@ -112,10 +112,10 @@ export function CamposDaFase({ fase, campos }: { fase: { id: string; nome: strin
   const [pendente, iniciar] = useTransition();
   const [novo, setNovo] = useState(false);
   return (
-    <div className="rounded-lg border border-borda">
+    <div className="rounded-controle border border-borda">
       <div className="flex items-center justify-between border-b border-borda px-3 py-2">
         <p className="text-sm font-bold">{fase.nome}</p>
-        <button className="text-xs font-semibold text-marca hover:text-destaque" onClick={() => setNovo((v) => !v)}>
+        <button className="text-xs font-semibold text-marca underline-offset-4 hover:underline" onClick={() => setNovo((v) => !v)}>
           {novo ? "Cancelar" : "+ Campo"}
         </button>
       </div>
@@ -185,7 +185,7 @@ export function ListaSimples({
       <CabecalhoCartao titulo={titulo} descricao="Itens inativos deixam de aparecer nos formulários, mas o histórico é mantido." />
       <ul className="divide-y divide-borda">
         {itens.map((i) => (
-          <li key={i.id} className="flex items-center gap-2 px-5 py-2">
+          <li key={i.id} className="flex items-center gap-2 px-6 py-2">
             <form className="flex flex-1 items-center gap-2" action={(form) => salvar(i.id, String(form.get("nome")), i.ativo, "Salvo.")}>
               <Entrada name="nome" defaultValue={i.nome} className={cn("h-9", !i.ativo && "opacity-50")} />
               {i.detalhe && <Selo>{i.detalhe}</Selo>}
@@ -199,7 +199,7 @@ export function ListaSimples({
         ))}
       </ul>
       {!semCriar && (
-        <form className="flex gap-2 border-t border-borda px-5 py-3" action={(form) => { salvar(null, String(form.get("nome")), true, "Adicionado."); }}>
+        <form className="flex gap-2 border-t border-borda px-6 py-3" action={(form) => { salvar(null, String(form.get("nome")), true, "Adicionado."); }}>
           <Entrada name="nome" placeholder="Novo item" className="h-9" required />
           <Botao type="submit" tamanho="sm" carregando={pendente}><Plus className="h-3.5 w-3.5" /> Adicionar</Botao>
         </form>
@@ -228,7 +228,7 @@ export function ResultadoLigacaoForm({
 
   return (
     <form
-      className={cn("grid gap-2 px-5 py-3 md:grid-cols-[minmax(160px,1fr)_minmax(160px,1fr)_minmax(200px,1.3fr)_auto]", resultado && !resultado.ativo && "opacity-60")}
+      className={cn("grid gap-2 px-6 py-3 md:grid-cols-[minmax(160px,1fr)_minmax(160px,1fr)_minmax(200px,1.3fr)_auto]", resultado && !resultado.ativo && "opacity-60")}
       action={(form) => iniciar(async () => {
         const txt = (k: string) => String(form.get(k) ?? "") || null;
         const r = await salvarResultadoLigacao(resultado?.id ?? null, {
@@ -301,7 +301,7 @@ export function ListaFeriados({ feriados }: { feriados: Tables<"feriados">[] }) 
       <CabecalhoCartao titulo="Feriados" descricao="Tarefas automáticas que cairiam em fim de semana ou feriado vão para o próximo dia útil." />
       <ul className="max-h-72 divide-y divide-borda overflow-y-auto">
         {proximos.map((f) => (
-          <li key={f.data} className="flex items-center justify-between gap-2 px-5 py-2 text-sm">
+          <li key={f.data} className="flex items-center justify-between gap-2 px-6 py-2 text-sm">
             <span><strong className="mr-2 tabular-nums">{f.data.split("-").reverse().join("/")}</strong>{f.nome}</span>
             <button aria-label={`Excluir ${f.nome}`} className="text-texto-suave hover:text-perigo" disabled={pendente}
               onClick={() => iniciar(async () => { const r = await excluirFeriado(f.data); if (!r.ok) toast.error(r.erro); })}>
@@ -309,9 +309,9 @@ export function ListaFeriados({ feriados }: { feriados: Tables<"feriados">[] }) 
             </button>
           </li>
         ))}
-        {proximos.length === 0 && <li className="px-5 py-2 text-sm text-texto-suave">Nenhum feriado futuro cadastrado.</li>}
+        {proximos.length === 0 && <Vazio compacto elemento="li" icone={CalendarOff} titulo="Nenhum feriado futuro cadastrado." />}
       </ul>
-      <form className="flex gap-2 border-t border-borda px-5 py-3" action={(form) => iniciar(async () => {
+      <form className="flex gap-2 border-t border-borda px-6 py-3" action={(form) => iniciar(async () => {
         const r = await salvarFeriado({ data: String(form.get("data")), nome: String(form.get("nome")) });
         if (r.ok) toast.success("Feriado salvo.");
         else toast.error(r.erro);
@@ -330,7 +330,7 @@ export function Cadencia({ passos, parametros }: {
 }) {
   const [pendente, iniciar] = useTransition();
   const linha = (p: Tables<"cadencia_passos"> | null) => (
-    <form key={p?.id ?? "novo"} className={cn("grid items-center gap-2 px-5 py-2 sm:grid-cols-[80px_130px_1fr_auto_auto]", p && !p.ativo && "opacity-60")}
+    <form key={p?.id ?? "novo"} className={cn("grid items-center gap-2 px-6 py-2 sm:grid-cols-[80px_130px_1fr_auto_auto]", p && !p.ativo && "opacity-60")}
       action={(form) => iniciar(async () => {
         const r = await salvarPassoCadencia(p?.id ?? null, {
           dia: Number(form.get("dia") ?? 0), canal: String(form.get("canal")) as "email",
@@ -373,7 +373,7 @@ export function Cadencia({ passos, parametros }: {
         {linha(null)}
       </div>
       {parametros && (
-        <form className="flex flex-wrap items-end gap-3 border-t border-borda px-5 py-3 text-sm"
+        <form className="flex flex-wrap items-end gap-3 border-t border-borda px-6 py-3 text-sm"
           action={(form) => iniciar(async () => {
             const r = await salvarParametrosCadencia({
               cadencia_dias_reciclagem: Number(form.get("cadencia_dias_reciclagem")), reciclagem_retorno_dias: Number(form.get("reciclagem_retorno_dias")),
@@ -422,7 +422,7 @@ export function Agentes({ agentes, saude, trabalhos }: {
           })}>Enviar trabalho de teste</Botao>
         } />
       {saude && (
-        <div className="grid grid-cols-2 gap-3 border-b border-borda px-5 py-4 text-sm sm:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 border-b border-borda px-6 py-4 text-sm sm:grid-cols-5">
           <Indicador rotulo="Na fila" valor={saude.pendentes} alerta={saude.pendentes > 30} />
           <Indicador rotulo="Processando" valor={saude.processando} />
           <Indicador rotulo="Mais antiga (min)" valor={saude.mais_antiga_minutos} alerta={saude.mais_antiga_minutos > 180} />
@@ -433,11 +433,11 @@ export function Agentes({ agentes, saude, trabalhos }: {
       )}
       <div className="divide-y divide-borda">
         {fases.map((f) => (
-          <div key={f} className="px-5 py-3">
+          <div key={f} className="px-6 py-3">
             <p className="mb-2 text-xs font-bold uppercase tracking-wider text-texto-suave">{NOME_FASE_ROADMAP[f] ?? "Sistema"}</p>
             <ul className="grid gap-2 md:grid-cols-2">
               {agentes.filter((a) => (a.fase_roadmap ?? 0) === f).map((a) => (
-                <li key={a.chave} className="flex items-start gap-3 rounded-md border border-borda px-3 py-2">
+                <li key={a.chave} className="flex items-start gap-3 rounded-controle border border-borda px-3 py-2">
                   <label className="mt-0.5 flex cursor-pointer items-center" title={a.ativo ? "Desligar" : "Ligar"}>
                     <input type="checkbox" className="h-4 w-4" checked={a.ativo} disabled={pendente}
                       onChange={(e) => iniciar(async () => {
@@ -457,7 +457,7 @@ export function Agentes({ agentes, saude, trabalhos }: {
           </div>
         ))}
       </div>
-      <div className="border-t border-borda px-5 py-3">
+      <div className="border-t border-borda px-6 py-3">
         <p className="mb-2 text-xs font-bold uppercase tracking-wider text-texto-suave">Últimos trabalhos</p>
         {trabalhos.length === 0 ? <p className="text-sm text-texto-suave">Nenhum trabalho ainda.</p> : (
           <ul className="space-y-1.5 text-sm">
@@ -482,7 +482,7 @@ export function Agentes({ agentes, saude, trabalhos }: {
 function Indicador({ rotulo, valor, alerta, detalhe }: { rotulo: string; valor: number; alerta?: boolean; detalhe?: string }) {
   return (
     <div>
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-texto-suave">{rotulo}</p>
+      <p className="text-2xs font-semibold uppercase tracking-wide text-texto-suave">{rotulo}</p>
       <p className={cn("font-titulo text-xl font-bold", alerta ? "text-perigo" : "text-marca")}>{valor}</p>
       {detalhe && <p className="text-xs text-texto-suave">{detalhe}</p>}
     </div>
@@ -506,7 +506,7 @@ export function Rubrica({ criterios }: { criterios: Tables<"rubrica_criterios">[
 function LinhaCriterio({ criterio: c, proximaOrdem = 0 }: { criterio: Tables<"rubrica_criterios"> | null; proximaOrdem?: number }) {
   const [pendente, iniciar] = useTransition();
   return (
-    <form className="grid items-end gap-3 px-5 py-3 md:grid-cols-[200px_1fr_80px_auto_auto]" action={(form) => iniciar(async () => {
+    <form className="grid items-end gap-3 px-6 py-3 md:grid-cols-[200px_1fr_80px_auto_auto]" action={(form) => iniciar(async () => {
       const r = await salvarCriterioRubrica(c?.id ?? null, {
         nome: String(form.get("nome")), descricao: String(form.get("descricao")),
         ordem: Number(form.get("ordem") || 0), ativo: form.get("ativo") === "on",

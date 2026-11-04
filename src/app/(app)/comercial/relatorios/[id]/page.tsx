@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { Cartao, CabecalhoCartao, TituloPagina } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { formatarData, formatarDataHora, formatarMoeda } from "@/lib/formatar";
@@ -45,7 +45,7 @@ export default async function PaginaRelatorio({ params }: PageProps<"/comercial/
   return (
     <div className="mx-auto max-w-5xl">
       {rel.status === "gerando" && <AtualizarEnquantoGera />}
-      <Link href="/comercial/relatorios" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href="/comercial/relatorios" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> Relatórios da R.I
       </Link>
       <TituloPagina titulo={`Relatório da R.I · ${periodo}`}
@@ -59,7 +59,7 @@ export default async function PaginaRelatorio({ params }: PageProps<"/comercial/
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-left text-xs uppercase text-texto-suave">
-              <tr><th className="px-5 py-2">Indicador</th><th className="px-3 py-2 text-right">Semana</th><th className="px-5 py-2 text-right">Trimestre</th></tr>
+              <tr><th className="px-6 py-2">Indicador</th><th className="px-3 py-2 text-right">Semana</th><th className="px-6 py-2 text-right">Trimestre</th></tr>
             </thead>
             <tbody className="divide-y divide-borda">
               {([
@@ -72,7 +72,7 @@ export default async function PaginaRelatorio({ params }: PageProps<"/comercial/
                 ["Taxa de ganho", pct(s.taxaGanho), pct(t.taxaGanho)],
                 ["Pipeline ponderado (hoje)", formatarMoeda(s.pipelinePonderado), "—"],
               ] as const).map(([rotulo, vs, vt]) => (
-                <tr key={rotulo}><td className="px-5 py-2">{rotulo}</td><td className="px-3 py-2 text-right font-semibold">{vs}</td><td className="px-5 py-2 text-right">{vt}</td></tr>
+                <tr key={rotulo}><td className="px-6 py-2">{rotulo}</td><td className="px-3 py-2 text-right font-semibold">{vs}</td><td className="px-6 py-2 text-right">{vt}</td></tr>
               ))}
             </tbody>
           </table>
@@ -85,21 +85,21 @@ export default async function PaginaRelatorio({ params }: PageProps<"/comercial/
           <table className="w-full text-sm">
             <thead className="text-left text-xs uppercase text-texto-suave">
               <tr>
-                <th className="px-5 py-2">Membro</th><th className="px-3 py-2 text-right">Ligações</th><th className="px-3 py-2 text-right">Diagnósticos</th>
+                <th className="px-6 py-2">Membro</th><th className="px-3 py-2 text-right">Ligações</th><th className="px-3 py-2 text-right">Diagnósticos</th>
                 <th className="px-3 py-2 text-right">Propostas</th><th className="px-3 py-2 text-right">Contratos</th>
-                <th className="px-3 py-2 text-right">Ativos</th><th className="px-5 py-2 text-right">Tarefas atrasadas</th>
+                <th className="px-3 py-2 text-right">Ativos</th><th className="px-6 py-2 text-right">Tarefas atrasadas</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-borda">
               {d.membros.map((m) => (
                 <tr key={m.id}>
-                  <td className="px-5 py-2 font-semibold">{m.nome}</td>
+                  <td className="px-6 py-2 font-semibold">{m.nome}</td>
                   <td className="px-3 py-2 text-right">{m.ligacoes_semana?.ligacoes ?? 0}</td>
                   <td className="px-3 py-2 text-right">{m.semana.diagnosticos} <span className="text-texto-suave">({m.trimestre.diagnosticos})</span></td>
                   <td className="px-3 py-2 text-right">{m.semana.propostas} <span className="text-texto-suave">({m.trimestre.propostas})</span></td>
                   <td className="px-3 py-2 text-right">{m.semana.contratos} <span className="text-texto-suave">({m.trimestre.contratos})</span></td>
                   <td className="px-3 py-2 text-right">{m.negocios_ativos}</td>
-                  <td className="px-5 py-2 text-right">{m.tarefas_atrasadas > 0 ? <Selo tom="perigo">{m.tarefas_atrasadas}</Selo> : 0}</td>
+                  <td className="px-6 py-2 text-right">{m.tarefas_atrasadas > 0 ? <Selo tom="perigo">{m.tarefas_atrasadas}</Selo> : 0}</td>
                 </tr>
               ))}
             </tbody>
@@ -112,7 +112,7 @@ export default async function PaginaRelatorio({ params }: PageProps<"/comercial/
           <CabecalhoCartao titulo="SLA estourado" descricao="Os 20 negócios parados há mais tempo." />
           <ul className="divide-y divide-borda">
             {d.sla_estourado.map((x, i) => (
-              <li key={i} className="px-5 py-2 text-sm">
+              <li key={i} className="px-6 py-2 text-sm">
                 <strong>{x.negocio}</strong> · {x.fase} · {x.dias} de {x.sla} dias{x.responsavel ? ` · ${x.responsavel}` : ""}
               </li>
             ))}
@@ -123,12 +123,12 @@ export default async function PaginaRelatorio({ params }: PageProps<"/comercial/
       {a && (
         <Cartao className="mb-6">
           <CabecalhoCartao titulo="Análise do Analista gerencial" descricao="Rascunho: confira com os números acima antes de compartilhar." />
-          <div className="space-y-4 px-5 py-4 text-sm">
+          <div className="space-y-4 px-6 py-4 text-sm">
             {a.resumo && <p>{a.resumo}</p>}
             <ListaAnalise titulo="Destaques" itens={a.destaques} />
             <ListaAnalise titulo="Pontos de atenção" itens={a.pontos_atencao} />
             {(a.planos ?? []).map((p) => (
-              <div key={p.membro} className="rounded-md border border-borda p-3">
+              <div key={p.membro} className="rounded-controle border border-borda p-3">
                 <p className="mb-2 font-semibold">Plano de melhoria · {p.membro}</p>
                 <ListaAnalise titulo="Pontos fortes" itens={p.pontos_fortes} />
                 <ListaAnalise titulo="Melhorias" itens={p.melhorias} />
@@ -154,7 +154,7 @@ function ListaAnalise({ titulo, itens }: { titulo: string; itens?: string[] }) {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-wide text-texto-suave">{titulo}</p>
-      <ul className="mt-1 list-disc space-y-1 pl-5">{itens.map((i, k) => <li key={k}>{i}</li>)}</ul>
+      <ul className="mt-1 list-disc space-y-1 pl-6">{itens.map((i, k) => <li key={k}>{i}</li>)}</ul>
     </div>
   );
 }

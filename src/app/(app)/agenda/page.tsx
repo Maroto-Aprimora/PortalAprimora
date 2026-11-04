@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Settings } from "lucide-react";
+import { Settings } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
 import { GoogleAgenda } from "@/components/agenda/google-agenda";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";

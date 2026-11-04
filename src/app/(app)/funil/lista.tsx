@@ -15,9 +15,9 @@ export function ListaNegocios({ fases, cartoes }: { fases: Fase[]; cartoes: Cart
       <table className="w-full text-sm">
         <thead className="border-b border-borda text-left text-xs uppercase text-texto-suave">
           <tr>
-            <th className="px-4 py-2.5">Negócio</th><th className="px-3 py-2.5">Fase</th><th className="px-3 py-2.5">Responsável</th>
-            <th className="px-3 py-2.5 text-right">Valor</th><th className="px-3 py-2.5">Na fase</th><th className="px-3 py-2.5">Segmento</th>
-            <th className="px-4 py-2.5">Última ligação</th>
+            <th className="px-4 py-3">Negócio</th><th className="px-3 py-3">Fase</th><th className="px-3 py-3">Responsável</th>
+            <th className="px-3 py-3 text-right">Valor</th><th className="px-3 py-3">Na fase</th><th className="px-3 py-3">Segmento</th>
+            <th className="px-4 py-3">Última ligação</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-borda">
@@ -27,18 +27,18 @@ export function ListaNegocios({ fases, cartoes }: { fases: Fase[]; cartoes: Cart
             const sla = fase ? situacaoSla(fase, dias) : "sem";
             return (
               <tr key={c.id} className="hover:bg-superficie-2">
-                <td className="px-4 py-2.5">
-                  <Link href={`/negocios/${c.id}`} className="font-semibold hover:text-destaque">{c.titulo}</Link>
+                <td className="px-4 py-3">
+                  <Link href={`/negocios/${c.id}`} className="font-semibold hover:text-marca">{c.titulo}</Link>
                   {c.cidade && <span className="block text-xs text-texto-suave">{c.cidade}</span>}
                 </td>
-                <td className="px-3 py-2.5">{fase?.nome ?? "—"}</td>
-                <td className="px-3 py-2.5">
-                  {c.responsavel ? <span className="flex items-center gap-2"><Avatar iniciais={iniciais(c.responsavel)} nome={c.responsavel} className="h-6 w-6 text-[10px]" />{c.responsavel}</span> : "—"}
+                <td className="px-3 py-3">{fase?.nome ?? "—"}</td>
+                <td className="px-3 py-3">
+                  {c.responsavel ? <span className="flex items-center gap-2"><Avatar iniciais={iniciais(c.responsavel)} nome={c.responsavel} className="h-6 w-6 text-2xs" />{c.responsavel}</span> : "—"}
                 </td>
-                <td className="px-3 py-2.5 text-right">{c.valor != null ? formatarMoeda(c.valor) : "—"}</td>
-                <td className="px-3 py-2.5"><Selo tom={sla === "estourado" ? "destaque" : "neutro"}>{dias} {dias === 1 ? "dia" : "dias"}{sla === "estourado" ? " · SLA" : ""}</Selo></td>
-                <td className="px-3 py-2.5">{c.segmento ?? "—"}</td>
-                <td className="px-4 py-2.5 text-texto-suave">{c.ultimaLigacao ?? "—"}</td>
+                <td className="px-3 py-3 text-right">{c.valor != null ? formatarMoeda(c.valor) : "—"}</td>
+                <td className="px-3 py-3"><Selo tom={sla === "estourado" ? "destaque" : "neutro"}>{dias} {dias === 1 ? "dia" : "dias"}{sla === "estourado" ? " · SLA" : ""}</Selo></td>
+                <td className="px-3 py-3">{c.segmento ?? "—"}</td>
+                <td className="px-4 py-3 text-texto-suave">{c.ultimaLigacao ?? "—"}</td>
               </tr>
             );
           })}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import { Check, X } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Cartao } from "@/components/ui/cartao";
@@ -52,7 +52,7 @@ export function CartaoAprovacao({ item, mostrarResponsavel, resultados = [], aoD
   });
 
   return (
-    <Cartao className={semMoldura ? "border-0 p-0 shadow-none" : "p-5"}>
+    <Cartao className={semMoldura ? "border-0 p-0 shadow-none" : "p-6"}>
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <Selo tom="marca">{item.agente}</Selo>
         {item.negocio && <Link href={`/negocios/${item.negocio.id}`}><Selo>{item.negocio.titulo}</Selo></Link>}
@@ -91,7 +91,7 @@ export function CartaoAprovacao({ item, mostrarResponsavel, resultados = [], aoD
             <Campo key={chave} rotulo={rotuloCampo(chave)}>
               {longo
                 ? <AreaTexto value={texto} onChange={(e) => mudar(e.target.value)} disabled={pendente}
-                    className={item.tipo === "email" ? "min-h-64 text-sm leading-relaxed" : "min-h-40 font-mono text-[13px] leading-relaxed"} />
+                    className={item.tipo === "email" ? "min-h-64 text-sm leading-relaxed" : "min-h-40 font-mono text-sm leading-relaxed"} />
                 : <Entrada value={texto} onChange={(e) => mudar(e.target.value)} disabled={pendente} />}
             </Campo>
           );

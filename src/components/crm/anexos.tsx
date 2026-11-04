@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Download, FileText, Paperclip, Trash2 } from "lucide-react";
+import { Download, FileOff, FileText, Paperclip, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
-import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { criarClienteNavegador } from "@/lib/supabase/client";
 import { mensagemDeErro } from "@/lib/erros";
 import { formatarData } from "@/lib/formatar";
@@ -103,27 +103,27 @@ export function AnexosDoNegocio({ negocioId, anexos, nomes, podeEnviar, usuarioI
       />
       <ul className="divide-y divide-borda">
         {anexos.map((a) => (
-          <li key={a.id} className="flex items-center gap-3 px-5 py-2.5 text-sm">
+          <li key={a.id} className="flex items-center gap-3 px-6 py-3 text-sm">
             <FileText className="h-4 w-4 shrink-0 text-texto-suave" />
             <div className="min-w-0 flex-1">
-              <button type="button" onClick={() => baixar(a)} className="block max-w-full truncate text-left font-semibold hover:text-destaque" title={a.nome}>
+              <button type="button" onClick={() => baixar(a)} className="block max-w-full truncate text-left font-semibold hover:text-marca" title={a.nome}>
                 {a.nome}
               </button>
               <p className="text-xs text-texto-suave">
                 {tamanhoLegivel(a.tamanho)} · {formatarData(a.created_at)}{a.enviado_por ? ` · ${nomes[a.enviado_por] ?? "—"}` : ""}
               </p>
             </div>
-            <button type="button" onClick={() => baixar(a)} disabled={pendente} className="rounded p-1 text-texto-suave hover:bg-superficie-2 hover:text-destaque" aria-label={`Baixar ${a.nome}`}>
+            <button type="button" onClick={() => baixar(a)} disabled={pendente} className="rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-marca" aria-label={`Baixar ${a.nome}`}>
               <Download className="h-4 w-4" />
             </button>
             {(a.enviado_por === usuarioId || podeExcluir) && (
-              <button type="button" onClick={() => excluir(a)} disabled={pendente} className="rounded p-1 text-texto-suave hover:bg-superficie-2 hover:text-perigo" aria-label={`Excluir ${a.nome}`}>
+              <button type="button" onClick={() => excluir(a)} disabled={pendente} className="rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-perigo" aria-label={`Excluir ${a.nome}`}>
                 <Trash2 className="h-4 w-4" />
               </button>
             )}
           </li>
         ))}
-        {anexos.length === 0 && <li className="px-5 py-3 text-sm text-texto-suave">Nenhum arquivo. Anexe propostas, contratos e apresentações (até 10 MB cada).</li>}
+        {anexos.length === 0 && <Vazio compacto elemento="li" icone={FileOff} titulo="Nenhum arquivo." descricao="Anexe propostas, contratos e apresentações (até 10 MB cada)." />}
       </ul>
     </Cartao>
   );

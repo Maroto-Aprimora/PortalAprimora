@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 import { Calculadora, type Fator, type Parecido } from "./calculadora";
@@ -36,11 +36,11 @@ export default async function PaginaPrecificacao({ params }: PageProps<"/negocio
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href={`/negocios/${id}`} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href={`/negocios/${id}`} className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> {negocio.titulo}
       </Link>
       <h1 className="text-2xl font-bold">Precificação</h1>
-      <p className="mb-5 text-sm text-texto-suave">
+      <p className="mb-6 text-sm text-texto-suave">
         {negocio.empresas?.nome}
         {negocio.negocio_servicos.length ? ` · ${negocio.negocio_servicos.map((s) => s.servicos?.nome).filter(Boolean).join(", ")}` : ""}
       </p>

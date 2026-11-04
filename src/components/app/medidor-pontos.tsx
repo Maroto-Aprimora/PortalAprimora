@@ -8,7 +8,7 @@ export function MedidorPontos({ total, compacto = false }: { total: number; comp
   return (
     <div className={cn("w-full", compacto ? "space-y-1" : "space-y-2")}>
       <div className="flex items-baseline justify-between">
-        <p className={cn("font-titulo font-bold", compacto ? "text-2xl" : "text-4xl", situacao === "marco" ? "text-perigo" : "text-marca")}>
+        <p className={cn("font-titulo font-bold", compacto ? "text-2xl" : "text-3xl", situacao === "marco" ? "text-perigo" : "text-marca")}>
           {total}<span className="text-base font-semibold text-texto-suave">/{PONTOS_MAXIMO}</span>
         </p>
         <p className="text-xs text-texto-suave">
@@ -17,10 +17,10 @@ export function MedidorPontos({ total, compacto = false }: { total: number; comp
       </div>
       <div className="relative h-3 rounded-full bg-superficie-2">
         <div className={cn("h-full rounded-full transition-all", cor)} style={{ width: `${(total / PONTOS_MAXIMO) * 100}%` }} />
-        <div className="absolute inset-y-[-4px] w-0.5 rounded bg-texto" style={{ left: `${(PONTOS_MARCO / PONTOS_MAXIMO) * 100}%` }} title="Marco: 6 pontos" />
+        <div className="absolute inset-y-[-4px] w-0.5 rounded-controle bg-texto" style={{ left: `${(PONTOS_MARCO / PONTOS_MAXIMO) * 100}%` }} title="Marco: 6 pontos" />
       </div>
       {!compacto && (
-        <div className="flex justify-between text-[11px] text-texto-suave">
+        <div className="flex justify-between text-2xs text-texto-suave">
           <span>0</span><span className="-ml-3">6 · marco</span><span>12</span>
         </div>
       )}

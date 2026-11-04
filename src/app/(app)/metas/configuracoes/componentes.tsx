@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { CalendarPlus, Plus, Trash2 } from "lucide-react";
+import { CalendarPlus, Plus, Trash2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
@@ -21,7 +21,7 @@ function LinhaMeta({ meta, trimestre, objetivos, aoCriar }: { meta: Meta | null;
   const listaId = `objetivos-${meta?.id ?? "nova"}`;
   return (
     <form
-      className={`grid gap-2 px-5 py-3 sm:grid-cols-2 ${COLUNAS} lg:items-center`}
+      className={`grid gap-2 px-6 py-3 sm:grid-cols-2 ${COLUNAS} lg:items-center`}
       action={(f) => iniciar(async () => {
         const g = (k: string) => String(f.get(k) ?? "");
         const r = await salvarMeta(meta?.id ?? null, {
@@ -74,7 +74,7 @@ export function EditorMetas({ trimestre, metas }: { trimestre: string; metas: Me
         descricao="Cálculo automático: o portal conta pelo funil e pela agenda, e o campo de realizado vira um ajuste somado (útil para o que aconteceu antes do portal). Manual: o diretor preenche."
         acoes={<Botao tamanho="sm" variante="secundario" onClick={() => setNovas((n) => n + 1)}><Plus className="h-3.5 w-3.5" /> Nova meta</Botao>}
       />
-      <div className={`hidden gap-2 bg-superficie-2 px-5 py-2 text-xs uppercase tracking-wide text-texto-suave lg:grid ${COLUNAS}`}>
+      <div className={`hidden gap-2 bg-superficie-2 px-6 py-2 text-xs uppercase tracking-wide text-texto-suave lg:grid ${COLUNAS}`}>
         <span>Objetivo</span><span>KR</span><span>Resultado-chave</span><span>Cálculo</span><span>Alvo</span><span>Unidade</span><span>Realizado / ajuste</span><span>Peso</span><span />
       </div>
       <div className="divide-y divide-borda">

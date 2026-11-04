@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
+import { Loader2 } from "./icones";
 
+/** Laranja não é cor de botão: fica para sinais de atenção (Selo tom="destaque"). */
 const variantes = {
-  primario: "bg-marca text-marca-texto hover:bg-marca-forte",
-  destaque: "bg-destaque text-white hover:brightness-95",
-  secundario: "border border-borda bg-superficie text-texto hover:bg-superficie-2",
+  primario: "bg-marca text-marca-texto shadow-suave hover:bg-marca-forte",
+  secundario: "border border-borda bg-superficie text-texto shadow-suave hover:bg-superficie-2",
   fantasma: "text-texto-suave hover:bg-superficie-2 hover:text-texto",
-  perigo: "bg-perigo text-white hover:brightness-95",
+  perigo: "bg-perigo text-marca-texto hover:brightness-95",
 } as const;
 
 const tamanhos = {
@@ -24,8 +25,8 @@ export function Botao({ variante = "primario", tamanho = "md", carregando, class
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destaque",
+        "inline-flex items-center justify-center gap-2 rounded-controle font-semibold transition-colors",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca",
         "disabled:cursor-not-allowed disabled:opacity-55",
         variantes[variante],
         tamanhos[tamanho],
@@ -34,7 +35,7 @@ export function Botao({ variante = "primario", tamanho = "md", carregando, class
       disabled={disabled || carregando}
       {...props}
     >
-      {carregando && <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />}
+      {carregando && <Loader2 className="h-4 w-4 animate-spin" />}
       {children}
     </button>
   );
@@ -43,7 +44,7 @@ export function Botao({ variante = "primario", tamanho = "md", carregando, class
 /** Mesmo visual do botão, para links (<Link className={classeBotao()} />). */
 export function classeBotao(variante: keyof typeof variantes = "primario", tamanho: keyof typeof tamanhos = "md") {
   return cn(
-    "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors",
+    "inline-flex items-center justify-center gap-2 rounded-controle font-semibold transition-colors",
     variantes[variante],
     tamanhos[tamanho],
   );

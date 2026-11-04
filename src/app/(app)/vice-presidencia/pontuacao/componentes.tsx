@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Plus, Undo2 } from "lucide-react";
+import { Plus, Undo2 } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Dialogo } from "@/components/ui/dialogo";
@@ -13,7 +13,7 @@ export function LancarPontos({ membros, hoje, membroInicial }: { membros: { id: 
   const [pendente, iniciar] = useTransition();
   return (
     <>
-      <Botao variante="destaque" onClick={() => setAberto(true)}><Plus className="h-4 w-4" /> Lançar pontos</Botao>
+      <Botao onClick={() => setAberto(true)}><Plus className="h-4 w-4" /> Lançar pontos</Botao>
       <Dialogo aberto={aberto} aoFechar={() => setAberto(false)} titulo="Lançar pontos"
         descricao="Pontos positivos somam ao total da pessoa; use um valor negativo para abonar. A pessoa recebe uma notificação.">
         <form className="space-y-4" action={(f) => iniciar(async () => {

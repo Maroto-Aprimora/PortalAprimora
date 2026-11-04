@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, ClipboardCheck, Copy, Loader2, Sparkles } from "lucide-react";
+import { Check, ClipboardCheck, Copy, Loader2, Sparkles } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
@@ -40,13 +40,13 @@ export function EditorProposta({ negocioId, podeEditar, diagnostico, proposta, m
     <div className="space-y-6">
       {(!diagnostico || diagnostico.status !== "concluido") && (
         <Cartao className="flex flex-wrap items-center gap-3 p-4 text-sm">
-          <ClipboardCheck className="h-5 w-5 text-destaque" />
+          <ClipboardCheck className="h-5 w-5 text-marca" />
           <span className="flex-1">Conclua o diagnóstico para o Assistente montar o rascunho. Você também pode escrever direto aqui.</span>
           <Link href={`/negocios/${negocioId}/diagnostico`}><Botao tamanho="sm" variante="secundario">Diagnóstico</Botao></Link>
         </Cartao>
       )}
       {diagnostico?.analiseStatus === "gerando" && (
-        <Cartao className="flex items-center gap-2 p-4 text-sm"><Loader2 className="h-4 w-4 animate-spin text-destaque" /> O Assistente está escrevendo o rascunho (1 a 2 minutos). Recarregue a página em seguida.</Cartao>
+        <Cartao className="flex items-center gap-2 p-4 text-sm"><Loader2 className="h-4 w-4 animate-spin text-marca" /> O Assistente está escrevendo o rascunho (1 a 2 minutos). Recarregue a página em seguida.</Cartao>
       )}
       {diagnostico?.analiseStatus === "erro" && (
         <Cartao className="p-4 text-sm text-perigo">O Assistente não conseguiu analisar: {diagnostico.analiseErro}</Cartao>
@@ -64,7 +64,7 @@ export function EditorProposta({ negocioId, podeEditar, diagnostico, proposta, m
           <CabecalhoCartao titulo="Serviços sugeridos" descricao="Pelas áreas de menor maturidade do diagnóstico." />
           <ul className="divide-y divide-borda text-sm">
             {proposta.sugestoes.map((s) => (
-              <li key={s.servico_id} className="flex flex-wrap items-start gap-2 px-5 py-2.5">
+              <li key={s.servico_id} className="flex flex-wrap items-start gap-2 px-6 py-3">
                 <span className="font-semibold">{s.nome}</span>
                 {marcados.includes(s.servico_id) && <Selo tom="sucesso">nas dores</Selo>}
                 {s.motivo && <span className="w-full text-texto-suave">{s.motivo}</span>}
@@ -72,7 +72,7 @@ export function EditorProposta({ negocioId, podeEditar, diagnostico, proposta, m
             ))}
           </ul>
           {podeEditar && naoMarcadas.length > 0 && (
-            <div className="flex justify-end border-t border-borda px-5 py-3">
+            <div className="flex justify-end border-t border-borda px-6 py-3">
               <Botao tamanho="sm" variante="secundario" carregando={pendente} onClick={() => iniciar(async () => {
                 const r = await aplicarServicosSugeridos(negocioId, naoMarcadas.map((s) => s.servico_id));
                 if (r.ok) { toast.success("Serviços marcados nas dores identificadas."); router.refresh(); } else toast.error(r.erro);
@@ -92,7 +92,7 @@ export function EditorProposta({ negocioId, podeEditar, diagnostico, proposta, m
             <AreaTexto value={c.valor} onChange={(e) => c.mudar(e.target.value)} disabled={!podeEditar} className={`${c.linhas} text-sm leading-relaxed`} />
             {c.valor && (
               <button type="button" onClick={() => copiar(c.valor)} aria-label={`Copiar ${c.rotulo}`}
-                className="absolute right-2 top-2 rounded p-1 text-texto-suave hover:bg-superficie-2 hover:text-texto"><Copy className="h-4 w-4" /></button>
+                className="absolute right-2 top-2 rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-texto"><Copy className="h-4 w-4" /></button>
             )}
           </div>
         </Campo>
@@ -101,7 +101,7 @@ export function EditorProposta({ negocioId, podeEditar, diagnostico, proposta, m
       {podeEditar && (
         <div className="flex flex-wrap justify-end gap-2 pb-6">
           <Botao variante="secundario" carregando={pendente} onClick={() => salvar(false)}>Salvar rascunho</Botao>
-          <Botao variante="destaque" carregando={pendente} onClick={() => salvar(true)}><Check className="h-4 w-4" /> Marcar como revisada</Botao>
+          <Botao carregando={pendente} onClick={() => salvar(true)}><Check className="h-4 w-4" /> Marcar como revisada</Botao>
         </div>
       )}
     </div>

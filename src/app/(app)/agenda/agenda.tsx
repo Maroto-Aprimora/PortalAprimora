@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { CalendarDays, ChevronLeft, ChevronRight, List, MapPin, Plus } from "lucide-react";
+import { CalendarDays, CalendarOff, ChevronLeft, ChevronRight, List, MapPin, Plus } from "@/components/ui/icones";
 import { Botao, classeBotao } from "@/components/ui/botao";
 import { Entrada, Selecao } from "@/components/ui/campos";
-import { Cartao, TituloPagina } from "@/components/ui/cartao";
+import { Cartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Dialogo } from "@/components/ui/dialogo";
 import { Selo } from "@/components/ui/selo";
 import { DialogoAtividade, type AtividadeEditavel } from "@/components/agenda/form-atividade";
@@ -61,11 +61,11 @@ export function Agenda({
       <TituloPagina
         titulo="Agenda"
         acoes={<>
-          <div className="flex rounded-md border border-borda bg-superficie">
+          <div className="flex rounded-controle border border-borda bg-superficie">
             <button onClick={() => irPara({ visao: "" })} className={cn("flex items-center gap-1 rounded-l-md px-3 py-1.5 text-sm", visao === "mes" && "bg-marca text-marca-texto")}><CalendarDays className="h-4 w-4" /> Mês</button>
             <button onClick={() => irPara({ visao: "lista" })} className={cn("flex items-center gap-1 rounded-r-md px-3 py-1.5 text-sm", visao === "lista" && "bg-marca text-marca-texto")}><List className="h-4 w-4" /> Lista</button>
           </div>
-          <Botao variante="destaque" onClick={() => setCriando(hoje)}><Plus className="h-4 w-4" /> Nova atividade</Botao>
+          <Botao onClick={() => setCriando(hoje)}><Plus className="h-4 w-4" /> Nova atividade</Botao>
           {acoes}
         </>}
       />
@@ -104,14 +104,14 @@ export function Agenda({
                   onDoubleClick={() => setCriando(d)}>
                   <div className="mb-1 flex items-center justify-between">
                     <span className={cn("inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold",
-                      d === hoje ? "bg-destaque text-white" : foraDoMes ? "text-texto-suave/60" : "text-texto-suave")}>
+                      d === hoje ? "bg-marca text-marca-texto" : foraDoMes ? "text-texto-suave/60" : "text-texto-suave")}>
                       {Number(d.slice(8))}
                     </span>
                   </div>
                   <div className="space-y-1">
                     {doDia.slice(0, 4).map((i) => <Chip key={i.id} item={i} tipo={tipo(i.tipoId)} aoClicar={() => setVendo(i)} />)}
                     {doDia.length > 4 && (
-                      <button className="w-full text-left text-[11px] font-semibold text-marca" onClick={() => irPara({ visao: "lista" })}>
+                      <button className="w-full text-left text-2xs font-semibold text-marca" onClick={() => irPara({ visao: "lista" })}>
                         +{doDia.length - 4} mais
                       </button>
                     )}
@@ -125,15 +125,15 @@ export function Agenda({
         <div className="space-y-4">
           {dias.filter((d) => porDia.has(d)).map((d) => (
             <Cartao key={d}>
-              <div className="border-b border-borda px-5 py-2.5 text-sm font-bold">
+              <div className="border-b border-borda px-6 py-3 text-sm font-bold">
                 {NOMES_DIA[new Date(`${d}T12:00:00Z`).getUTCDay()]}, {d.slice(8)}/{d.slice(5, 7)} {d === hoje && <Selo tom="destaque" className="ml-2">Hoje</Selo>}
               </div>
               <ul className="divide-y divide-borda">
                 {porDia.get(d)!.map((i) => (
                   <li key={i.id}>
-                    <button className="flex w-full items-center gap-3 px-5 py-2.5 text-left text-sm hover:bg-superficie-2/60" onClick={() => setVendo(i)}>
+                    <button className="flex w-full items-center gap-3 px-6 py-3 text-left text-sm hover:bg-superficie-2/60" onClick={() => setVendo(i)}>
                       <span className="w-24 shrink-0 font-semibold">{horaBR(i.inicio)}{i.fim ? `–${horaBR(i.fim)}` : ""}</span>
-                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-bold", COR_TIPO[tipo(i.tipoId)?.cor ?? "marca"])}>{tipo(i.tipoId)?.nome}</span>
+                      <span className={cn("rounded-controle px-1.5 py-0.5 text-2xs font-bold", COR_TIPO[tipo(i.tipoId)?.cor ?? "marca"])}>{tipo(i.tipoId)?.nome}</span>
                       <span className={cn("min-w-0 flex-1 truncate", i.status === "cancelada" && "line-through opacity-60")}>{i.titulo}</span>
                       {!i.recorrente && <span className="hidden text-texto-suave sm:inline">{nome(i.responsavelId)}</span>}
                     </button>
@@ -142,7 +142,7 @@ export function Agenda({
               </ul>
             </Cartao>
           ))}
-          {itens.length === 0 && <Cartao className="p-8 text-center text-sm text-texto-suave">Nada agendado nos próximos 30 dias.</Cartao>}
+          {itens.length === 0 && <Cartao><Vazio icone={CalendarOff} titulo="Nada agendado nos próximos 30 dias" descricao="Use “Nova atividade” para marcar uma visita, reunião ou ligação." /></Cartao>}
         </div>
       )}
 
@@ -176,9 +176,9 @@ export function Agenda({
 function Chip({ item, tipo, aoClicar }: { item: ItemAgenda; tipo?: TipoAtividade; aoClicar: () => void }) {
   return (
     <button onClick={aoClicar} title={item.titulo}
-      className={cn("block w-full truncate rounded px-1.5 py-0.5 text-left text-[11px] font-semibold",
+      className={cn("block w-full truncate rounded-controle px-1.5 py-0.5 text-left text-2xs font-semibold",
         COR_TIPO[tipo?.cor ?? "marca"], (item.status === "cancelada" || item.status === "remarcada") && "line-through opacity-50",
-        item.status === "pendente" && tipo?.exige_confirmacao && "ring-2 ring-destaque/60 ring-inset")}>
+        item.status === "pendente" && tipo?.exige_confirmacao && "ring-1 ring-destaque ring-inset")}>
       {horaBR(item.inicio)} {item.titulo}
     </button>
   );
@@ -206,7 +206,7 @@ function DetalheItem({
         <p><strong>Quando:</strong> {diaBR(item.inicio).split("-").reverse().join("/")} · {horaBR(item.inicio)}{item.fim ? ` às ${horaBR(item.fim)}` : ""}</p>
         {item.local && <p className="flex items-center gap-1"><MapPin className="h-4 w-4 text-texto-suave" /> {item.local}</p>}
         {item.empresaNome && <p><strong>Empresa:</strong> {item.empresaNome}</p>}
-        {item.negocioId && <p><Link href={`/negocios/${item.negocioId}`} className="font-semibold text-marca hover:text-destaque">Abrir negócio</Link></p>}
+        {item.negocioId && <p><Link href={`/negocios/${item.negocioId}`} className="font-semibold text-marca underline-offset-4 hover:underline">Abrir negócio</Link></p>}
         {!item.recorrente && (
           <>
             <p><strong>Responsável:</strong> {nome(item.responsavelId)}</p>
@@ -221,7 +221,7 @@ function DetalheItem({
         )}
       </div>
       {podeEditar && remarcando && (
-        <form className="mt-4 space-y-2 rounded-md border border-borda p-3" action={(form) => iniciar(async () => {
+        <form className="mt-4 space-y-2 rounded-controle border border-borda p-3" action={(form) => iniciar(async () => {
           const r = await remarcarAtividade(item.id, String(form.get("novo_inicio") ?? ""), String(form.get("motivo") ?? "") || null);
           if (!r.ok) return void toast.error(r.erro);
           toast.success("Atividade remarcada. A data original fica registrada.");
@@ -237,7 +237,7 @@ function DetalheItem({
         </form>
       )}
       {podeEditar && !remarcando && item.status !== "remarcada" && (
-        <div className="mt-5 flex flex-wrap justify-end gap-2">
+        <div className="mt-6 flex flex-wrap justify-end gap-2">
           {!item.recorrente && (item.status === "pendente" || item.status === "confirmada") && (
             <Botao variante="secundario" onClick={() => setRemarcando(true)}>Remarcar</Botao>
           )}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { criarClienteNavegador } from "@/lib/supabase/client";
+import { Loader2 } from "@/components/ui/icones";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
 /**
@@ -59,11 +60,11 @@ export default function PaginaConfirmar() {
             <p className="mt-2 text-sm text-texto-suave">
               O link pode ter expirado ou já ter sido usado. Peça um novo em “Primeiro acesso” ou “Esqueci minha senha”.
             </p>
-            <a href="/entrar" className="mt-4 inline-block font-semibold text-marca hover:text-destaque">Ir para o login</a>
+            <a href="/entrar" className="mt-4 inline-block font-semibold text-marca underline-offset-4 hover:underline">Ir para o login</a>
           </>
         ) : (
           <>
-            <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-4 border-marca border-t-transparent" />
+            <Loader2 className="mx-auto h-8 w-8 animate-spin text-marca" />
             <p className="mt-4 text-sm text-texto-suave">Validando seu acesso…</p>
           </>
         )}

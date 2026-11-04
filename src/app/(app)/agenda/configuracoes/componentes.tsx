@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Entrada, Selecao } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
@@ -25,7 +25,7 @@ function FormReuniao({ reuniao, tipos, hoje, aoSalvar }: {
   const [pendente, iniciar] = useTransition();
   return (
     <form
-      className="grid gap-2 px-5 py-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_110px_90px_90px_1fr_130px_130px_60px_auto] lg:items-end"
+      className="grid gap-2 px-6 py-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_110px_90px_90px_1fr_130px_130px_60px_auto] lg:items-end"
       action={(f) => iniciar(async () => {
         const r = await salvarReuniao(reuniao?.id ?? null, {
           tipo_id: String(f.get("tipo_id")),
@@ -84,7 +84,7 @@ export function ReunioesRecorrentes({ reunioes, tipos, hoje }: { reunioes: Reuni
         descricao="Mudam a cada semestre: ajuste dia e horário aqui. A agenda e o lembrete do dia usam sempre o horário vigente."
         acoes={!nova && <Botao tamanho="sm" variante="secundario" onClick={() => setNova(true)}><Plus className="h-3.5 w-3.5" /> Nova reunião</Botao>}
       />
-      <div className="hidden grid-cols-[1.2fr_1fr_110px_90px_90px_1fr_130px_130px_60px_auto] gap-2 bg-superficie-2 px-5 py-2 text-xs uppercase tracking-wide text-texto-suave lg:grid">
+      <div className="hidden grid-cols-[1.2fr_1fr_110px_90px_90px_1fr_130px_130px_60px_auto] gap-2 bg-superficie-2 px-6 py-2 text-xs uppercase tracking-wide text-texto-suave lg:grid">
         <span>Título</span><span>Tipo</span><span>Dia</span><span>Início</span><span>Fim</span><span>Local</span><span>Vale de</span><span>Até</span><span>Ativa</span><span />
       </div>
       <div className="divide-y divide-borda">
@@ -100,7 +100,7 @@ function LinhaTipo({ tipo }: { tipo: TipoAtividade }) {
   const [cor, setCor] = useState(tipo.cor);
   return (
     <form
-      className="grid grid-cols-[1fr_130px_auto] items-center gap-2 px-5 py-2.5 sm:grid-cols-[1fr_130px_110px_110px_70px_auto]"
+      className="grid grid-cols-[1fr_130px_auto] items-center gap-2 px-6 py-3 sm:grid-cols-[1fr_130px_110px_110px_70px_auto]"
       action={(f) => iniciar(async () => avisar(await salvarTipoAtividade(tipo.id, {
         nome: String(f.get("nome")),
         cor,

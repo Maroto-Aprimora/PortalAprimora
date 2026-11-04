@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, UserOff } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { Campo, Entrada, Selecao } from "@/components/ui/campos";
-import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Dialogo } from "@/components/ui/dialogo";
 import { Selo } from "@/components/ui/selo";
 import { CamposEmpresa, lerEmpresa, type ValoresEmpresa } from "@/components/crm/campos-empresa";
@@ -63,7 +63,7 @@ export function NovoNegocio({
   const [pendente, iniciar] = useTransition();
   return (
     <>
-      <Botao variante="destaque" onClick={() => setAberto(true)}><Plus className="h-4 w-4" /> Novo negócio</Botao>
+      <Botao onClick={() => setAberto(true)}><Plus className="h-4 w-4" /> Novo negócio</Botao>
       <Dialogo aberto={aberto} aoFechar={() => setAberto(false)} titulo="Novo negócio" descricao="Uma nova oportunidade com esta empresa (ex.: pós-venda ou retomada).">
         <form className="space-y-4" action={(form) => iniciar(async () => {
           const g = (k: string) => String(form.get(k) ?? "");
@@ -106,13 +106,13 @@ export function Contatos({ empresaId, contatos, podeEditar }: { empresaId: strin
       <CabecalhoCartao titulo="Contatos" acoes={podeEditar && <Botao tamanho="sm" variante="secundario" onClick={() => setEditando("novo")}><Plus className="h-3.5 w-3.5" /> Contato</Botao>} />
       <ul className="divide-y divide-borda">
         {ordenados.map((c) => (
-          <li key={c.id} className="flex flex-wrap items-start justify-between gap-3 px-5 py-3 text-sm">
+          <li key={c.id} className="flex flex-wrap items-start justify-between gap-3 px-6 py-3 text-sm">
             <div className="min-w-0">
               <p className="font-semibold">
                 {c.nome} {c.decisor && <Selo tom="destaque">Decisor</Selo>} {c.nao_contatar && <Selo tom="perigo">Não contatar</Selo>}
               </p>
               <p className="text-texto-suave">{[c.cargo, c.email, c.telefone].filter(Boolean).join(" · ") || "—"}</p>
-              {c.linkedin && <a href={c.linkedin} target="_blank" rel="noreferrer" className="text-xs text-marca hover:text-destaque">LinkedIn</a>}
+              {c.linkedin && <a href={c.linkedin} target="_blank" rel="noreferrer" className="text-xs text-marca underline-offset-4 hover:underline">LinkedIn</a>}
             </div>
             {podeEditar && (
               <div className="flex gap-1">
@@ -129,7 +129,7 @@ export function Contatos({ empresaId, contatos, podeEditar }: { empresaId: strin
             )}
           </li>
         ))}
-        {contatos.length === 0 && <li className="px-5 py-4 text-sm text-texto-suave">Nenhum contato cadastrado.</li>}
+        {contatos.length === 0 && <Vazio compacto elemento="li" icone={UserOff} titulo="Nenhum contato cadastrado." />}
       </ul>
       {editando && (
         <Dialogo aberto aoFechar={() => setEditando(null)} titulo={editando === "novo" ? "Novo contato" : "Editar contato"}>

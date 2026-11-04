@@ -4,21 +4,25 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Identidade visual da Aprimora (ver docs/escopo, Seção 13).
+ * Identidade visual da Aprimora (ver docs/escopo, Seção 13) e sistema de design (docs/DESENVOLVIMENTO.md).
  * Sempre use os tokens semânticos (bg-fundo, text-texto, bg-marca...), nunca cores soltas.
+ *
+ * Cores: base neutra (fundo, superfícies, texto e bordas em cinza). A marca (azul) fica só nas
+ * ações principais e no item ativo; o destaque (laranja) só em sinais de atenção (SLA, pendências,
+ * contadores). Nada de gradientes: profundidade vem de borda de 1px + sombra sutil.
  */
 :root {
-  --fundo: #f6f8fb;
+  --fundo: #f7f7f8;
   --superficie: #ffffff;
-  --superficie-2: #f2f5f9;
-  --dialogo: #ffffff;          /* janela aberta: mais clara que o fundo escurecido */
-  --texto: #1a2433;
-  --texto-suave: #5b6573;
-  --borda: #dde3ea;
+  --superficie-2: #f3f4f6;
+  --dialogo: #ffffff;
+  --texto: #1c1f24;
+  --texto-suave: #5f6670;
+  --borda: #e4e6ea;
   --marca: #24476f;          /* azul Aprimora */
   --marca-forte: #1a3554;    /* azul profundo */
   --marca-texto: #ffffff;
-  --destaque: #e8833a;       /* laranja Aprimora */
+  --destaque: #e8833a;       /* laranja Aprimora: só sinais de atenção */
   --destaque-suave: #fdf1e7;
   --azul-claro: #97b9c6;
   --roxo: #7b5ea7;
@@ -26,33 +30,39 @@
   --sucesso-suave: #e9f6ef;
   --perigo: #c0392b;
   --perigo-suave: #fcebea;
-  --menu: #24476f;
-  --menu-texto: #e3ecf3;
-  --menu-ativo: #1a3554;
+  /* Menu lateral: mesma superfície neutra do conteúdo */
+  --menu: #ffffff;
+  --menu-texto: #5f6670;
+  --menu-ativo: #f0f3f7;
+  /* Sombras: 2 níveis (ver @theme) */
+  --sombra-suave: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+  --sombra-elevada: 0 12px 32px -8px rgb(16 24 40 / 0.16), 0 2px 6px -2px rgb(16 24 40 / 0.06);
 }
 
 .dark {
-  --fundo: #0f1b2b;
-  --superficie: #16253a;
-  --superficie-2: #1c2e47;
-  --dialogo: #1f3452;
-  --texto: #eef3f8;
-  --texto-suave: #9fb0c3;
-  --borda: #2a3f5c;
+  --fundo: #111316;
+  --superficie: #181b20;
+  --superficie-2: #1f232a;
+  --dialogo: #1f232a;
+  --texto: #eceef1;
+  --texto-suave: #9aa1ab;
+  --borda: #2b3038;
   --marca: #4f7fb5;
   --marca-forte: #6e98c7;
   --marca-texto: #ffffff;
   --destaque: #f09a55;
-  --destaque-suave: #3a2a1d;
+  --destaque-suave: #33261b;
   --azul-claro: #97b9c6;
   --roxo: #9b7fc7;
   --sucesso: #4cbf82;
-  --sucesso-suave: #17352a;
+  --sucesso-suave: #16301f;
   --perigo: #ef6b5e;
-  --perigo-suave: #3d1d1b;
-  --menu: #0b1522;
-  --menu-texto: #c9d6e3;
-  --menu-ativo: #16253a;
+  --perigo-suave: #3a1c1a;
+  --menu: #14171b;
+  --menu-texto: #9aa1ab;
+  --menu-ativo: #1f232a;
+  --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --sombra-elevada: 0 16px 40px -8px rgb(0 0 0 / 0.55), 0 2px 6px -2px rgb(0 0 0 / 0.3);
 }
 
 @theme inline {
@@ -77,8 +87,64 @@
   --color-menu: var(--menu);
   --color-menu-texto: var(--menu-texto);
   --color-menu-ativo: var(--menu-ativo);
+  /* Azul institucional fixo (não muda no tema escuro): painel da marca no login */
+  --color-institucional: #24476f;
   --font-sans: var(--fonte-texto), ui-sans-serif, system-ui, sans-serif;
   --font-titulo: var(--fonte-titulo), ui-sans-serif, system-ui, sans-serif;
+
+  /* Sombras: só 2. shadow-suave (cartões, campos) e shadow-elevada (menus suspensos, janelas).
+     Os nomes padrão do Tailwind apontam para elas, para nada fugir da escala. */
+  --shadow-suave: var(--sombra-suave);
+  --shadow-elevada: var(--sombra-elevada);
+  --shadow-2xs: var(--sombra-suave);
+  --shadow-xs: var(--sombra-suave);
+  --shadow-sm: var(--sombra-suave);
+  --shadow-md: var(--sombra-elevada);
+  --shadow-lg: var(--sombra-elevada);
+  --shadow-xl: var(--sombra-elevada);
+  --shadow-2xl: var(--sombra-elevada);
+}
+
+@theme {
+  /* Raios: só 2. rounded-controle (botões, campos, itens de menu, selos quadrados)
+     e rounded-cartao (cartões, janelas, painéis). rounded-full segue para pílulas e avatares. */
+  --radius-controle: 0.375rem; /* 6px */
+  --radius-cartao: 0.625rem;   /* 10px */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.625rem;
+
+  /* Tipografia: escala fechada (os tamanhos fora dela deixam de existir).
+     2xs 11 · xs 12 · sm 14 · base 16 · lg 18 · xl 20 · 2xl 24 · 3xl 30 */
+  --text-*: initial;
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-2xl--letter-spacing: -0.01em;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-3xl--letter-spacing: -0.02em;
+
+  /* Espaçamento: base de 4px (--spacing). Passos permitidos em padding, margin e gap:
+     0.5 (2px) · 1 (4) · 1.5 (6) · 2 (8) · 3 (12) · 4 (16) · 6 (24) · 8 (32) · 12 (48) · 16 (64).
+     Atalhos semânticos: p-cartao (24px dentro de cartões), gap-secao (32px entre blocos da página). */
+  --spacing-cartao: 1.5rem;
+  --spacing-secao: 2rem;
 }
 
 html {
@@ -98,7 +164,25 @@ h1, h2, h3 {
 }
 
 dialog::backdrop {
-  /* Fundo bem escurecido para a janela aberta se destacar */
-  background: rgb(8 16 28 / 0.68);
+  /* Fundo escurecido para a janela aberta se destacar */
+  background: rgb(12 14 18 / 0.55);
   backdrop-filter: blur(2px);
+}
+
+/* Animações Lottie (src/components/ui/animacoes): a cor vem dos tokens, não do arquivo.
+   "traco" herda a cor do texto (text-texto-suave, text-marca...). */
+.animacao-lottie .traco path { stroke: currentColor; }
+.animacao-lottie .traco-marca path { stroke: var(--marca); }
+.animacao-lottie .traco-sucesso path { stroke: var(--sucesso); }
+.animacao-lottie .fundo-superficie path { fill: var(--superficie); }
+.animacao-lottie .fundo-sucesso path { fill: var(--sucesso-suave); }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

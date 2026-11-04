@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { hojeBR, somarDias } from "@/lib/datas";
@@ -26,7 +26,7 @@ export default async function PaginaRelatorios() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href="/comercial" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href="/comercial" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> Painel comercial
       </Link>
       <TituloPagina titulo="Relatórios da R.I"
@@ -47,7 +47,7 @@ export default async function PaginaRelatorios() {
           <ul className="divide-y divide-borda">
             {(relatorios ?? []).map((r) => (
               <li key={r.id}>
-                <Link href={`/comercial/relatorios/${r.id}`} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-sm hover:bg-superficie-2">
+                <Link href={`/comercial/relatorios/${r.id}`} className="flex flex-wrap items-center justify-between gap-2 px-6 py-3 text-sm hover:bg-superficie-2">
                   <span className="font-semibold">{formatarData(r.de)} a {formatarData(r.ate)}</span>
                   <span className="flex items-center gap-2 text-xs text-texto-suave">
                     {formatarDataHora(r.created_at)}

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
+import { ArrowLeft, CalendarOff } from "@/components/ui/icones";
+import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -72,7 +72,7 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
 
   return (
     <div className="mx-auto max-w-6xl">
-      <Link href="/empresas" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+      <Link href="/empresas" className="mb-3 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
         <ArrowLeft className="h-4 w-4" /> Empresas
       </Link>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -99,11 +99,11 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
           <Cartao>
             <CabecalhoCartao titulo="Atividade" descricao="Tudo o que já foi feito com este lead: reuniões, ligações, e-mails e mudanças de fase." />
             {negocios.length > 0 && (
-              <div className="flex flex-wrap gap-2 border-b border-borda px-5 py-3">
+              <div className="flex flex-wrap gap-2 border-b border-borda px-6 py-3">
                 {negocios.map((n) => {
                   const f = fases.get(n.fase_id);
                   return (
-                    <Link key={n.id} href={`/negocios/${n.id}`} className="inline-flex items-center gap-2 rounded-lg border border-borda px-3 py-1.5 text-sm hover:border-destaque">
+                    <Link key={n.id} href={`/negocios/${n.id}`} className="inline-flex items-center gap-2 rounded-controle border border-borda px-3 py-1.5 text-sm hover:border-marca/40">
                       <span className="font-semibold">{n.titulo}</span>
                       {n.valor != null && <Selo tom="marca">{formatarMoeda(n.valor)}</Selo>}
                       <Selo tom={f?.tipo === "ganho" ? "sucesso" : f?.tipo === "perda" ? "perigo" : "neutro"}>{nomeFase(n.fase_id)}</Selo>
@@ -114,7 +114,7 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
             )}
             <ul className="divide-y divide-borda">
               {eventos.map((e) => (
-                <li key={e.id} className="px-5 py-3 text-sm">
+                <li key={e.id} className="px-6 py-3 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
                     <Selo tom={e.tipo === "Fase" || e.tipo === "Negócio" ? "neutro" : e.tipo.startsWith("Resposta") ? "destaque" : "marca"}>{e.tipo}</Selo>
                     <span className="text-xs text-texto-suave">{formatarDataHora(e.quando)}{e.quem ? ` · ${e.quem}` : ""}</span>
@@ -123,7 +123,7 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
                   {e.detalhe && <p className="mt-0.5 whitespace-pre-line text-texto-suave">{e.detalhe}</p>}
                 </li>
               ))}
-              {eventos.length === 0 && <li className="px-5 py-4 text-sm text-texto-suave">Nenhuma atividade ainda.</li>}
+              {eventos.length === 0 && <Vazio compacto elemento="li" icone={CalendarOff} titulo="Nenhuma atividade ainda." />}
             </ul>
           </Cartao>
           <Contatos empresaId={empresa.id} contatos={empresa.contatos} podeEditar={podeEditar || podeCriar} />
@@ -159,13 +159,13 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
           <CabecalhoCartao titulo="Dados da empresa" />
           <dl className="divide-y divide-borda text-sm">
             {linhas.map(([rotulo, valor]) => (
-              <div key={rotulo} className="grid grid-cols-[130px_1fr] gap-2 px-5 py-2.5">
+              <div key={rotulo} className="grid grid-cols-[130px_1fr] gap-2 px-6 py-3">
                 <dt className="text-texto-suave">{rotulo}</dt>
                 <dd className="break-words">{valor || "—"}</dd>
               </div>
             ))}
             {empresa.observacoes && (
-              <div className="px-5 py-3">
+              <div className="px-6 py-3">
                 <dt className="text-texto-suave">Observações</dt>
                 <dd className="mt-1 whitespace-pre-wrap">{empresa.observacoes}</dd>
               </div>

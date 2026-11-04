@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 const base =
-  "w-full rounded-md border border-borda bg-superficie px-3 text-sm text-texto placeholder:text-texto-suave/70 " +
+  "w-full rounded-controle border border-borda bg-superficie px-3 text-sm text-texto placeholder:text-texto-suave/70 " +
   "focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 disabled:opacity-60";
 
 export function Entrada({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
-import { Phone } from "lucide-react";
+import { Phone } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Dialogo } from "@/components/ui/dialogo";
@@ -36,7 +36,7 @@ export function RegistrarLigacao({
     <>
       {compacto ? (
         <button onClick={() => setAberto(true)} title="Registrar ligação" aria-label="Registrar ligação"
-          className={cn("rounded p-1 text-texto-suave opacity-70 hover:bg-superficie-2 hover:opacity-100", className)}>
+          className={cn("rounded-controle p-1 text-texto-suave opacity-70 hover:bg-superficie-2 hover:opacity-100", className)}>
           <Phone className="h-3.5 w-3.5" />
         </button>
       ) : (
@@ -66,7 +66,7 @@ export function RegistrarLigacao({
             <div className="grid gap-2 sm:grid-cols-2">
               {resultados.map((r) => (
                 <label key={r.id} className={cn(
-                  "flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm",
+                  "flex cursor-pointer items-center gap-2 rounded-controle border px-3 py-2 text-sm",
                   r.id === resultadoId ? "border-marca bg-superficie-2 font-semibold" : "border-borda hover:bg-superficie-2",
                 )}>
                   <input type="radio" name="resultado_id" value={r.id} required checked={r.id === resultadoId}

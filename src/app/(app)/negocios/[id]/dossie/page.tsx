@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@/components/ui/icones";
 import { carregarConfiguracaoComercial, carregarTodosMembros } from "@/lib/crm-servidor";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { formatarData, formatarDataHora, formatarMoeda } from "@/lib/formatar";
@@ -56,15 +56,15 @@ export default async function PaginaDossie({ params }: PageProps<"/negocios/[id]
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href={`/negocios/${id}`} className="inline-flex items-center gap-1 text-sm text-texto-suave hover:text-destaque">
+        <Link href={`/negocios/${id}`} className="inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">
           <ArrowLeft className="h-4 w-4" /> {n.titulo}
         </Link>
         <BotaoImprimir />
       </div>
 
-      <article className="rounded-2xl bg-superficie p-6 shadow-sm print:p-0 print:shadow-none">
+      <article className="rounded-cartao bg-superficie p-6 shadow-suave print:p-0 print:shadow-none">
         <header className="mb-2">
-          <p className="text-xs font-semibold uppercase tracking-widest text-destaque">Aprimora · Dossiê de passagem para Projetos</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-texto-suave">Aprimora · Dossiê de passagem para Projetos</p>
           <h1 className="text-2xl font-bold">{e?.nome}</h1>
           <p className="text-sm text-texto-suave">
             {fase(n.fase_id)}{n.valor != null ? ` · ${formatarMoeda(n.valor)}` : ""} · responsável {nome(n.responsavel_id)}

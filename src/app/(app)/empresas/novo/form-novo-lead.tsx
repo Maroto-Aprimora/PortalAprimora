@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada, Selecao } from "@/components/ui/campos";
 import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
@@ -60,10 +60,10 @@ export function FormNovoLead({
     <form action={enviar} className="space-y-6">
       <Cartao>
         <CabecalhoCartao titulo="Empresa" />
-        <div className="px-5 py-4">
+        <div className="px-6 py-4">
           <CamposEmpresa segmentos={segmentos} aoMudar={(c, v) => (c in chave ? setChave((s) => ({ ...s, [c]: v })) : undefined)} />
           {semelhantes.length > 0 && (
-            <div className="mt-4 rounded-lg border border-destaque/50 bg-destaque-suave p-3 text-sm">
+            <div className="mt-4 rounded-controle border border-destaque/50 bg-destaque-suave p-3 text-sm">
               <p className="flex items-center gap-2 font-semibold text-destaque"><AlertTriangle className="h-4 w-4" /> Possível duplicidade</p>
               <ul className="mt-2 space-y-1">
                 {semelhantes.map((s) => (
@@ -81,7 +81,7 @@ export function FormNovoLead({
 
       <Cartao>
         <CabecalhoCartao titulo="Decisor" descricao="Opcional. Você pode cadastrar mais contatos depois, na página da empresa." />
-        <div className="grid gap-4 px-5 py-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 px-6 py-4 sm:grid-cols-2 lg:grid-cols-3">
           <Campo rotulo="Nome"><Entrada name="decisor_nome" /></Campo>
           <Campo rotulo="Cargo"><Entrada name="decisor_cargo" placeholder="Sócio, gerente de produção…" /></Campo>
           <Campo rotulo="E-mail"><Entrada type="email" name="decisor_email" /></Campo>
@@ -92,7 +92,7 @@ export function FormNovoLead({
 
       <Cartao>
         <CabecalhoCartao titulo="Entrada no funil" />
-        <div className="grid gap-4 px-5 py-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 px-6 py-4 sm:grid-cols-2 lg:grid-cols-3">
           <Campo rotulo="Fase inicial" obrigatorio dica="“Entrada de leads” vai automaticamente para Enriquecimento.">
             <Selecao name="fase_id" defaultValue={fases[0]?.id} required>
               {fases.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
@@ -118,8 +118,8 @@ export function FormNovoLead({
       </Cartao>
 
       <div className="flex justify-end gap-2">
-        <Link href="/empresas" className="inline-flex h-10 items-center rounded-md px-4 text-sm font-semibold text-texto-suave hover:bg-superficie-2">Cancelar</Link>
-        <Botao type="submit" variante="destaque" carregando={pendente}>Cadastrar lead</Botao>
+        <Link href="/empresas" className="inline-flex h-10 items-center rounded-controle px-4 text-sm font-semibold text-texto-suave hover:bg-superficie-2">Cancelar</Link>
+        <Botao type="submit" carregando={pendente}>Cadastrar lead</Botao>
       </div>
     </form>
   );

@@ -62,7 +62,7 @@ export default async function PaginaAuditoria({ searchParams }: PageProps<"/audi
       <div className="mb-4 flex flex-wrap gap-2">
         {FILTROS.map((f) => (
           <Link key={f.valor} href={f.valor ? `/auditoria?acao=${f.valor}` : "/auditoria"}
-            className={cn("rounded-full border px-3 py-1 text-sm", filtro === f.valor ? "border-marca bg-marca text-white" : "border-borda hover:bg-superficie-2")}>
+            className={cn("rounded-full border px-3 py-1 text-sm", filtro === f.valor ? "border-marca bg-marca text-marca-texto" : "border-borda hover:bg-superficie-2")}>
             {f.rotulo}
           </Link>
         ))}
@@ -75,7 +75,7 @@ export default async function PaginaAuditoria({ searchParams }: PageProps<"/audi
             {(registros ?? []).map((r) => {
               const alvo = (r.entidade_id && nomes.get(r.entidade_id)) || r.entidade_id || r.entidade;
               return (
-                <li key={r.id} className="flex flex-wrap items-start justify-between gap-2 px-5 py-3 text-sm">
+                <li key={r.id} className="flex flex-wrap items-start justify-between gap-2 px-6 py-3 text-sm">
                   <div className="min-w-0">
                     <Selo tom={r.acao === "membro_desativado" || r.acao === "cargo_delete" ? "perigo" : "marca"}>{NOME_ACAO[r.acao] ?? r.acao}</Selo>
                     <p className="mt-1">{descrever(r.acao, r.dados as Dados, nomes, alvo)}</p>

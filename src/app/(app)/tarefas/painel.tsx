@@ -6,7 +6,7 @@ import { useMemo, useState, useSyncExternalStore, useTransition } from "react";
 import { toast } from "sonner";
 import {
   Bot, Building2, CalendarClock, Check, ChevronsLeftRight, ExternalLink, Flag, Inbox, ListChecks, Pencil, Plus, RotateCcw, Sparkles, Trash2, User,
-} from "lucide-react";
+} from "@/components/ui/icones";
 import { BarraVisoes, BotaoFiltros, CampoBusca, useParametros } from "@/components/app/barra-visoes";
 import { Botao } from "@/components/ui/botao";
 import { Campo, Selecao } from "@/components/ui/campos";
@@ -121,13 +121,13 @@ export function PainelTarefas({
             </Selecao>
           </Campo>
         </BotaoFiltros>
-        <Botao variante="destaque" tamanho="sm" onClick={() => setEditando("nova")}><Plus className="h-4 w-4" /> Nova tarefa</Botao>
+        <Botao tamanho="sm" onClick={() => setEditando("nova")}><Plus className="h-4 w-4" /> Nova tarefa</Botao>
       </BarraVisoes>
 
       {ver === "lista" ? (
         <>
           {aprovacoesVisiveis.length > 0 && (
-            <div className="mb-4 rounded-xl border border-marca/30 bg-marca/5 p-3">
+            <div className="mb-4 rounded-cartao border border-marca/30 bg-marca/5 p-3">
               <p className="mb-2 flex items-center gap-2 text-sm font-bold text-marca"><Inbox className="h-4 w-4" /> Para aprovar · {aprovacoesVisiveis.length}</p>
               <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                 {aprovacoesVisiveis.map((a) => <CardAprovacao key={a.id} item={a} aoAbrir={() => setAprovando(a)} mostrarResponsavel={resp !== "minhas"} />)}
@@ -146,7 +146,7 @@ export function PainelTarefas({
               if (recolhida) {
                 return (
                   <button key={c.chave} type="button" onClick={() => alternar(c.chave)} title={`Mostrar ${c.titulo}`}
-                    className="flex w-11 shrink-0 flex-col items-center gap-2 rounded-xl border border-borda bg-superficie-2/60 py-3 text-texto-suave hover:text-texto">
+                    className="flex w-11 shrink-0 flex-col items-center gap-2 rounded-cartao border border-borda bg-superficie-2/60 py-3 text-texto-suave hover:text-texto">
                     <ChevronsLeftRight className="h-4 w-4" />
                     <span className="text-xs font-bold">{itens.length}</span>
                     <span className="text-sm font-semibold [writing-mode:vertical-rl]">{c.titulo}</span>
@@ -154,14 +154,14 @@ export function PainelTarefas({
                 );
               }
               return (
-                <section key={c.chave} className="flex w-72 shrink-0 flex-col rounded-xl border border-borda bg-superficie-2/60">
+                <section key={c.chave} className="flex w-72 shrink-0 flex-col rounded-cartao border border-borda bg-superficie-2/60">
                   <header className="flex items-center justify-between gap-2 rounded-t-xl border-b border-borda bg-superficie px-3 py-2">
                     <h2 className={cn("flex items-center gap-2 text-sm font-bold",
                       c.tom === "perigo" && "text-perigo", c.tom === "marca" && "text-marca", c.tom === "sucesso" && "text-sucesso")}>
                       {c.chave === "aprovar" && <Inbox className="h-4 w-4" />}{c.titulo}
                       <span className="rounded-full bg-superficie-2 px-1.5 text-xs text-texto-suave">{itens.length}</span>
                     </h2>
-                    <button type="button" onClick={() => alternar(c.chave)} className="rounded p-1 text-texto-suave hover:bg-superficie-2 hover:text-texto"
+                    <button type="button" onClick={() => alternar(c.chave)} className="rounded-controle p-1 text-texto-suave hover:bg-superficie-2 hover:text-texto"
                       aria-label={`Recolher ${c.titulo}`} title="Recolher coluna">
                       <ChevronsLeftRight className="h-4 w-4" />
                     </button>
@@ -170,7 +170,7 @@ export function PainelTarefas({
                     {c.chave === "aprovar"
                       ? (itens as Aprovacao[]).map((a) => <CardAprovacao key={a.id} item={a} aoAbrir={() => setAprovando(a)} mostrarResponsavel={resp !== "minhas"} />)
                       : (itens as Tarefa[]).map((t) => <CardTarefa key={t.id} tarefa={t} hoje={hoje} nome={nome} aoAbrir={() => setAberta(t)} />)}
-                    {itens.length === 0 && <p className="py-5 text-center text-xs text-texto-suave">Nada aqui</p>}
+                    {itens.length === 0 && <p className="rounded-controle border border-dashed border-borda py-6 text-center text-xs text-texto-suave">Nada aqui</p>}
                   </div>
                 </section>
               );
@@ -201,7 +201,7 @@ function CardTarefa({ tarefa: t, hoje, nome, aoAbrir }: { tarefa: Tarefa; hoje: 
   const concluida = t.status === "concluida";
   return (
     <button type="button" onClick={aoAbrir}
-      className={cn("rounded-lg border border-borda bg-superficie p-2.5 text-left shadow-sm transition hover:border-marca/40 hover:shadow-md", concluida && "opacity-70")}>
+      className={cn("rounded-controle border border-borda bg-superficie p-3 text-left shadow-suave transition hover:border-marca/40 hover:shadow-elevada", concluida && "opacity-70")}>
       <p className={cn("line-clamp-2 text-sm font-semibold leading-snug", concluida && "line-through")}>{t.titulo}</p>
       {t.negocioTitulo && <p className="mt-0.5 truncate text-xs text-texto-suave">{t.negocioTitulo}</p>}
       <div className="mt-2 flex items-center gap-1.5">
@@ -210,7 +210,7 @@ function CardTarefa({ tarefa: t, hoje, nome, aoAbrir }: { tarefa: Tarefa; hoje: 
         {t.status === "em_andamento" && <Selo tom="marca">Em andamento</Selo>}
         {t.origem !== "manual" && <Selo title={NOME_ORIGEM[t.origem]}>{t.origem === "agente" ? <Bot className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}</Selo>}
         <span className="ml-auto flex -space-x-1.5">
-          {t.responsaveis.slice(0, 3).map((r) => <Avatar key={r} iniciais={iniciais(nome(r))} nome={nome(r)} className="h-5 w-5 text-[9px] ring-2 ring-superficie" />)}
+          {t.responsaveis.slice(0, 3).map((r) => <Avatar key={r} iniciais={iniciais(nome(r))} nome={nome(r)} className="h-5 w-5 text-2xs ring-2 ring-superficie" />)}
         </span>
       </div>
     </button>
@@ -220,13 +220,13 @@ function CardTarefa({ tarefa: t, hoje, nome, aoAbrir }: { tarefa: Tarefa; hoje: 
 function CardAprovacao({ item, aoAbrir, mostrarResponsavel }: { item: Aprovacao; aoAbrir: () => void; mostrarResponsavel: boolean }) {
   return (
     <button type="button" onClick={aoAbrir}
-      className="rounded-lg border border-marca/30 bg-superficie p-2.5 text-left shadow-sm transition hover:border-marca hover:shadow-md">
+      className="rounded-controle border border-marca/30 bg-superficie p-3 text-left shadow-suave transition hover:border-marca hover:shadow-elevada">
       <p className="line-clamp-2 text-sm font-semibold leading-snug">{item.titulo}</p>
       {item.resumo && <p className="mt-0.5 line-clamp-2 text-xs text-texto-suave">{item.resumo}</p>}
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <Selo tom="marca">{item.agente}</Selo>
         {mostrarResponsavel && item.responsavel && <Selo>{item.responsavel}</Selo>}
-        <span className="ml-auto text-[11px] text-texto-suave">{formatarData(item.criadoEm)}</span>
+        <span className="ml-auto text-2xs text-texto-suave">{formatarData(item.criadoEm)}</span>
       </div>
     </button>
   );
@@ -257,22 +257,22 @@ function DetalheTarefa({ tarefa: t, hoje, nome, nomesDiretorias, usuarioId, resu
           {t.prioridade === "alta" && <Selo tom="destaque">Prioridade alta</Selo>}
           <Selo>{NOME_ORIGEM[t.origem]}</Selo>
         </div>
-        {t.descricao && <p className="whitespace-pre-line rounded-lg bg-superficie-2 p-3 text-sm">{t.descricao}</p>}
-        <dl className="space-y-2.5 text-sm">
+        {t.descricao && <p className="whitespace-pre-line rounded-controle bg-superficie-2 p-3 text-sm">{t.descricao}</p>}
+        <dl className="space-y-3 text-sm">
           <Linha icone={CalendarClock} rotulo="Prazo">{t.prazo ? formatarData(t.prazo) : "Sem prazo"}</Linha>
           <Linha icone={Flag} rotulo="Prioridade">{NOME_PRIORIDADE[t.prioridade]}</Linha>
           <Linha icone={User} rotulo="Responsáveis">
             <span className="flex flex-wrap justify-end gap-1.5">
               {t.responsaveis.map((r) => (
                 <span key={r} className="flex items-center gap-1.5 rounded-full border border-borda py-0.5 pl-0.5 pr-2">
-                  <Avatar iniciais={iniciais(nome(r))} nome={nome(r)} className="h-5 w-5 text-[9px]" />{nome(r)}
+                  <Avatar iniciais={iniciais(nome(r))} nome={nome(r)} className="h-5 w-5 text-2xs" />{nome(r)}
                 </span>
               ))}
             </span>
           </Linha>
           {t.negocioId && (
             <Linha icone={Building2} rotulo="Negócio">
-              <Link href={`/negocios/${t.negocioId}`} className="inline-flex items-center gap-1 font-semibold text-marca hover:text-destaque">
+              <Link href={`/negocios/${t.negocioId}`} className="inline-flex items-center gap-1 font-semibold text-marca underline-offset-4 hover:underline">
                 {t.negocioTitulo} <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </Linha>

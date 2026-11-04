@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Copy, FileText } from "lucide-react";
+import { Copy, FileText } from "@/components/ui/icones";
 import { Botao } from "@/components/ui/botao";
 import { AreaTexto, Campo, Entrada } from "@/components/ui/campos";
 import { gerarRelatorioRi, salvarRevisao } from "./acoes";
@@ -16,7 +16,7 @@ export function FormGerarRelatorio({ dePadrao, atePadrao }: { dePadrao: string; 
   const [pendente, iniciar] = useTransition();
   return (
     <form
-      className="flex flex-wrap items-end gap-3 px-5 py-4"
+      className="flex flex-wrap items-end gap-3 px-6 py-4"
       onSubmit={(e) => {
         e.preventDefault();
         iniciar(async () => {
@@ -50,7 +50,7 @@ export function EditorRevisao({ id, inicial, jaRevisado }: { id: string; inicial
   const [texto, setTexto] = useState(inicial);
   const [pendente, iniciar] = useTransition();
   return (
-    <div className="space-y-3 px-5 py-4">
+    <div className="space-y-3 px-6 py-4">
       <AreaTexto rows={18} value={texto} onChange={(e) => setTexto(e.target.value)} aria-label="Texto revisado do relatório" />
       <div className="flex flex-wrap gap-2">
         <Botao

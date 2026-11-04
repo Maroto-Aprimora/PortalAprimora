@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Handshake, CalendarDays, ListChecks, Trophy, Users } from "lucide-react";
+import { CalendarDays, CalendarOff, CircleCheck, Handshake, ListChecks, Trophy, Users } from "@/components/ui/icones";
 import { MedidorPontos } from "@/components/app/medidor-pontos";
-import { Cartao, CabecalhoCartao, TituloPagina } from "@/components/ui/cartao";
+import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { COR_TIPO, ocorrenciasRecorrentes } from "@/lib/agenda";
 import { diaBR, diaDaSemana, hojeBR, horaBR, NOMES_DIA, somarDias } from "@/lib/datas";
@@ -72,17 +72,17 @@ export default async function PaginaPainelGeral() {
           <CabecalhoCartao titulo="Hoje na agenda" acoes={<LinkCartao href="/agenda?pessoa=eu" icone={CalendarDays}>Agenda</LinkCartao>} />
           <ul className="divide-y divide-borda">
             {minhasAtividades.map((a) => (
-              <li key={a.id} className="flex items-center gap-3 px-5 py-2.5 text-sm">
+              <li key={a.id} className="flex items-center gap-3 px-6 py-3 text-sm">
                 <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", COR_TIPO[tipoDe(a.tipo_id)?.cor ?? "marca"])} />
                 <span className="w-12 shrink-0 font-semibold">{horaBR(a.inicio)}</span>
-                {a.negocio_id ? <Link href={`/negocios/${a.negocio_id}`} className="min-w-0 flex-1 truncate hover:text-destaque">{a.titulo}</Link>
+                {a.negocio_id ? <Link href={`/negocios/${a.negocio_id}`} className="min-w-0 flex-1 truncate hover:text-marca">{a.titulo}</Link>
                   : <span className="min-w-0 flex-1 truncate">{a.titulo}</span>}
                 {a.status === "pendente" && <Selo>a confirmar</Selo>}
               </li>
             ))}
-            {minhasAtividades.length === 0 && <li className="px-5 py-3 text-sm text-texto-suave">Nenhuma atividade sua hoje.</li>}
+            {minhasAtividades.length === 0 && <Vazio compacto elemento="li" icone={CalendarOff} titulo="Nenhuma atividade sua hoje." />}
             {proximasReunioes.map((r) => (
-              <li key={r.id} className="flex items-center gap-3 bg-superficie-2/50 px-5 py-2.5 text-sm">
+              <li key={r.id} className="flex items-center gap-3 bg-superficie-2/50 px-6 py-3 text-sm">
                 <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", COR_TIPO[tipoDe(r.tipoId)?.cor ?? "cinza"])} />
                 <span className="min-w-0 flex-1 truncate font-semibold">{r.titulo}</span>
                 <span className="text-xs text-texto-suave">{quando(r.inicio)}{r.local ? ` · ${r.local}` : ""}</span>
@@ -97,7 +97,7 @@ export default async function PaginaPainelGeral() {
             {(tarefas ?? []).slice(0, 6).map((t) => {
               const atrasada = t.prazo && t.prazo < hoje;
               return (
-                <li key={t.id} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm">
+                <li key={t.id} className="flex items-center justify-between gap-3 px-6 py-3 text-sm">
                   <span className="min-w-0 truncate">{t.titulo}</span>
                   {t.prazo ? (
                     <Selo tom={atrasada ? "perigo" : t.prazo === hoje ? "destaque" : "neutro"}>
@@ -107,13 +107,13 @@ export default async function PaginaPainelGeral() {
                 </li>
               );
             })}
-            {(tarefas ?? []).length === 0 && <li className="px-5 py-3 text-sm text-texto-suave">Nenhuma tarefa aberta com você.</li>}
+            {(tarefas ?? []).length === 0 && <Vazio compacto elemento="li" icone={CircleCheck} titulo="Nenhuma tarefa aberta com você." />}
           </ul>
         </Cartao>
 
         <Cartao>
           <CabecalhoCartao titulo="Minha pontuação" acoes={<LinkCartao href="/vice-presidencia/pontuacao" icone={Trophy}>Detalhes</LinkCartao>} />
-          <div className="px-5 py-4"><MedidorPontos total={minhaPontuacao} compacto /></div>
+          <div className="px-6 py-4"><MedidorPontos total={minhaPontuacao} compacto /></div>
         </Cartao>
 
       </div>
@@ -141,7 +141,7 @@ export default async function PaginaPainelGeral() {
 
 function LinkCartao({ href, icone: Icone, children }: { href: string; icone: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-marca hover:text-destaque">
+    <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-marca underline-offset-4 hover:underline">
       <Icone className="h-4 w-4" />{children}
     </Link>
   );
@@ -152,12 +152,12 @@ function CartaoDiretoria({ nome, icone: Icone, href, children }: {
 }) {
   const titulo = (
     <span className="flex items-center gap-2 font-bold">
-      <Icone className="h-4 w-4 text-destaque" /> {nome}
+      <Icone className="h-4 w-4 text-texto-suave" /> {nome}
     </span>
   );
   return (
     <Cartao className="flex flex-col gap-3 p-4">
-      {href ? <Link href={href} className="hover:text-destaque">{titulo}</Link> : titulo}
+      {href ? <Link href={href} className="hover:text-marca">{titulo}</Link> : titulo}
       {children}
     </Cartao>
   );

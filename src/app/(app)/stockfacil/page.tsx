@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Download } from "lucide-react";
+import { Download } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
 import { TituloPagina } from "@/components/ui/cartao";
 import { buscarTudo } from "@/lib/paginar";
@@ -41,7 +41,7 @@ export default async function PaginaStockFacil({ searchParams }: PageProps<"/sto
     <>
       <TituloPagina titulo="Leads StockFacil"
         descricao="Lista temporária para vender o StockFacil: comércios de Londrina com muitos produtos e pouco controle de estoque. Separada do funil da Aprimora."
-        acoes={<a href={`/stockfacil/exportar${qs ? `?${qs}` : ""}`} className={classeBotao("destaque", "sm")}><Download className="h-4 w-4" /> Exportar Excel</a>} />
+        acoes={<a href={`/stockfacil/exportar${qs ? `?${qs}` : ""}`} className={classeBotao("primario", "sm")}><Download className="h-4 w-4" /> Exportar Excel</a>} />
       <Buscas buscas={buscas ?? []} termosPadrao={TERMOS_PADRAO} />
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
         <span className="rounded-full bg-marca px-3 py-1 font-semibold text-marca-texto">{total ?? 0} leads</span>
