@@ -57,8 +57,10 @@ Há duas saídas:
 
 1. Crie a conta em [resend.com](https://resend.com) com o e-mail da Diretoria.
 2. **Domains → Add domain** → `aprimoraej.com`, região **São Paulo (sa-east-1)** se aparecer.
-3. O Resend mostra 3 ou 4 registros DNS. Adicione-os onde o DNS do `aprimoraej.com` é administrado
-   (o mesmo lugar onde estão os registros do Google Workspace):
+3. O Resend mostra 3 ou 4 registros DNS. O DNS do `aprimoraej.com` fica no **Squarespace Domains**
+   (nameservers `nse1..nse4.squarespacedns.com`; o domínio veio do Google Domains). O acesso ao Squarespace é pela
+   **conta do e-mail de marketing** da Aprimora: [account.squarespace.com/domains](https://account.squarespace.com/domains)
+   → `aprimoraej.com` → **DNS** → **Custom records** → **Add record** (no campo Host, só `send` ou `resend._domainkey`):
 
    | Tipo | Nome | Valor |
    |---|---|---|
