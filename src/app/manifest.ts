@@ -11,10 +11,12 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#24476f",
     theme_color: "#24476f",
     lang: "pt-BR",
+    // Gerados por scripts/gerar-icones.py a partir dos logos oficiais
     icons: [
       { src: "/icone-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icone-512.png", sizes: "512x512", type: "image/png" },
-      { src: "/icone-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      // Android recorta o ícone em círculo/gota: versão com margem maior para o símbolo não ser cortado
+      { src: "/icone-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

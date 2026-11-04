@@ -135,7 +135,10 @@ export function MenuLateral(dados: DadosMenu) {
         <button onClick={() => setAberto(true)} aria-label="Abrir menu" className="rounded-controle p-1 hover:bg-superficie-2">
           <Menu className="h-6 w-6" />
         </button>
-        <span className="font-titulo font-bold text-marca">Portal Aprimora</span>
+        <Link href="/painel" className="flex items-center gap-2">
+          <Image src="/marca-app.png" alt="" width={96} height={96} className="h-7 w-7" />
+          <span className="font-titulo text-sm font-bold text-texto">Portal Aprimora</span>
+        </Link>
         <Sino />
       </header>
 
@@ -150,9 +153,7 @@ export function MenuLateral(dados: DadosMenu) {
       >
         <div className={cn("flex items-center justify-between px-6 pb-4 pt-6", so("lg:flex-col lg:gap-3 lg:px-2"))}>
           <Link href="/painel" className="flex items-center gap-2" onClick={() => setAberto(false)}>
-            <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-controle bg-marca", so("lg:h-8 lg:w-8"))}>
-              <Image src="/logo-branca.png" alt="" width={44} height={34} className="h-5 w-auto" />
-            </span>
+            <Image src="/marca-app.png" alt="" width={96} height={96} className={cn("h-9 w-9 shrink-0", so("lg:h-8 lg:w-8"))} />
             <span className={cn("font-titulo text-sm font-bold leading-tight text-texto", so("lg:hidden"))}>
               Portal<br /><span className="text-2xs font-semibold tracking-[0.2em] text-texto-suave">APRIMORA</span>
             </span>
