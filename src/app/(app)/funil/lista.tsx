@@ -3,6 +3,7 @@ import { Avatar, Selo } from "@/components/ui/selo";
 import { Cartao, Vazio } from "@/components/ui/cartao";
 import { situacaoSla, type Fase } from "@/lib/crm";
 import { diasDesde, formatarMoeda, iniciais } from "@/lib/formatar";
+import { SeloEtiqueta } from "@/components/crm/selo-etiqueta";
 import type { CartaoNegocio } from "./kanban";
 
 /** Visão em lista do funil: os mesmos negócios do quadro, na ordem das fases. */
@@ -30,6 +31,9 @@ export function ListaNegocios({ fases, cartoes }: { fases: Fase[]; cartoes: Cart
                 <td className="px-4 py-3">
                   <Link href={`/negocios/${c.id}`} className="font-semibold hover:text-marca">{c.titulo}</Link>
                   {c.cidade && <span className="block text-xs text-texto-suave">{c.cidade}</span>}
+                  {c.etiquetas.length > 0 && (
+                    <span className="mt-1 flex flex-wrap gap-1">{c.etiquetas.map((e) => <SeloEtiqueta key={e.id} etiqueta={e} />)}</span>
+                  )}
                 </td>
                 <td className="px-3 py-3">{fase?.nome ?? "—"}</td>
                 <td className="px-3 py-3">

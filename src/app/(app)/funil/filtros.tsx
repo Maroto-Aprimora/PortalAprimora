@@ -6,11 +6,12 @@ import { BarraVisoes, BotaoFiltros, CampoBusca, useParametros } from "@/componen
 import { Campo, Selecao } from "@/components/ui/campos";
 import type { MembroResumo } from "@/lib/crm";
 
-const FILTROS = ["resp", "origem", "segmento"] as const;
+const FILTROS = ["resp", "origem", "segmento", "etiqueta"] as const;
 
 /** Cabeçalho do funil (estilo Pipefy): Kanban e Lista à esquerda; busca e filtros à direita. Tudo fica na URL. */
-export function BarraFunil({ membros, origens, segmentos, acoes }: {
-  membros: MembroResumo[]; origens: { id: string; nome: string }[]; segmentos: { id: string; nome: string }[]; acoes?: React.ReactNode;
+export function BarraFunil({ membros, origens, segmentos, etiquetas, acoes }: {
+  membros: MembroResumo[]; origens: { id: string; nome: string }[]; segmentos: { id: string; nome: string }[];
+  etiquetas: { id: string; nome: string }[]; acoes?: React.ReactNode;
 }) {
   const router = useRouter();
   const { params, montar } = useParametros();
@@ -47,6 +48,12 @@ export function BarraFunil({ membros, origens, segmentos, acoes }: {
           <Selecao value={params.get("segmento") ?? ""} onChange={(e) => aplicar({ segmento: e.target.value || null })}>
             <option value="">Todos</option>
             {segmentos.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
+          </Selecao>
+        </Campo>
+        <Campo rotulo="Etiqueta">
+          <Selecao value={params.get("etiqueta") ?? ""} onChange={(e) => aplicar({ etiqueta: e.target.value || null })}>
+            <option value="">Todas</option>
+            {etiquetas.map((t) => <option key={t.id} value={t.id}>{t.nome}</option>)}
           </Selecao>
         </Campo>
       </BotaoFiltros>

@@ -13,12 +13,15 @@ import { RegistrarLigacao } from "@/components/crm/registrar-ligacao";
 import { NOME_MACROETAPA, situacaoSla, type Fase, type Motivo, type ResultadoLigacao } from "@/lib/crm";
 import { diasDesde, formatarData, formatarMoeda } from "@/lib/formatar";
 import { cn } from "@/lib/utils";
+import { SeloEtiqueta } from "@/components/crm/selo-etiqueta";
+import { EditorEtiquetas } from "@/components/crm/editor-etiquetas";
+import type { Etiqueta } from "@/lib/etiquetas";
 
 export type CartaoNegocio = {
   id: string; titulo: string; faseId: string; responsavel: string | null; valor: number | null;
   entrouNaFaseEm: string; cidade: string | null; ficticio: boolean; contatoId: string | null; ultimaLigacao: string | null;
   ultimaLigacaoEm: string | null; empresa: string; site: string | null; telefone: string | null; segmento: string | null;
-  servicos: string[]; contato: string | null;
+  servicos: string[]; contato: string | null; etiquetas: Etiqueta[];
   /** E-mail do Redator esperando aprovação (aparece à direita no pop-up do card) */
   emailParaAprovar: ItemAprovacao | null;
 };
@@ -45,8 +48,8 @@ const COR_BORDA: Record<string, string> = {
 /** Cards por coluna antes do "Mostrar mais". */
 const POR_COLUNA = 100;
 
-export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio }: {
-  fases: Fase[]; motivos: Motivo[]; resultados: ResultadoLigacao[]; cartoes: CartaoNegocio[]; dadosEnvio: string;
+export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio, etiquetas }: {
+  fases: Fase[]; motivos: Motivo[]; resultados: ResultadoLigacao[]; cartoes: CartaoNegocio[]; dadosEnvio: string; etiquetas: Etiqueta[];
 }) {
   const [itens, setItens] = useState(cartoes);
   const [anteriores, setAnteriores] = useState(cartoes);
@@ -103,7 +106,7 @@ export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio }: {
                   </div>
                 </header>
                 <div className="flex max-h-[calc(100vh-290px)] min-h-32 flex-col gap-2 overflow-y-auto p-2">
-                  {daFase.slice(0, visiveis[fase.id] ?? POR_COLUNA).map((c) => <Cartao key={c.id} cartao={c} fase={fase} fases={fases} resultados={resultados} dadosEnvio={dadosEnvio} aoMover={(d) => mover(c.id, c.titulo, d)} />)}
+                  {daFase.slice(0, visiveis[fase.id] ?? POR_COLUNA).map((c) => <Cartao key={c.id} cartao={c} fase={fase} fases={fases} resultados={resultados} dadosEnvio={dadosEnvio} etiquetas={etiquetas} aoMover={(d) => mover(c.id, c.titulo, d)} />)}
                   {daFase.length > (visiveis[fase.id] ?? POR_COLUNA) && (
                     <button type="button" className="rounded-controle border border-dashed border-borda py-2 text-xs font-semibold text-texto-suave hover:border-marca/40 hover:text-marca"
                       onClick={() => setVisiveis((v) => ({ ...v, [fase.id]: (v[fase.id] ?? POR_COLUNA) + POR_COLUNA }))}>
@@ -126,8 +129,9 @@ export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio }: {
  * Card do negócio: compacto no quadro; ao clicar, abre numa janela com todos os dados do lead e as ações
  * (mesmo comportamento do card de tarefa). Continua arrastável entre as fases.
  */
-function Cartao({ cartao, fase, fases, resultados, dadosEnvio, aoMover }: {
-  cartao: CartaoNegocio; fase: Fase; fases: Fase[]; resultados: ResultadoLigacao[]; dadosEnvio: string; aoMover: (destino: Fase) => void;
+function Cartao({ cartao, fase, fases, resultados, dadosEnvio, etiquetas, aoMover }: {
+  cartao: CartaoNegocio; fase: Fase; fases: Fase[]; resultados: ResultadoLigacao[]; dadosEnvio: string; etiquetas: Etiqueta[];
+  aoMover: (destino: Fase) => void;
 }) {
   const router = useRouter();
   const [aberto, setAberto] = useState(false);
@@ -153,6 +157,9 @@ function Cartao({ cartao, fase, fases, resultados, dadosEnvio, aoMover }: {
       >
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold leading-tight">{cartao.titulo}</p>
+          {cartao.etiquetas.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-1">{cartao.etiquetas.map((e) => <SeloEtiqueta key={e.id} etiqueta={e} />)}</div>
+          )}
           <div className="mt-1 flex flex-wrap items-center gap-1">
             <Selo tom={sla === "estourado" || sla === "atencao" ? "destaque" : "neutro"}>{dias}d{sla === "estourado" ? " · SLA" : ""}</Selo>
             {cartao.valor != null && <Selo tom="marca">{formatarMoeda(cartao.valor)}</Selo>}
@@ -176,6 +183,9 @@ function Cartao({ cartao, fase, fases, resultados, dadosEnvio, aoMover }: {
               <Linha icone={Clock} rotulo="Na fase">
                 {dias} {dias === 1 ? "dia" : "dias"}{fase.sla_dias ? ` de ${fase.sla_dias}` : ""}
                 {sla === "estourado" && <Selo tom="destaque" className="ml-1">SLA estourado</Selo>}
+              </Linha>
+              <Linha icone={Tag} rotulo="Etiquetas">
+                <EditorEtiquetas negocioId={cartao.id} todas={etiquetas} marcadas={cartao.etiquetas.map((e) => e.id)} />
               </Linha>
               {cartao.segmento && <Linha icone={Tag} rotulo="Segmento"><Selo tom="marca">{cartao.segmento}</Selo></Linha>}
               {cartao.servicos.length > 0 && (

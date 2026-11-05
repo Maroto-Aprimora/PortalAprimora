@@ -1127,6 +1127,51 @@ export type Database = {
           },
         ]
       }
+      etiquetas: {
+        Row: {
+          cor: string
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          diretoria: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          cor?: string
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          cor?: string
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etiquetas_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etiquetas_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       eventos_integracoes: {
         Row: {
           erro: string | null
@@ -1637,6 +1682,49 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "diretorias"
             referencedColumns: ["slug"]
+          },
+        ]
+      }
+      negocio_etiquetas: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          etiqueta_id: string
+          negocio_id: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          etiqueta_id: string
+          negocio_id: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          etiqueta_id?: string
+          negocio_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "negocio_etiquetas_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "negocio_etiquetas_etiqueta_id_fkey"
+            columns: ["etiqueta_id"]
+            isOneToOne: false
+            referencedRelation: "etiquetas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "negocio_etiquetas_negocio_id_fkey"
+            columns: ["negocio_id"]
+            isOneToOne: false
+            referencedRelation: "negocios"
+            referencedColumns: ["id"]
           },
         ]
       }

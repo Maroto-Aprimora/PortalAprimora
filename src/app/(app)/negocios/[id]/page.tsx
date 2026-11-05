@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Building2, PhoneOff, UserOff } from "@/components/ui/icones";
 import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Avatar, Selo } from "@/components/ui/selo";
+import { EditorEtiquetas } from "@/components/crm/editor-etiquetas";
 import { NOME_MACROETAPA, situacaoSla } from "@/lib/crm";
 import { carregarConfiguracaoComercial, carregarTodosMembros } from "@/lib/crm-servidor";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -37,11 +38,12 @@ export default async function PaginaNegocio({ params }: PageProps<"/negocios/[id
     carregarTodosMembros(),
     supabase
       .from("negocios")
-      .select("*, empresas(id, nome, cidade, uf, telefone, email_principal, cnpj, porte, cnae, situacao_cadastral, enriquecido_em, enriquecimento), negocio_servicos(servico_id, valor), negocio_participantes(membro_id), motivos(nome)")
+      .select("*, empresas(id, nome, cidade, uf, telefone, email_principal, cnpj, porte, cnae, situacao_cadastral, enriquecido_em, enriquecimento), negocio_servicos(servico_id, valor), negocio_participantes(membro_id), negocio_etiquetas(etiqueta_id), motivos(nome)")
       .eq("id", id)
       .maybeSingle(),
   ]);
   if (!negocio) notFound();
+  const { data: etiquetas } = await supabase.from("etiquetas").select("id, nome, cor").eq("diretoria", "comercial").order("nome");
 
   const [{ data: diagnostico }, { data: precificacao }, { data: proposta }] = await Promise.all([
     supabase.from("diagnosticos").select("status, analise_status, maturidade").eq("negocio_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
@@ -93,6 +95,9 @@ export default async function PaginaNegocio({ params }: PageProps<"/negocios/[id
             {fase && <Selo tom={fase.tipo === "ganho" ? "sucesso" : fase.tipo === "perda" ? "perigo" : "marca"}>{NOME_MACROETAPA[fase.macroetapa]} · {fase.nome}</Selo>}
             {sla === "estourado" && <Selo tom="destaque">SLA estourado ({dias} de {fase?.sla_dias} dias)</Selo>}
             {negocio.ficticio && <Selo>fictício</Selo>}
+            {(etiquetas ?? []).length > 0 && (
+              <EditorEtiquetas negocioId={negocio.id} todas={etiquetas ?? []} marcadas={negocio.negocio_etiquetas.map((e) => e.etiqueta_id)} />
+            )}
           </div>
           <h1 className="mt-2 text-2xl font-bold">{negocio.titulo}</h1>
           <Link href={`/empresas/${negocio.empresas.id}`} className="mt-1 inline-flex items-center gap-1 text-sm text-texto-suave hover:text-marca">

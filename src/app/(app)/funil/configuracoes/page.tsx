@@ -11,6 +11,7 @@ import { Agentes, Cadencia, CamposDaFase, LinhaFase, ListaFeriados, ListaSimples
 import { AbaPeloAncora } from "./aba-ancora";
 import { Copies, type DesempenhoCopy } from "./copies";
 import { ConfigDiagnostico, ConfigPrecificacao } from "./venda";
+import { Etiquetas } from "./etiquetas";
 import { hojeBR, somarDias } from "@/lib/datas";
 
 export const metadata: Metadata = { title: "Configurações do funil" };
@@ -29,7 +30,7 @@ export default async function PaginaConfiguracoes({ searchParams }: PageProps<"/
   const { data: funil } = await supabase.from("funis").select("id").eq("diretoria", "comercial").eq("chave", "comercial").single();
   const [{ data: fases }, { data: campos }, { data: motivos }, { data: origens }, { data: segmentos }, { data: servicos },
     { data: resultados }, { data: tiposAtividade }, { data: feriados }, { data: passos }, { data: parametros },
-    { data: agentes }, { data: saude }, { data: trabalhos }, { data: rubrica }, { data: copies }, { data: indicadoresEmail }, { data: areasDiag }, { data: paramPreco }] = await Promise.all([
+    { data: agentes }, { data: saude }, { data: trabalhos }, { data: rubrica }, { data: copies }, { data: indicadoresEmail }, { data: areasDiag }, { data: paramPreco }, { data: etiquetas }] = await Promise.all([
     supabase.from("fases").select("*").eq("funil_id", funil!.id).is("excluida_em", null).order("ordem"),
     supabase.from("fase_campos").select("*").order("ordem"),
     supabase.from("motivos").select("*").eq("diretoria", "comercial").order("ordem"),
@@ -49,6 +50,7 @@ export default async function PaginaConfiguracoes({ searchParams }: PageProps<"/
     ver === "copy" ? supabase.rpc("indicadores_email", { _de: somarDias(hojeBR(), -90), _ate: hojeBR() }) : Promise.resolve({ data: null }),
     supabase.from("diagnostico_areas").select("id, nome, servico_id, ativo, ordem, diagnostico_perguntas(id, texto, ordem, ativo)").order("ordem"),
     supabase.from("parametros_precificacao").select("*").eq("diretoria", "comercial").maybeSingle(),
+    supabase.from("etiquetas").select("id, nome, cor, descricao, negocio_etiquetas(count)").eq("diretoria", "comercial").order("nome"),
   ]);
   const listaFases = fases ?? [];
   // Quantos negócios estão em cada fase (para pedir o destino ao excluir)
@@ -93,6 +95,10 @@ export default async function PaginaConfiguracoes({ searchParams }: PageProps<"/
           </table>
         </div>
       </Cartao>
+
+      <Etiquetas etiquetas={(etiquetas ?? []).map((e) => ({
+        id: e.id, nome: e.nome, cor: e.cor, descricao: e.descricao, cards: e.negocio_etiquetas[0]?.count ?? 0,
+      }))} />
 
       <Cartao className="mb-6">
         <CabecalhoCartao titulo="Campos de cada fase" descricao="Campos obrigatórios precisam estar preenchidos para o negócio avançar para uma fase seguinte." />
