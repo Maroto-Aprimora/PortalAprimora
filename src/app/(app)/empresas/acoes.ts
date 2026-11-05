@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { mensagemDeErro } from "@/lib/erros";
+import { obterUsuario } from "@/lib/usuario";
 
 export type Resultado<T = undefined> = { ok: true; dados?: T } | { ok: false; erro: string };
 
@@ -71,18 +72,28 @@ export async function criarLead(entrada: unknown): Promise<Resultado<{ negocioId
       .insert({ ...v.data.decisor, nome: v.data.decisor.nome, decisor: true, empresa_id: empresa.id })
       .select("id")
       .single();
-    if (e2) return { ok: false, erro: mensagemDeErro(e2) };
+    if (e2) {
+      await supabase.rpc("descartar_empresa_sem_negocio", { _empresa: empresa.id });
+      return { ok: false, erro: mensagemDeErro(e2) };
+    }
     contatoId = contato.id;
   }
 
   const { data: fase } = await supabase.from("fases").select("funil_id").eq("id", v.data.negocio.fase_id).single();
-  if (!fase) return { ok: false, erro: "Fase inválida." };
+  if (!fase) {
+    await supabase.rpc("descartar_empresa_sem_negocio", { _empresa: empresa.id });
+    return { ok: false, erro: "Fase inválida." };
+  }
   const { data: negocio, error: e3 } = await supabase
     .from("negocios")
     .insert({ ...v.data.negocio, funil_id: fase.funil_id, empresa_id: empresa.id, contato_id: contatoId, titulo: empresa.nome })
     .select("id")
     .single();
-  if (e3) return { ok: false, erro: mensagemDeErro(e3) };
+  if (e3) {
+    // Toda empresa precisa estar no funil: sem o card, a empresa recém-criada é descartada.
+    await supabase.rpc("descartar_empresa_sem_negocio", { _empresa: empresa.id });
+    return { ok: false, erro: mensagemDeErro(e3) };
+  }
 
   revalidatePath("/funil");
   revalidatePath("/empresas");
@@ -126,15 +137,19 @@ export async function excluirContato(empresaId: string, contatoId: string): Prom
   return { ok: true };
 }
 
+/** Exclui a empresa e os cards dela no funil (só o diretor). Ao sair o último card, o banco remove a empresa. */
 export async function excluirEmpresa(id: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
-  const { data: r, error } = await supabase.from("empresas").delete().eq("id", id).select("id");
-  if (error) {
-    if (/foreign key|violates/i.test(error.message)) return { ok: false, erro: "Exclua ou mova os negócios desta empresa antes." };
-    return { ok: false, erro: mensagemDeErro(error) };
-  }
-  if (!r?.length) return { ok: false, erro: "Só o diretor pode excluir empresas." };
+  const usuario = await obterUsuario();
+  if (!usuario.ehDiretorDe("comercial")) return { ok: false, erro: "Só o diretor pode excluir empresas." };
+  const { error: e1 } = await supabase.from("negocios").delete().eq("empresa_id", id);
+  if (e1) return { ok: false, erro: mensagemDeErro(e1) };
+  const { error } = await supabase.from("empresas").delete().eq("id", id);
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  const { data: resta } = await supabase.from("empresas").select("id").eq("id", id).maybeSingle();
+  if (resta) return { ok: false, erro: "Não foi possível excluir: há cards desta empresa em um funil que você não administra." };
   revalidatePath("/empresas");
+  revalidatePath("/funil");
   return { ok: true };
 }
 

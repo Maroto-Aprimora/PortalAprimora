@@ -3320,6 +3320,10 @@ export type Database = {
         Returns: string
       }
       concluir_diagnostico: { Args: { _diagnostico: string }; Returns: Json }
+      descartar_empresa_sem_negocio: {
+        Args: { _empresa: string }
+        Returns: undefined
+      }
       empresas_semelhantes: {
         Args: {
           _cnpj?: string

@@ -54,7 +54,7 @@ export function AcoesTopoNegocio({
           aria-label="Excluir negócio"
           carregando={pendente}
           onClick={() =>
-            confirm("Excluir este negócio e todo o histórico? Esta ação não pode ser desfeita.") &&
+            confirm("Excluir este negócio e todo o histórico? Se for o único card da empresa, a empresa também sai do portal. Esta ação não pode ser desfeita.") &&
             iniciar(async () => {
               const r = await excluirNegocio(negocioId);
               if (!r.ok) return void toast.error(r.erro);

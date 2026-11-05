@@ -13,13 +13,6 @@ import type { ItemAprovacao } from "@/app/(app)/aprovacoes/item";
 
 export const metadata: Metadata = { title: "Funil" };
 
-const DIAS_ENCERRADOS = 90;
-
-/** Data a partir da qual negócios perdidos ainda aparecem no quadro (os vendidos aparecem sempre). */
-function limiteEncerrados() {
-  return new Date(Date.now() - DIAS_ENCERRADOS * 86_400_000).toISOString();
-}
-
 export default async function PaginaFunil({ searchParams }: PageProps<"/funil">) {
   const filtros = await searchParams;
   const resp = typeof filtros.resp === "string" ? filtros.resp : "";
@@ -30,15 +23,13 @@ export default async function PaginaFunil({ searchParams }: PageProps<"/funil">)
 
   const [usuario, config, supabase] = await Promise.all([obterUsuario(), carregarConfiguracaoComercial(), criarClienteServidor()]);
 
-  const fasesGanho = config.fases.filter((f) => f.tipo === "ganho").map((f) => f.id);
   // Busca em páginas de 1.000 (limite do banco por consulta) até trazer todos os cards
   const montarConsulta = () => {
     let consulta = supabase
       .from("negocios")
       .select("id, titulo, fase_id, responsavel_id, contato_id, valor, entrou_na_fase_em, encerrado_em, ficticio, empresas!inner(nome, cidade, site, telefone, nome_normalizado, segmentos(nome)), contatos!negocios_contato_id_fkey(nome, cargo, telefone), negocio_servicos(servicos(nome)), ligacoes(inicio, resultados_ligacao(nome))")
       .eq("funil_id", config.funil.id)
-      // Abertos, encerrados nos últimos 90 dias e TODOS os vendidos (o histórico de projetos fica sempre no funil)
-      .or([`encerrado_em.is.null`, `encerrado_em.gte.${limiteEncerrados()}`, ...fasesGanho.map((id) => `fase_id.eq.${id}`)].join(","))
+      // Todos os cards, de qualquer data: toda empresa cadastrada tem de aparecer no funil
       .order("entrou_na_fase_em", { ascending: true })
       .order("id", { ascending: true })
       // Só a última ligação de cada negócio (selo no card)

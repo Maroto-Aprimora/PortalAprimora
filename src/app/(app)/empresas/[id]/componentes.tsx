@@ -33,7 +33,7 @@ export function EditarEmpresa({ empresa, segmentos, podeExcluir }: { empresa: Va
           <div className="mt-4 flex items-center justify-between gap-2">
             {podeExcluir ? (
               <Botao type="button" variante="fantasma" className="text-perigo" onClick={() =>
-                confirm("Excluir esta empresa e seus contatos?") && iniciar(async () => {
+                confirm("Excluir esta empresa, seus contatos e todos os cards dela no funil? Esta ação não pode ser desfeita.") && iniciar(async () => {
                   const r = await excluirEmpresa(empresa.id);
                   if (!r.ok) return void toast.error(r.erro);
                   toast.success("Empresa excluída.");
