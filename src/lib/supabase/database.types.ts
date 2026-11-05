@@ -3355,6 +3355,7 @@ export type Database = {
         Args: { _ate: string; _de: string; _responsavel?: string }
         Returns: Json
       }
+      membros_sem_acesso: { Args: never; Returns: string[] }
       mover_negocio: {
         Args: {
           _comentario?: string

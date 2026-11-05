@@ -98,6 +98,28 @@ export function AcoesPreCadastro({ id, email, podeGerir }: { id: string; email: 
   );
 }
 
+export function ReenviarPrimeiroAcesso({ email }: { email: string }) {
+  const [pendente, iniciar] = useTransition();
+
+  function reenviar() {
+    iniciar(async () => {
+      // A conta já existe (foi criada no primeiro convite): reenvia o mesmo link de "Primeiro acesso".
+      const { error } = await criarClienteConvite().auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false, emailRedirectTo: `${urlDoSite()}/auth/confirmar?proximo=/definir-senha` },
+      });
+      if (error) return void toast.error(mensagemDeErro(error));
+      toast.success(`E-mail de primeiro acesso reenviado para ${email}.`);
+    });
+  }
+
+  return (
+    <Botao tamanho="sm" variante="secundario" onClick={reenviar} carregando={pendente}>
+      <Mail className="h-3.5 w-3.5" /> Reenviar primeiro acesso
+    </Botao>
+  );
+}
+
 export function AcoesMembro({
   membroId, diretoria, cargo, ativo, participaRodizio, ehVoce, mostrarRodizio,
 }: {

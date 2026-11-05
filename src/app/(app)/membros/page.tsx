@@ -4,7 +4,7 @@ import { Avatar, Selo } from "@/components/ui/selo";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { formatarData, iniciais, NOME_CARGO } from "@/lib/formatar";
 import { obterUsuario } from "@/lib/usuario";
-import { AcoesMembro, AcoesPreCadastro, DataEntrada, NovoPreCadastro, ProcessosSeletivos, TransferirCarteira } from "./componentes";
+import { AcoesMembro, AcoesPreCadastro, DataEntrada, NovoPreCadastro, ProcessosSeletivos, ReenviarPrimeiroAcesso, TransferirCarteira } from "./componentes";
 import { UserOff } from "@/components/ui/icones";
 
 export const metadata: Metadata = { title: "Membros" };
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Membros" };
 export default async function PaginaMembros() {
   const usuario = await obterUsuario();
   const supabase = await criarClienteServidor();
-  const [{ data: diretorias }, { data: membros }, { data: cargos }, { data: pre }, { data: processos }] = await Promise.all([
+  const [{ data: diretorias }, { data: membros }, { data: cargos }, { data: pre }, { data: processos }, { data: semAcessoIds }] = await Promise.all([
     supabase.from("diretorias").select("slug, nome").order("ordem"),
     supabase.from("membros").select("id, nome, email, ativo, data_entrada").order("nome"),
     supabase.from("membro_diretorias").select("membro_id, diretoria, cargo, participa_rodizio"),
@@ -20,7 +20,10 @@ export default async function PaginaMembros() {
       ? supabase.from("pre_cadastros").select("id, nome, email, convite_enviado_em, aceito_em, pre_cadastro_diretorias(diretoria, cargo)").is("aceito_em", null).order("nome")
       : Promise.resolve({ data: [] as never[] }),
     supabase.from("processos_seletivos").select("id, nome, data").order("data", { ascending: false }),
+    usuario.ehDiretor ? supabase.rpc("membros_sem_acesso") : Promise.resolve({ data: [] as string[] }),
   ]);
+  // Membros com conta criada pelo convite, mas que nunca entraram no portal.
+  const semAcesso = new Set<string>((semAcessoIds ?? []) as string[]);
 
   const minhasDiretorias = (diretorias ?? []).filter((d) => usuario.ehDiretorDe(d.slug));
   const ordemCargo = { diretor: 0, assessor: 1, trainee: 2 } as const;
@@ -37,7 +40,7 @@ export default async function PaginaMembros() {
         <Cartao className="mb-6">
           <CabecalhoCartao
             titulo="Aguardando primeiro acesso"
-            descricao="Pré-cadastrados que ainda não ativaram a conta. Envie o convite ou peça para a pessoa usar “Primeiro acesso” na tela de login."
+            descricao="Pré-cadastrados que ainda não receberam o convite. Depois do envio, a pessoa aparece na diretoria com o selo “Ainda não acessou” e o botão de reenvio até entrar no portal."
           />
           <ul className="divide-y divide-borda">
             {(pre ?? []).map((p) => (
@@ -90,11 +93,13 @@ export default async function PaginaMembros() {
                           <p className="font-semibold">
                             {c.membro!.nome}
                             {!c.membro!.ativo && <Selo tom="perigo" className="ml-2">Desativado</Selo>}
+                            {c.membro!.ativo && semAcesso.has(c.membro_id) && <Selo tom="destaque" className="ml-2">Ainda não acessou</Selo>}
                           </p>
                           <p className="truncate text-sm text-texto-suave">{c.membro!.email}</p>
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
+                      {podeGerir && c.membro!.ativo && semAcesso.has(c.membro_id) && <ReenviarPrimeiroAcesso email={c.membro!.email} />}
                       <DataEntrada membroId={c.membro_id} valor={c.membro!.data_entrada} podeEditar={podeGerir} />
                       {podeGerir && (
                         <TransferirCarteira membroId={c.membro_id} nome={c.membro!.nome} diretoria={d.slug}
