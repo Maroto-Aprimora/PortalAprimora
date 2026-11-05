@@ -164,3 +164,6 @@ chama uma função `n8n_*` do banco, que confere o segredo de novo (hash em `pri
   (`{fonte}` → `desde`) antes de ler e `POST /api/n8n/leituras/fim` (`{fonte, ate}`) depois de entregar. Se o n8n ficar fora
   do ar, a próxima execução lê desde a última leitura concluída (até 30 dias). Gmail com paginação (até 10 páginas de 100);
   API4COM com paginação por `skip` (até 15 páginas de 100).
+- **Fuso da API4COM (05/11/2026)**: `started_at`/`ended_at` vêm no horário de Brasília com sufixo `Z`. O nó "Separar em lotes"
+  soma 3 h (e marca `_hora_corrigida`) antes de comparar com a marca d'água e de entregar ao portal. Se a API4COM um dia
+  corrigir o fuso, tire essa soma.
