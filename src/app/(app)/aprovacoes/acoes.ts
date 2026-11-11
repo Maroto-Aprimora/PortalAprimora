@@ -9,7 +9,7 @@ import { mensagemDeErro } from "@/lib/erros";
 export type Resultado = { ok: true } | { ok: false; erro: string };
 
 const esquema = z.object({
-  id: z.string().uuid(),
+  id: z.guid(),
   status: z.enum(["aprovada", "descartada"]),
   conteudo: z.record(z.string(), z.unknown()),
   comentario: z.string().trim().max(2000).nullable(),

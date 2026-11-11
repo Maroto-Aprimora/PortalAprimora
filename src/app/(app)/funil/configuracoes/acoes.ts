@@ -17,7 +17,7 @@ const esquemaFase = z.object({
   descricao: z.string().trim().nullable(),
   sla_dias: z.number().int().positive().nullable(),
   acao_sla: z.enum(["alertar", "mover"]).nullable(),
-  fase_destino_sla: z.string().uuid().nullable(),
+  fase_destino_sla: z.guid().nullable(),
   probabilidade: z.number().min(0).max(1),
   probabilidade_automatica: z.boolean().optional(),
   distribui_responsavel: z.boolean(),
@@ -41,7 +41,7 @@ export async function salvarFase(id: string, dados: z.input<typeof esquemaFase>)
 }
 
 const esquemaCampo = z.object({
-  fase_id: z.string().uuid(),
+  fase_id: z.guid(),
   rotulo: z.string().trim().min(2),
   tipo: z.enum(["texto", "texto_longo", "data", "numero", "moeda", "membros", "selecao", "booleano", "link"]),
   obrigatorio: z.boolean(),
@@ -120,13 +120,13 @@ export async function excluirFase(id: string, destino: string | null): Promise<R
 const esquemaResultado = z.object({
   nome: z.string().trim().min(2, "Informe o nome do resultado."),
   ativo: z.boolean(),
-  fase_destino_id: z.string().uuid().nullable(),
-  motivo_id: z.string().uuid().nullable(),
+  fase_destino_id: z.guid().nullable(),
+  motivo_id: z.guid().nullable(),
   conta_tentativa: z.boolean(),
   exige_retorno: z.boolean(),
   registra_decisor: z.boolean(),
   marca_telefone_invalido: z.boolean(),
-  tipo_atividade_id: z.string().uuid().nullable(),
+  tipo_atividade_id: z.guid().nullable(),
   tarefa_titulo: z.string().trim().nullable(),
   tarefa_prazo: z.enum(["mesmo_dia", "proximo_dia_util", "proximo_toque", "data_retorno", "vespera_compromisso"]).nullable(),
 });
@@ -268,10 +268,10 @@ const esquemaCopy = z.object({
   nome: z.string().trim().min(2, "Dê um nome à copy."),
   uso: z.enum(["cadencia", "pediu_email", "pos_proposta"]),
   regra: z.enum(["qualquer", "segmento", "origem", "sem_site", "com_dores"]),
-  regra_valor: z.string().uuid().nullable(),
+  regra_valor: z.guid().nullable(),
   ativo: z.boolean(),
   mensagens: z.array(z.object({
-    passo_id: z.string().uuid().nullable(),
+    passo_id: z.guid().nullable(),
     assunto: z.string().trim(),
     corpo: z.string().trim(),
   })),
@@ -353,7 +353,7 @@ export async function salvarParametrosEmail(dados: {
 // Diagnóstico (áreas e perguntas) e precificação (Fase 4)
 // ---------------------------------------------------------------------
 export async function salvarAreaDiagnostico(id: string, dados: { nome: string; servico_id: string | null; ativo: boolean }): Promise<Resultado> {
-  const v = z.object({ nome: z.string().trim().min(2, "Informe o nome da área."), servico_id: z.string().uuid().nullable(), ativo: z.boolean() }).safeParse(dados);
+  const v = z.object({ nome: z.string().trim().min(2, "Informe o nome da área."), servico_id: z.guid().nullable(), ativo: z.boolean() }).safeParse(dados);
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.from("diagnostico_areas").update(v.data).eq("id", id).select("id");
@@ -365,7 +365,7 @@ export async function salvarAreaDiagnostico(id: string, dados: { nome: string; s
 
 export async function salvarPerguntaDiagnostico(id: string | null, dados: { area_id: string; texto: string; ordem: number; ativo: boolean }): Promise<Resultado> {
   const v = z.object({
-    area_id: z.string().uuid(), texto: z.string().trim().min(5, "Escreva a pergunta."), ordem: z.number().int().min(0), ativo: z.boolean(),
+    area_id: z.guid(), texto: z.string().trim().min(5, "Escreva a pergunta."), ordem: z.number().int().min(0), ativo: z.boolean(),
   }).safeParse(dados);
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();

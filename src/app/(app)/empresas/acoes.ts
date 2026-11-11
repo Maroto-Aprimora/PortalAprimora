@@ -11,7 +11,7 @@ export type Resultado<T = undefined> = { ok: true; dados?: T } | { ok: false; er
 const nulo = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : typeof v === "string" ? v.trim() : v);
 const txt = z.preprocess(nulo, z.string().nullable().optional());
 const email = z.preprocess(nulo, z.string().email("E-mail inválido.").nullable().optional());
-const uuid = z.preprocess(nulo, z.string().uuid().nullable().optional());
+const uuid = z.preprocess(nulo, z.guid().nullable().optional());
 const data = z.preprocess(nulo, z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional());
 
 const esquemaEmpresa = z.object({
@@ -46,8 +46,8 @@ const esquemaLead = z.object({
   empresa: esquemaEmpresa,
   decisor: esquemaContato.partial().extend({ nome: txt }),
   negocio: z.object({
-    fase_id: z.string().uuid("Escolha a fase."),
-    origem_id: z.string().uuid("Informe a origem do lead."),
+    fase_id: z.guid("Escolha a fase."),
+    origem_id: z.guid("Informe a origem do lead."),
     origem_detalhe: txt,
     responsavel_id: uuid,
     data_coldcall_1: data,

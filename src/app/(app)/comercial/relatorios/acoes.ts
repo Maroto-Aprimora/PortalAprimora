@@ -22,7 +22,7 @@ export async function gerarRelatorioRi(entrada: { de: string; ate: string }): Pr
 
 /** Salva o texto revisado pelo diretor (a versão que vai para a R.I). */
 export async function salvarRevisao(entrada: { id: string; texto: string }): Promise<Resultado> {
-  const v = z.object({ id: z.string().uuid(), texto: z.string().trim().max(50000) }).safeParse(entrada);
+  const v = z.object({ id: z.guid(), texto: z.string().trim().max(50000) }).safeParse(entrada);
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();
   const { data: { user } } = await supabase.auth.getUser();

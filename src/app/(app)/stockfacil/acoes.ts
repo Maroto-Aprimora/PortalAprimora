@@ -19,7 +19,7 @@ export async function buscarLeads(termos: string[], cidade: string): Promise<Res
 const SITUACOES = ["novo", "contatado", "interessado", "demonstracao", "cliente", "descartado"] as const;
 
 export async function atualizarLead(id: string, dados: { situacao?: string; responsavel_id?: string | null }): Promise<Resultado> {
-  const v = z.object({ situacao: z.enum(SITUACOES).optional(), responsavel_id: z.string().uuid().nullable().optional() }).safeParse(dados);
+  const v = z.object({ situacao: z.enum(SITUACOES).optional(), responsavel_id: z.guid().nullable().optional() }).safeParse(dados);
   if (!v.success) return { ok: false, erro: "Dados inválidos." };
   const supabase = await criarClienteServidor();
   const { data: { user } } = await supabase.auth.getUser();

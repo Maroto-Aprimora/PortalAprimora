@@ -16,7 +16,7 @@ function revalidar(negocioId?: string) {
 
 /** Marca ou desmarca uma etiqueta num card (qualquer membro do Comercial). */
 export async function marcarEtiqueta(negocioId: string, etiquetaId: string, marcar: boolean): Promise<Resultado> {
-  const ids = z.object({ n: z.string().uuid(), e: z.string().uuid() }).safeParse({ n: negocioId, e: etiquetaId });
+  const ids = z.object({ n: z.guid(), e: z.guid() }).safeParse({ n: negocioId, e: etiquetaId });
   if (!ids.success) return { ok: false, erro: "Dados inválidos." };
   const supabase = await criarClienteServidor();
   const { error } = marcar

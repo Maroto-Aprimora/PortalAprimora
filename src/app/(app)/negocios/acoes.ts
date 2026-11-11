@@ -12,7 +12,7 @@ export type Resultado<T = undefined> = { ok: true; dados?: T } | { ok: false; er
 
 const vazioParaNulo = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
 const textoOpcional = z.preprocess(vazioParaNulo, z.string().trim().nullable().optional());
-const uuidOpcional = z.preprocess(vazioParaNulo, z.string().uuid().nullable().optional());
+const uuidOpcional = z.preprocess(vazioParaNulo, z.guid().nullable().optional());
 const dataOpcional = z.preprocess(vazioParaNulo, z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional());
 
 function revalidarCrm(negocioId?: string) {
@@ -106,9 +106,9 @@ export async function excluirNegocio(negocioId: string): Promise<Resultado> {
 }
 
 const esquemaNovoNegocio = z.object({
-  empresa_id: z.string().uuid(),
+  empresa_id: z.guid(),
   titulo: z.string().trim().min(2),
-  fase_id: z.string().uuid(),
+  fase_id: z.guid(),
   origem_id: uuidOpcional,
   responsavel_id: uuidOpcional,
   contato_id: uuidOpcional,
@@ -127,8 +127,8 @@ export async function criarNegocio(dados: z.input<typeof esquemaNovoNegocio>): P
 }
 
 const esquemaLigacao = z.object({
-  negocio_id: z.string().uuid(),
-  resultado_id: z.string().uuid("Escolha o resultado da ligação."),
+  negocio_id: z.guid(),
+  resultado_id: z.guid("Escolha o resultado da ligação."),
   contato_id: uuidOpcional,
   duracao_min: z.preprocess((v) => (v === "" || v == null ? null : Number(String(v).replace(",", "."))),
     z.number().nonnegative("Duração inválida.").max(600).nullable()),

@@ -16,7 +16,7 @@ function revalidar(negocioId: string) {
 // ---------------------------------------------------------------------
 // Diagnóstico
 // ---------------------------------------------------------------------
-const esquemaRespostas = z.record(z.string().uuid(), z.object({
+const esquemaRespostas = z.record(z.guid(), z.object({
   nota: z.number().int().min(1).max(4).nullable(),
   comentario: z.string().max(2000).optional(),
 }));

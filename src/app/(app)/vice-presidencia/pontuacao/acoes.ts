@@ -8,7 +8,7 @@ import { mensagemDeErro } from "@/lib/erros";
 export type Resultado = { ok: true } | { ok: false; erro: string };
 
 const esquema = z.object({
-  membro_id: z.string().uuid("Escolha o membro."),
+  membro_id: z.guid("Escolha o membro."),
   pontos: z.preprocess((v) => Number(v), z.number().int().min(-12).max(12).refine((n) => n !== 0, "Informe os pontos.")),
   motivo: z.string().trim().min(3, "Descreva o motivo."),
   data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida."),

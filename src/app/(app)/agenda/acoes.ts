@@ -11,14 +11,14 @@ export type Resultado = { ok: true } | { ok: false; erro: string };
 const nulo = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : typeof v === "string" ? v.trim() : v);
 
 const esquema = z.object({
-  tipo_id: z.string().uuid("Escolha o tipo."),
+  tipo_id: z.guid("Escolha o tipo."),
   titulo: z.string().trim().min(2, "Informe o título."),
   inicio: z.string().min(16, "Informe a data e a hora de início."),
   fim: z.preprocess(nulo, z.string().nullable().optional()),
   local: z.preprocess(nulo, z.string().nullable().optional()),
   link_reuniao: z.preprocess(nulo, z.string().url("Link inválido.").nullable().optional()),
-  negocio_id: z.preprocess(nulo, z.string().uuid().nullable().optional()),
-  responsavel_id: z.preprocess(nulo, z.string().uuid().nullable().optional()),
+  negocio_id: z.preprocess(nulo, z.guid().nullable().optional()),
+  responsavel_id: z.preprocess(nulo, z.guid().nullable().optional()),
   stakeholder: z.preprocess(nulo, z.string().nullable().optional()),
   resumo: z.preprocess(nulo, z.string().nullable().optional()),
   proximos_passos: z.preprocess(nulo, z.string().nullable().optional()),

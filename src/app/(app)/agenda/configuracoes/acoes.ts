@@ -16,7 +16,7 @@ function revalidar() {
 const hora = z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, "Horário inválido.");
 
 const esquemaReuniao = z.object({
-  tipo_id: z.string().uuid(),
+  tipo_id: z.guid(),
   titulo: z.string().trim().min(2, "Informe o título."),
   dia_semana: z.number().int().min(0).max(6),
   hora_inicio: hora,

@@ -9,7 +9,7 @@ export type Resultado = { ok: true } | { ok: false; erro: string };
 
 /** Marca (ou desmarca) uma ocorrência como resolvida. Só o diretor comercial consegue (RLS). */
 export async function marcarResolvida(id: string, resolvida: boolean): Promise<Resultado> {
-  if (!z.string().uuid().safeParse(id).success) return { ok: false, erro: "Ocorrência inválida." };
+  if (!z.guid().safeParse(id).success) return { ok: false, erro: "Ocorrência inválida." };
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.from("ocorrencias")
     .update({ resolvida_em: resolvida ? new Date().toISOString() : null }).eq("id", id).select("id");

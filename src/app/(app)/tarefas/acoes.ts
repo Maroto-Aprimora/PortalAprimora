@@ -14,7 +14,7 @@ const esquema = z.object({
   descricao: z.preprocess(nulo, z.string().nullable().optional()),
   prazo: z.preprocess(nulo, z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional()),
   prioridade: z.enum(["baixa", "media", "alta"]),
-  negocio_id: z.preprocess(nulo, z.string().uuid().nullable().optional()),
+  negocio_id: z.preprocess(nulo, z.guid().nullable().optional()),
   diretoria: z.string().min(1),
 });
 

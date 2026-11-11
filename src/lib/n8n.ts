@@ -57,4 +57,4 @@ export function exigir<T>({ data, error }: { data: T; error: { message: string }
   return data;
 }
 
-export const uuid = z.string().uuid("id inválido");
+export const uuid = z.guid("id inválido");
