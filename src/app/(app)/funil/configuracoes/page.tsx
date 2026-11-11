@@ -71,13 +71,13 @@ export default async function PaginaConfiguracoes({ searchParams }: PageProps<"/
 
       {ver === "campos" && <>
       <Cartao className="mb-6">
-        <CabecalhoCartao titulo="Fases do funil" descricao="SLA: dias máximos na fase. “Mover” leva o negócio automaticamente para a fase de destino quando o SLA estoura (verificado todo dia às 8h)." />
+        <CabecalhoCartao titulo="Fases do funil" descricao="SLA: dias máximos na fase. “Mover” leva o negócio automaticamente para a fase de destino quando o SLA estoura (verificado todo dia às 8h). Prob. %: com “auto”, é calculada todo dia pelos negócios que passaram pela fase (últimos 12 meses, ponderados pelo histórico completo); passe o mouse para ver a base." />
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] text-sm">
             <thead className="bg-superficie-2 text-left text-xs uppercase tracking-wide text-texto-suave">
               <tr>
                 <th className="px-3 py-2">Fase</th><th className="px-3 py-2">SLA (dias)</th><th className="px-3 py-2">Ao estourar</th>
-                <th className="px-3 py-2">Destino</th><th className="px-3 py-2">Prob. %</th><th className="px-3 py-2">Rodízio</th>
+                <th className="px-3 py-2">Destino</th><th className="px-3 py-2" title="Chance de virar contrato. “auto”: calculada todo dia pelo histórico real">Prob. %</th><th className="px-3 py-2">Rodízio</th>
                 <th className="px-3 py-2">Ativa</th><th className="px-3 py-2" />
               </tr>
             </thead>

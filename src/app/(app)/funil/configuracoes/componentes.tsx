@@ -23,6 +23,25 @@ const NOME_TIPO: Record<string, string> = {
   selecao: "Seleção", booleano: "Sim/Não", link: "Link",
 };
 
+/** Probabilidade da fase: calculada pelo histórico (padrão nas fases de Oportunidade e Venda) ou digitada à mão. */
+function ProbabilidadeFase({ fase }: { fase: Tables<"fases"> }) {
+  const [auto, setAuto] = useState(fase.probabilidade_automatica);
+  const pct = Math.round(fase.probabilidade * 1000) / 10;
+  const dica = auto
+    ? `Calculada pelo histórico real (atualiza todo dia). ${fase.probabilidade_detalhe ?? "Ainda não calculada."}`
+    : "Valor digitado à mão. Marque “auto” para calcular pelo histórico.";
+  return (
+    <div className="flex items-center gap-1" title={dica}>
+      {auto
+        ? <><input type="hidden" name="probabilidade" value={pct} /><span className="w-12 text-right text-sm font-semibold">{pct}%</span></>
+        : <Entrada name="probabilidade" type="number" min={0} max={100} step="0.1" defaultValue={pct} className="h-9 w-16" />}
+      <label className="flex items-center gap-1 text-2xs text-texto-suave">
+        <input type="checkbox" name="prob_auto" checked={auto} onChange={(e) => setAuto(e.target.checked)} className="h-3.5 w-3.5" />auto
+      </label>
+    </div>
+  );
+}
+
 export function LinhaFase({ fase, fases, negociosNaFase, destinosPossiveis }: {
   fase: Tables<"fases">; fases: { id: string; nome: string }[]; negociosNaFase: number; destinosPossiveis: { id: string; nome: string }[];
 }) {
@@ -32,7 +51,7 @@ export function LinhaFase({ fase, fases, negociosNaFase, destinosPossiveis }: {
     <tr>
       <td className="px-3 py-2" colSpan={8}>
         <form
-          className="grid grid-cols-[minmax(180px,1.4fr)_90px_120px_minmax(160px,1fr)_80px_70px_60px_120px] items-center gap-2"
+          className="grid grid-cols-[minmax(180px,1.4fr)_90px_120px_minmax(160px,1fr)_110px_70px_60px_120px] items-center gap-2"
           action={(form) => iniciar(async () => {
             const sla = String(form.get("sla_dias") ?? "");
             const acao = String(form.get("acao_sla") ?? "");
@@ -44,6 +63,7 @@ export function LinhaFase({ fase, fases, negociosNaFase, destinosPossiveis }: {
               acao_sla: acao ? (acao as "mover") : null,
               fase_destino_sla: destino || null,
               probabilidade: Number(form.get("probabilidade") || 0) / 100,
+              probabilidade_automatica: form.get("prob_auto") === "on",
               distribui_responsavel: form.get("distribui") === "on",
               ativa: form.get("ativa") === "on",
             });
@@ -66,7 +86,7 @@ export function LinhaFase({ fase, fases, negociosNaFase, destinosPossiveis }: {
             <option value="">—</option>
             {fases.filter((f) => f.id !== fase.id).map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
           </Selecao>
-          <Entrada name="probabilidade" type="number" min={0} max={100} defaultValue={Math.round(fase.probabilidade * 100)} className="h-9" />
+          <ProbabilidadeFase fase={fase} />
           <input type="checkbox" name="distribui" defaultChecked={fase.distribui_responsavel} className="mx-auto h-4 w-4" title="Distribui responsável por rodízio" />
           <input type="checkbox" name="ativa" defaultChecked={fase.ativa} className="mx-auto h-4 w-4" />
           <div className="flex items-center gap-1">

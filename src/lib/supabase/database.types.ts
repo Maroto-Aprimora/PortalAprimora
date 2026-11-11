@@ -1274,6 +1274,10 @@ export type Database = {
           nome: string
           ordem: number
           probabilidade: number
+          probabilidade_automatica: boolean
+          probabilidade_base: number | null
+          probabilidade_calculada_em: string | null
+          probabilidade_detalhe: string | null
           sla_dias: number | null
           tipo: Database["public"]["Enums"]["tipo_fase"]
         }
@@ -1293,6 +1297,10 @@ export type Database = {
           nome: string
           ordem: number
           probabilidade?: number
+          probabilidade_automatica?: boolean
+          probabilidade_base?: number | null
+          probabilidade_calculada_em?: string | null
+          probabilidade_detalhe?: string | null
           sla_dias?: number | null
           tipo?: Database["public"]["Enums"]["tipo_fase"]
         }
@@ -1312,6 +1320,10 @@ export type Database = {
           nome?: string
           ordem?: number
           probabilidade?: number
+          probabilidade_automatica?: boolean
+          probabilidade_base?: number | null
+          probabilidade_calculada_em?: string | null
+          probabilidade_detalhe?: string | null
           sla_dias?: number | null
           tipo?: Database["public"]["Enums"]["tipo_fase"]
         }

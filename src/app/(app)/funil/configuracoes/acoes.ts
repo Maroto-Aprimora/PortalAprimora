@@ -19,6 +19,7 @@ const esquemaFase = z.object({
   acao_sla: z.enum(["alertar", "mover"]).nullable(),
   fase_destino_sla: z.string().uuid().nullable(),
   probabilidade: z.number().min(0).max(1),
+  probabilidade_automatica: z.boolean().optional(),
   distribui_responsavel: z.boolean(),
   ativa: z.boolean(),
 });
@@ -29,7 +30,10 @@ export async function salvarFase(id: string, dados: z.input<typeof esquemaFase>)
   if (v.data.acao_sla === "mover" && (!v.data.fase_destino_sla || !v.data.sla_dias))
     return { ok: false, erro: "Para mover automaticamente, informe o SLA em dias e a fase de destino." };
   const supabase = await criarClienteServidor();
-  const { data, error } = await supabase.from("fases").update(v.data).eq("id", id).select("id");
+  // Com o cálculo automático ligado, a probabilidade vem do histórico (recalculada todo dia): não sobrescreve.
+  const { probabilidade, ...resto } = v.data;
+  const registro = v.data.probabilidade_automatica ? resto : { ...resto, probabilidade };
+  const { data, error } = await supabase.from("fases").update(registro).eq("id", id).select("id");
   if (error) return { ok: false, erro: mensagemDeErro(error) };
   if (!data?.length) return { ok: false, erro: "Só o Diretor Comercial altera as fases." };
   revalidar();
