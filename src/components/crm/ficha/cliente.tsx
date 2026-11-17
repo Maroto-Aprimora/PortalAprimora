@@ -24,7 +24,7 @@ export function ModalCard({ children, negocioId }: { children: React.ReactNode; 
   }, []);
   return (
     <dialog ref={ref} onClose={() => router.back()} onClick={(e) => e.target === ref.current && router.back()}
-      className="m-auto h-[min(94vh,980px)] w-[min(98vw,1440px)] max-w-none rounded-cartao border border-borda bg-fundo p-0 text-texto shadow-elevada">
+      className="janela-card m-auto h-[min(94vh,980px)] w-[min(98vw,1440px)] max-w-none rounded-cartao border border-borda bg-fundo p-0 text-texto shadow-elevada">
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-end gap-1 border-b border-borda bg-superficie px-3 py-2">
           {/* Link comum (carga completa): abre a página do card em vez de reabrir a janela */}

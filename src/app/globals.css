@@ -169,6 +169,12 @@ dialog::backdrop {
   backdrop-filter: blur(2px);
 }
 
+/* Ficha do card aberta por cima do funil: o quadro fica borrado ao fundo */
+dialog.janela-card::backdrop {
+  background: rgb(12 14 18 / 0.4);
+  backdrop-filter: blur(6px);
+}
+
 /* Animações Lottie (src/components/ui/animacoes): a cor vem dos tokens, não do arquivo.
    "traco" herda a cor do texto (text-texto-suave, text-marca...). */
 .animacao-lottie .traco path { stroke: currentColor; }
