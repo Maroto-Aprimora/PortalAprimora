@@ -78,11 +78,13 @@ type DadosNegocio = {
 };
 
 export function FormNegocio({
-  negocio, servicosSelecionados, membros, origens, servicos, contatos, podeEditar,
+  negocio, servicosSelecionados, membros, origens, servicos, contatos, podeEditar, semDores = false,
 }: {
   negocio: DadosNegocio; servicosSelecionados: string[]; membros: MembroResumo[];
   origens: { id: string; nome: string }[]; servicos: { id: string; nome: string; area: keyof typeof NOME_AREA }[];
   contatos: { id: string; nome: string; cargo: string | null }[]; podeEditar: boolean;
+  /** Na ficha do card as dores ficam no Resumo (checklist que salva sozinho): aqui só os demais dados. */
+  semDores?: boolean;
 }) {
   const [pendente, iniciar] = useTransition();
 
@@ -92,7 +94,8 @@ export function FormNegocio({
         ["titulo", "valor", "responsavel_id", "origem_id", "origem_detalhe", "contato_id", "data_coldcall_1", "data_coldcall_2", "dores_identificadas"]
           .map((k) => [k, form.get(k)]),
       );
-      const r = await salvarNegocio(negocio.id, dados, form.getAll("servicos").map(String));
+      if (semDores) dados.dores_identificadas = negocio.dores_identificadas;
+      const r = await salvarNegocio(negocio.id, dados, semDores ? servicosSelecionados : form.getAll("servicos").map(String));
       if (r.ok) toast.success("Negócio salvo.");
       else toast.error(r.erro);
     });
@@ -128,6 +131,7 @@ export function FormNegocio({
           <Campo rotulo="Coldcall 1"><Entrada type="date" name="data_coldcall_1" defaultValue={negocio.data_coldcall_1 ?? ""} /></Campo>
           <Campo rotulo="Coldcall 2"><Entrada type="date" name="data_coldcall_2" defaultValue={negocio.data_coldcall_2 ?? ""} /></Campo>
         </div>
+        {!semDores && <>
         <div className="sm:col-span-2">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texto-suave">Dores identificadas</p>
           <div className="grid gap-x-4 gap-y-1.5 sm:grid-cols-2">
@@ -142,6 +146,7 @@ export function FormNegocio({
         <Campo rotulo="Detalhes das dores" dica="Anotações das ligações e do Enriquecedor sobre as dores do lead." className="sm:col-span-2">
           <AreaTexto name="dores_identificadas" defaultValue={negocio.dores_identificadas ?? ""} className="min-h-20" />
         </Campo>
+        </>}
       </fieldset>
       {podeEditar && (
         <div className="flex justify-end border-t border-borda px-6 py-3">

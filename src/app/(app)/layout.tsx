@@ -4,7 +4,7 @@ import { NOME_CARGO } from "@/lib/formatar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 
-export default async function LayoutApp({ children }: { children: React.ReactNode }) {
+export default async function LayoutApp({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   const [usuario, supabase] = await Promise.all([obterUsuario(), criarClienteServidor()]);
   const ehDiretorComercial = usuario.ehDiretorDe("comercial");
   const [{ data: diretorias }, { count: aprovacoes }, { count: emails }, { count: ocorrencias }] = await Promise.all([
@@ -40,6 +40,8 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
           <Sino />
         </div>
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:pt-2">{children}</main>
+        {/* Card do funil aberto numa janela (rota interceptada /negocios/[id]) */}
+        {modal}
       </div>
     </div>
   );

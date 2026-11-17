@@ -10,10 +10,10 @@ import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { consultarLeads, lerFiltros, NOME_SITUACAO, TERMOS_PADRAO } from "./dados";
 import { Buscas, FiltrosStockFacil, TabelaLeads } from "./componentes";
 
-export const metadata: Metadata = { title: "Leads StockFacil" };
+export const metadata: Metadata = { title: "Leads Contak" };
 
 /**
- * Temporário: prospecção do SaaS StockFacil (controle de estoque no celular do dono) em comércios de Londrina com
+ * Leads Contak: prospecção do SaaS de gestão de estoque (controle de estoque no celular do dono) em comércios de Londrina com
  * muitos itens. A busca roda o google-maps-scraper (gosom) pelo n8n; todo o time vê e edita (decisão de 15/10/2026).
  */
 export default async function PaginaStockFacil({ searchParams }: PageProps<"/stockfacil">) {
@@ -39,8 +39,8 @@ export default async function PaginaStockFacil({ searchParams }: PageProps<"/sto
 
   return (
     <>
-      <TituloPagina titulo="Leads StockFacil"
-        descricao="Lista temporária para vender o StockFacil: comércios de Londrina com muitos produtos e pouco controle de estoque. Separada do funil da Aprimora."
+      <TituloPagina titulo="Leads Contak"
+        descricao="Lista para vender o Contak, o SaaS de gestão de estoque da Aprimora: comércios de Londrina com muitos produtos e pouco controle de estoque. Separada do funil da Aprimora."
         acoes={<a href={`/stockfacil/exportar${qs ? `?${qs}` : ""}`} className={classeBotao("primario", "sm")}><Download className="h-4 w-4" /> Exportar Excel</a>} />
       <Buscas buscas={buscas ?? []} termosPadrao={TERMOS_PADRAO} />
       <div className="mb-4 flex flex-wrap gap-2 text-sm">

@@ -8,9 +8,11 @@ export type ValoresEmpresa = Partial<{
 
 /** Campos da empresa (os mesmos do "Formulário inicial" do Pipefy). Usado no novo lead e na edição. */
 export function CamposEmpresa({
-  segmentos, valores = {}, aoMudar, prefixo = "",
+  segmentos, valores = {}, aoMudar, prefixo = "", comAnotacao = false,
 }: {
   segmentos: { id: string; nome: string }[]; valores?: ValoresEmpresa; aoMudar?: (campo: string, valor: string) => void; prefixo?: string;
+  /** Só no novo lead: a primeira anotação vai para o card criado (as anotações moram no card, não na empresa). */
+  comAnotacao?: boolean;
 }) {
   const n = (c: string) => `${prefixo}${c}`;
   const mudar = (c: string) => (e: React.ChangeEvent<HTMLInputElement>) => aoMudar?.(c, e.target.value);
@@ -38,9 +40,11 @@ export function CamposEmpresa({
         <Campo rotulo="Cidade"><Entrada name={n("cidade")} defaultValue={valores.cidade ?? ""} placeholder="Londrina" /></Campo>
         <Campo rotulo="UF"><Entrada name={n("uf")} defaultValue={valores.uf ?? ""} maxLength={2} placeholder="PR" /></Campo>
       </div>
-      <Campo rotulo="Observações" className="sm:col-span-2 lg:col-span-3">
-        <AreaTexto name={n("observacoes")} defaultValue={valores.observacoes ?? ""} className="min-h-16" />
-      </Campo>
+      {comAnotacao && (
+        <Campo rotulo="Primeira anotação" dica="Fica nas anotações do card." className="sm:col-span-2 lg:col-span-3">
+          <AreaTexto name={n("observacoes")} defaultValue="" className="min-h-16" />
+        </Campo>
+      )}
     </div>
   );
 }

@@ -141,6 +141,51 @@ export type Database = {
           },
         ]
       }
+      anotacoes: {
+        Row: {
+          autor_id: string | null
+          created_at: string
+          fixada: boolean
+          id: string
+          negocio_id: string
+          texto: string
+          updated_at: string
+        }
+        Insert: {
+          autor_id?: string | null
+          created_at?: string
+          fixada?: boolean
+          id?: string
+          negocio_id: string
+          texto: string
+          updated_at?: string
+        }
+        Update: {
+          autor_id?: string | null
+          created_at?: string
+          fixada?: boolean
+          id?: string
+          negocio_id?: string
+          texto?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anotacoes_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anotacoes_negocio_id_fkey"
+            columns: ["negocio_id"]
+            isOneToOne: false
+            referencedRelation: "negocios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aprovacoes: {
         Row: {
           agente: string

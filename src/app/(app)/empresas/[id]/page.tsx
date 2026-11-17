@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarOff } from "@/components/ui/icones";
 import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
+import { AnotacoesCard } from "@/components/crm/ficha/cliente";
+import { SeloEtiqueta } from "@/components/crm/selo-etiqueta";
 import { Selo } from "@/components/ui/selo";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -29,7 +31,7 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
   const principal = negocios.find((n) => !n.encerrado_em) ?? negocios[0] ?? null;
   const ids = negocios.map((n) => n.id);
   const nada = ["00000000-0000-0000-0000-000000000000"];
-  const [{ data: atividades }, { data: tipos }, { data: anexos }, { data: ligacoes }, { data: emails }, { data: respostas }, { data: historico }] = await Promise.all([
+  const [{ data: atividades }, { data: tipos }, { data: anexos }, { data: ligacoes }, { data: emails }, { data: respostas }, { data: historico }, { data: anotacoes }, { data: etiquetasCard }] = await Promise.all([
     supabase.from("atividades").select("*, atividade_participantes(membro_id), tipos_atividade(nome)").in("negocio_id", ids.length ? ids : nada).order("inicio", { ascending: false }),
     supabase.from("tipos_atividade").select("*").eq("ativo", true).order("ordem"),
     principal ? supabase.from("anexos").select("id, nome, caminho, tamanho, enviado_por, created_at").eq("negocio_id", principal.id).order("created_at", { ascending: false })
@@ -38,6 +40,9 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
     supabase.from("emails").select("id, assunto, status, enviado_em, created_at, membro_id").in("negocio_id", ids.length ? ids : nada).eq("status", "enviado"),
     supabase.from("respostas_email").select("id, recebido_em, resumo, trecho, classificacao").in("negocio_id", ids.length ? ids : nada),
     supabase.from("negocio_historico").select("id, created_at, autor_id, automatico, fase_origem_id, fase_destino_id, comentario").in("negocio_id", ids.length ? ids : nada),
+    // Anotações moram no card: aqui só aparecem as dos cards desta empresa
+    supabase.from("anotacoes").select("id, negocio_id, texto, autor_id, fixada, created_at, updated_at").in("negocio_id", ids.length ? ids : nada).order("created_at", { ascending: false }),
+    principal ? supabase.from("negocio_etiquetas").select("etiquetas(id, nome, cor)").eq("negocio_id", principal.id) : Promise.resolve({ data: [] }),
   ]);
 
   const fases = new Map(config.fases.map((f) => [f.id, f]));
@@ -62,6 +67,12 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
       titulo: `${nomeFase(h.fase_origem_id)} → ${nomeFase(h.fase_destino_id)}`, detalhe: h.comentario, quem: h.automatico ? "Automático" : nome(h.autor_id) })),
   ].sort((a, b) => b.quando.localeCompare(a.quando));
   const segmento = config.segmentos.find((s) => s.id === empresa.segmento_id)?.nome;
+  const faseP = principal ? fases.get(principal.fase_id) : null;
+  const paraAnotacao = (a: NonNullable<typeof anotacoes>[number]) => ({
+    id: a.id, texto: a.texto, autorId: a.autor_id, autor: a.autor_id ? nomeMembro.get(a.autor_id) ?? "—" : null,
+    criadaEm: a.created_at, editadaEm: a.updated_at, fixada: a.fixada,
+  });
+  const anotacoesOutros = (anotacoes ?? []).filter((a) => a.negocio_id !== principal?.id);
 
   const linhas: [string, string | null][] = [
     ["Razão social", empresa.razao_social], ["CNPJ", empresa.cnpj], ["Segmento", segmento ?? null], ["Telefone", empresa.telefone],
@@ -96,6 +107,37 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="space-y-6">
+          {principal && (
+            <Cartao>
+              <CabecalhoCartao titulo={`Card no funil: ${principal.titulo}`}
+                descricao="As informações do lead ficam no card do funil; esta página só as mostra organizadas pela empresa." />
+              <div className="flex flex-wrap items-center gap-2 px-6 py-3 text-sm">
+                <Selo tom={faseP?.tipo === "ganho" ? "sucesso" : faseP?.tipo === "perda" ? "perigo" : "marca"}>{nomeFase(principal.fase_id)}</Selo>
+                <span>Responsável: <strong>{principal.responsavel_id ? nomeMembro.get(principal.responsavel_id) ?? "—" : "Sem responsável"}</strong></span>
+                {principal.valor != null && <Selo tom="marca">{formatarMoeda(principal.valor)}</Selo>}
+                {(etiquetasCard ?? []).map((x) => x.etiquetas && <SeloEtiqueta key={x.etiquetas.id} etiqueta={x.etiquetas} />)}
+                <Link href={`/negocios/${principal.id}`} className="ml-auto font-semibold text-marca underline-offset-4 hover:underline">Abrir card</Link>
+              </div>
+              <div className="border-t border-borda px-6 py-4">
+                <p className="mb-3 text-sm font-bold">Anotações</p>
+                <AnotacoesCard negocioId={principal.id} usuarioId={usuario.id} ehDiretor={usuario.ehDiretorDe("comercial")} podeEscrever={podeEditar}
+                  anotacoes={(anotacoes ?? []).filter((a) => a.negocio_id === principal.id).map(paraAnotacao)} />
+                {anotacoesOutros.length > 0 && (
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texto-suave">Anotações de outros cards desta empresa</p>
+                    <ul className="space-y-2 text-sm">
+                      {anotacoesOutros.map((a) => (
+                        <li key={a.id} className="rounded-controle border border-borda p-2">
+                          <p className="text-xs text-texto-suave">{negocios.find((n) => n.id === a.negocio_id)?.titulo} · {formatarDataHora(a.created_at)}</p>
+                          <p className="whitespace-pre-wrap">{a.texto}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </Cartao>
+          )}
           <Cartao>
             <CabecalhoCartao titulo="Atividade" descricao="Tudo o que já foi feito com este lead: reuniões, ligações, e-mails e mudanças de fase." />
             {negocios.length > 0 && (
@@ -164,12 +206,6 @@ export default async function PaginaEmpresa({ params }: PageProps<"/empresas/[id
                 <dd className="break-words">{valor || "—"}</dd>
               </div>
             ))}
-            {empresa.observacoes && (
-              <div className="px-6 py-3">
-                <dt className="text-texto-suave">Observações</dt>
-                <dd className="mt-1 whitespace-pre-wrap">{empresa.observacoes}</dd>
-              </div>
-            )}
           </dl>
         </Cartao>
         </aside>

@@ -5,7 +5,7 @@ import { buscarTudo } from "@/lib/paginar";
 import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { consultarLeads, lerFiltros, NOME_SITUACAO } from "../dados";
 
-/** Exporta os Leads StockFacil (com os filtros da página) em .xlsx ou .csv. Todo o time (RLS). */
+/** Exporta os Leads Contak (com os filtros da página) em .xlsx ou .csv. Todo o time (RLS). */
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const sp = Object.fromEntries(url.searchParams.entries());
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   ]);
   const nomeMembro = new Map(config.membrosComercial.map((m) => [m.id, m.nome]));
   const planilhas: Planilha[] = [{
-    nome: "Leads StockFacil",
+    nome: "Leads Contak",
     colunas: ["Nome", "Categoria", "Situação", "Responsável", "Telefone", "WhatsApp", "Endereço", "Bairro", "Site", "E-mails", "Nota", "Avaliações",
       "Google Maps", "Observações", "Encontrado em"],
     linhas: leads.map((l) => {

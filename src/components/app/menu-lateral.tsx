@@ -49,8 +49,8 @@ function montarMenu({ ehDiretor, diretorDe, aprovacoesPendentes, emailsPendentes
         { href: "/empresas", rotulo: "Empresas e leads", icone: Building2 },
         { href: "/desempenho", rotulo: "Desempenho individual", icone: TrendingUp },
         { href: "/metas", rotulo: "Metas", icone: Target },
-        // Temporário: prospecção do SaaS StockFacil (todo o time)
-        { href: "/stockfacil", rotulo: "Leads StockFacil", icone: PackageSearch },
+        // Leads Contak: prospecção do SaaS de gestão de estoque (todo o time)
+        { href: "/stockfacil", rotulo: "Leads Contak", icone: PackageSearch },
         // Erros de e-mail, fluxos do n8n, agentes e telas: só o diretor comercial
         ...(diretorDe.includes("comercial") ? [{ href: "/controle", rotulo: "Controle do App", icone: ShieldAlert, contador: ocorrenciasAbertas }] : []),
       ] },

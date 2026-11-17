@@ -170,3 +170,57 @@ export async function enriquecerNegocio(negocioId: string): Promise<Resultado> {
   revalidatePath("/funil/configuracoes");
   return { ok: true };
 }
+
+/** Nova anotação no card (fica no histórico do lead e aparece também em Empresas e leads). */
+export async function criarAnotacao(negocioId: string, texto: string): Promise<Resultado> {
+  const v = z.object({ n: z.guid(), t: z.string().trim().min(1, "Escreva a anotação.").max(20000) }).safeParse({ n: negocioId, t: texto });
+  if (!v.success) return { ok: false, erro: v.error.issues[0].message };
+  const supabase = await criarClienteServidor();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+  const { error } = await supabase.from("anotacoes").insert({ negocio_id: v.data.n, texto: v.data.t, autor_id: user.id });
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  revalidarCrm(negocioId);
+  return { ok: true };
+}
+
+export async function editarAnotacao(id: string, negocioId: string, dados: { texto?: string; fixada?: boolean }): Promise<Resultado> {
+  const v = z.object({ texto: z.string().trim().min(1).max(20000).optional(), fixada: z.boolean().optional() }).safeParse(dados);
+  if (!v.success) return { ok: false, erro: "Anotação inválida." };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("anotacoes").update(v.data).eq("id", id).select("id");
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  if (!data?.length) return { ok: false, erro: "Só quem escreveu (ou o diretor) altera esta anotação." };
+  revalidarCrm(negocioId);
+  return { ok: true };
+}
+
+export async function excluirAnotacao(id: string, negocioId: string): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("anotacoes").delete().eq("id", id).select("id");
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  if (!data?.length) return { ok: false, erro: "Só quem escreveu (ou o diretor) exclui esta anotação." };
+  revalidarCrm(negocioId);
+  return { ok: true };
+}
+
+/** Marca ou desmarca uma dor (serviço da Carta) no card. */
+export async function alternarDor(negocioId: string, servicoId: string, marcar: boolean): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = marcar
+    ? await supabase.from("negocio_servicos").upsert({ negocio_id: negocioId, servico_id: servicoId }, { onConflict: "negocio_id,servico_id", ignoreDuplicates: true })
+    : await supabase.from("negocio_servicos").delete().eq("negocio_id", negocioId).eq("servico_id", servicoId);
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  revalidarCrm(negocioId);
+  return { ok: true };
+}
+
+/** Salva só o texto "Detalhes das dores". */
+export async function salvarDetalhesDores(negocioId: string, texto: string): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("negocios").update({ dores_identificadas: texto.trim() || null }).eq("id", negocioId).select("id");
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  if (!data?.length) return { ok: false, erro: "Você não tem permissão para editar este negócio." };
+  revalidarCrm(negocioId);
+  return { ok: true };
+}

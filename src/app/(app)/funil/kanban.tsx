@@ -1,20 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Clock, ExternalLink, Globe, Mail, MapPin, Phone, PhoneCall, Send, Tag, User, Wallet, Wrench } from "@/components/ui/icones";
-import { classeBotao } from "@/components/ui/botao";
-import { Dialogo } from "@/components/ui/dialogo";
+import { Mail, PhoneCall } from "@/components/ui/icones";
 import { Selo } from "@/components/ui/selo";
-import { CartaoAprovacao, type ItemAprovacao } from "@/app/(app)/aprovacoes/item";
+import type { ItemAprovacao } from "@/app/(app)/aprovacoes/item";
 import { useMoverNegocio } from "@/components/crm/mover-negocio";
-import { RegistrarLigacao } from "@/components/crm/registrar-ligacao";
 import { NOME_MACROETAPA, situacaoSla, type Fase, type Motivo, type ResultadoLigacao } from "@/lib/crm";
-import { diasDesde, formatarData, formatarMoeda } from "@/lib/formatar";
+import { diasDesde, formatarMoeda } from "@/lib/formatar";
 import { cn } from "@/lib/utils";
 import { SeloEtiqueta } from "@/components/crm/selo-etiqueta";
-import { EditorEtiquetas } from "@/components/crm/editor-etiquetas";
 import type { Etiqueta } from "@/lib/etiquetas";
 
 export type CartaoNegocio = {
@@ -48,8 +43,8 @@ const COR_BORDA: Record<string, string> = {
 /** Cards por coluna antes do "Mostrar mais". */
 const POR_COLUNA = 100;
 
-export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio, etiquetas }: {
-  fases: Fase[]; motivos: Motivo[]; resultados: ResultadoLigacao[]; cartoes: CartaoNegocio[]; dadosEnvio: string; etiquetas: Etiqueta[];
+export function Kanban({ fases, motivos, cartoes }: {
+  fases: Fase[]; motivos: Motivo[]; resultados?: ResultadoLigacao[]; cartoes: CartaoNegocio[]; dadosEnvio?: string; etiquetas?: Etiqueta[];
 }) {
   const [itens, setItens] = useState(cartoes);
   const [anteriores, setAnteriores] = useState(cartoes);
@@ -106,7 +101,7 @@ export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio, etique
                   </div>
                 </header>
                 <div className="flex max-h-[calc(100vh-290px)] min-h-32 flex-col gap-2 overflow-y-auto p-2">
-                  {daFase.slice(0, visiveis[fase.id] ?? POR_COLUNA).map((c) => <Cartao key={c.id} cartao={c} fase={fase} fases={fases} resultados={resultados} dadosEnvio={dadosEnvio} etiquetas={etiquetas} aoMover={(d) => mover(c.id, c.titulo, d)} />)}
+                  {daFase.slice(0, visiveis[fase.id] ?? POR_COLUNA).map((c) => <Cartao key={c.id} cartao={c} fase={fase} />)}
                   {daFase.length > (visiveis[fase.id] ?? POR_COLUNA) && (
                     <button type="button" className="rounded-controle border border-dashed border-borda py-2 text-xs font-semibold text-texto-suave hover:border-marca/40 hover:text-marca"
                       onClick={() => setVisiveis((v) => ({ ...v, [fase.id]: (v[fase.id] ?? POR_COLUNA) + POR_COLUNA }))}>
@@ -126,19 +121,16 @@ export function Kanban({ fases, motivos, resultados, cartoes, dadosEnvio, etique
 }
 
 /**
- * Card do negócio: compacto no quadro; ao clicar, abre numa janela com todos os dados do lead e as ações
- * (mesmo comportamento do card de tarefa). Continua arrastável entre as fases.
+ * Card do negócio: compacto no quadro; ao clicar, abre a ficha completa do card (a mesma da página do card)
+ * numa janela por cima do funil. Continua arrastável entre as fases.
  */
-function Cartao({ cartao, fase, fases, resultados, dadosEnvio, etiquetas, aoMover }: {
-  cartao: CartaoNegocio; fase: Fase; fases: Fase[]; resultados: ResultadoLigacao[]; dadosEnvio: string; etiquetas: Etiqueta[];
-  aoMover: (destino: Fase) => void;
-}) {
+function Cartao({ cartao, fase }: { cartao: CartaoNegocio; fase: Fase }) {
   const router = useRouter();
-  const [aberto, setAberto] = useState(false);
+  // O card abre a ficha completa (mesma da página do card), numa janela por cima do funil
+  const abrir = () => router.push(`/negocios/${cartao.id}`, { scroll: false });
   const email = cartao.emailParaAprovar;
   const dias = diasDesde(cartao.entrouNaFaseEm);
   const sla = situacaoSla(fase, dias);
-  const site = cartao.site ? cartao.site.replace(/^https?:\/\//, "").replace(/\/$/, "") : null;
 
   return (
     <>
@@ -146,8 +138,8 @@ function Cartao({ cartao, fase, fases, resultados, dadosEnvio, etiquetas, aoMove
         draggable
         role="button"
         tabIndex={0}
-        onClick={() => setAberto(true)}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setAberto(true))}
+        onClick={abrir}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), abrir())}
         onDragStart={(e) => { e.dataTransfer.setData("text/negocio", cartao.id); e.dataTransfer.effectAllowed = "move"; }}
         className={cn(
           "cursor-pointer rounded-cartao border border-l-4 bg-superficie px-3 py-3 shadow-suave transition hover:border-marca/40 hover:shadow-elevada active:cursor-grabbing",
@@ -171,84 +163,6 @@ function Cartao({ cartao, fase, fases, resultados, dadosEnvio, etiquetas, aoMove
         </div>
       </article>
 
-      {aberto && (
-        <Dialogo aberto aoFechar={() => setAberto(false)} titulo={cartao.titulo}
-          descricao={`${NOME_MACROETAPA[fase.macroetapa]} · ${fase.nome}`} className={email ? "w-[min(96vw,1100px)]" : "w-[min(94vw,600px)]"}>
-          <div className={cn(email && "grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]")}>
-          <div className="space-y-4">
-            <dl className="space-y-3 text-sm">
-              <Linha icone={User} rotulo="Responsável">{cartao.responsavel ?? (fase.tipo === "aberta" ? "Sem responsável" : "—")}</Linha>
-              {cartao.cidade && <Linha icone={MapPin} rotulo="Cidade">{cartao.cidade}</Linha>}
-              <Linha icone={Wallet} rotulo="Valor">{cartao.valor != null ? <Selo tom="sucesso">{formatarMoeda(cartao.valor)}</Selo> : "—"}</Linha>
-              <Linha icone={Clock} rotulo="Na fase">
-                {dias} {dias === 1 ? "dia" : "dias"}{fase.sla_dias ? ` de ${fase.sla_dias}` : ""}
-                {sla === "estourado" && <Selo tom="destaque" className="ml-1">SLA estourado</Selo>}
-              </Linha>
-              <Linha icone={Tag} rotulo="Etiquetas">
-                <EditorEtiquetas negocioId={cartao.id} todas={etiquetas} marcadas={cartao.etiquetas.map((e) => e.id)} />
-              </Linha>
-              {cartao.segmento && <Linha icone={Tag} rotulo="Segmento"><Selo tom="marca">{cartao.segmento}</Selo></Linha>}
-              {cartao.servicos.length > 0 && (
-                <Linha icone={Wrench} rotulo="Dores">
-                  <span className="flex flex-wrap justify-end gap-1">{cartao.servicos.map((s) => <Selo key={s}>{s}</Selo>)}</span>
-                </Linha>
-              )}
-              {cartao.contato && <Linha icone={Building2} rotulo="Contato">{cartao.contato}</Linha>}
-              {cartao.telefone && <Linha icone={Phone} rotulo="Telefone">{cartao.telefone}</Linha>}
-              {site && (
-                <Linha icone={Globe} rotulo="Site">
-                  <a href={cartao.site!.startsWith("http") ? cartao.site! : `https://${cartao.site}`} target="_blank" rel="noopener noreferrer"
-                    className="truncate rounded-full border border-borda px-2 py-0.5 hover:text-marca">{site}</a>
-                </Linha>
-              )}
-              {cartao.ultimaLigacao && (
-                <Linha icone={PhoneCall} rotulo="Última ligação">
-                  {cartao.ultimaLigacao}{cartao.ultimaLigacaoEm ? ` · ${formatarData(cartao.ultimaLigacaoEm)}` : ""}
-                </Linha>
-              )}
-            </dl>
-            <div className="flex flex-wrap items-center gap-2 border-t border-borda pt-4">
-              {fase.tipo === "aberta" && (
-                <RegistrarLigacao negocioId={cartao.id} titulo={cartao.titulo} resultados={resultados} contatoPadrao={cartao.contatoId} />
-              )}
-              <select className="h-10 rounded-controle border border-borda bg-superficie px-3 text-sm" defaultValue="" aria-label="Mover para a fase"
-                onChange={(e) => {
-                  const destino = fases.find((f) => f.id === e.target.value);
-                  if (destino) { setAberto(false); aoMover(destino); }
-                }}>
-                <option value="" disabled>Mover para…</option>
-                {fases.filter((f) => f.id !== fase.id).map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
-              </select>
-              <Link href={`/negocios/${cartao.id}`} className={cn(classeBotao("primario"), "ml-auto")}>
-                Abrir negócio <ExternalLink className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-          {email && (
-            <section className="rounded-cartao border border-destaque/40 bg-superficie p-4 lg:max-h-[70vh] lg:overflow-y-auto" aria-label="E-mail para aprovar">
-              <h3 className="flex items-center gap-2 font-bold"><Mail className="h-4 w-4 text-destaque" /> E-mail pronto para aprovar</h3>
-              <p className="mt-1 flex items-start gap-2 text-xs text-texto-suave">
-                <Send className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span>Sai de {dadosEnvio}, no mesmo fio dos e-mails anteriores do lead.</span>
-              </p>
-              <div className="mt-3">
-                <CartaoAprovacao item={email} mostrarResponsavel={false} semMoldura
-                  aoDecidir={() => { setAberto(false); router.refresh(); }} />
-              </div>
-            </section>
-          )}
-          </div>
-        </Dialogo>
-      )}
     </>
-  );
-}
-
-function Linha({ icone: Icone, rotulo, children }: { icone: React.ComponentType<{ className?: string }>; rotulo: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <dt className="flex shrink-0 items-center gap-2 text-texto-suave"><Icone className="h-4 w-4" />{rotulo}</dt>
-      <dd className="flex min-w-0 items-center justify-end text-right font-semibold">{children}</dd>
-    </div>
   );
 }

@@ -61,7 +61,7 @@ export function FormNovoLead({
       <Cartao>
         <CabecalhoCartao titulo="Empresa" />
         <div className="px-6 py-4">
-          <CamposEmpresa segmentos={segmentos} aoMudar={(c, v) => (c in chave ? setChave((s) => ({ ...s, [c]: v })) : undefined)} />
+          <CamposEmpresa segmentos={segmentos} comAnotacao aoMudar={(c, v) => (c in chave ? setChave((s) => ({ ...s, [c]: v })) : undefined)} />
           {semelhantes.length > 0 && (
             <div className="mt-4 rounded-controle border border-destaque/50 bg-destaque-suave p-3 text-sm">
               <p className="flex items-center gap-2 font-semibold text-destaque"><AlertTriangle className="h-4 w-4" /> Possível duplicidade</p>

@@ -62,7 +62,9 @@ export async function criarLead(entrada: unknown): Promise<Resultado<{ negocioId
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();
 
-  const { data: empresa, error: e1 } = await supabase.from("empresas").insert(v.data.empresa).select("id, nome").single();
+  // A "primeira anotação" do formulário vai para o card, não para a empresa
+  const { observacoes: primeiraAnotacao, ...dadosEmpresa } = v.data.empresa;
+  const { data: empresa, error: e1 } = await supabase.from("empresas").insert(dadosEmpresa).select("id, nome").single();
   if (e1) return { ok: false, erro: mensagemDeErro(e1) };
 
   let contatoId: string | null = null;
@@ -94,6 +96,10 @@ export async function criarLead(entrada: unknown): Promise<Resultado<{ negocioId
     await supabase.rpc("descartar_empresa_sem_negocio", { _empresa: empresa.id });
     return { ok: false, erro: mensagemDeErro(e3) };
   }
+  if (primeiraAnotacao) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) await supabase.from("anotacoes").insert({ negocio_id: negocio.id, texto: primeiraAnotacao, autor_id: user.id });
+  }
 
   revalidatePath("/funil");
   revalidatePath("/empresas");
@@ -106,7 +112,10 @@ export async function salvarEmpresa(id: string, dados: unknown): Promise<Resulta
   const v = esquemaEmpresa.safeParse(dados);
   if (!v.success) return { ok: false, erro: v.error.issues[0].message };
   const supabase = await criarClienteServidor();
-  const { data: r, error } = await supabase.from("empresas").update(v.data).eq("id", id).select("id");
+  // Anotações ficam no card: a edição da empresa não mexe nelas
+  const { observacoes: _ignorada, ...camposEmpresa } = v.data;
+  void _ignorada;
+  const { data: r, error } = await supabase.from("empresas").update(camposEmpresa).eq("id", id).select("id");
   if (error) return { ok: false, erro: mensagemDeErro(error) };
   if (!r?.length) return { ok: false, erro: "Você não tem permissão para editar esta empresa." };
   revalidatePath(`/empresas/${id}`);
