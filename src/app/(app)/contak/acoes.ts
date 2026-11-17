@@ -12,7 +12,7 @@ export async function buscarLeads(termos: string[], cidade: string): Promise<Res
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc("buscar_leads_stockfacil", { _termos: termos, _cidade: cidade });
   if (error) return { ok: false, erro: mensagemDeErro(error) };
-  revalidatePath("/stockfacil");
+  revalidatePath("/contak");
   return { ok: true };
 }
 
@@ -27,7 +27,7 @@ export async function atualizarLead(id: string, dados: { situacao?: string; resp
   const { data, error } = await supabase.from("stockfacil_leads").update(campos).eq("id", id).select("id");
   if (error) return { ok: false, erro: mensagemDeErro(error) };
   if (!data?.length) return { ok: false, erro: "Sem permissão." };
-  revalidatePath("/stockfacil");
+  revalidatePath("/contak");
   return { ok: true };
 }
 
@@ -36,6 +36,6 @@ export async function excluirLead(id: string): Promise<Resultado> {
   const { data, error } = await supabase.from("stockfacil_leads").delete().eq("id", id).select("id");
   if (error) return { ok: false, erro: mensagemDeErro(error) };
   if (!data?.length) return { ok: false, erro: "Sem permissão." };
-  revalidatePath("/stockfacil");
+  revalidatePath("/contak");
   return { ok: true };
 }

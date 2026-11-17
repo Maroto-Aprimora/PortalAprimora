@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "Leads Contak" };
  * Leads Contak: prospecção do SaaS de gestão de estoque (controle de estoque no celular do dono) em comércios de Londrina com
  * muitos itens. A busca roda o google-maps-scraper (gosom) pelo n8n; todo o time vê e edita (decisão de 15/10/2026).
  */
-export default async function PaginaStockFacil({ searchParams }: PageProps<"/stockfacil">) {
+export default async function PaginaContak({ searchParams }: PageProps<"/contak">) {
   const sp = await searchParams;
   const [usuario, config] = await Promise.all([obterUsuario(), carregarConfiguracaoComercial()]);
   if (usuario.cargoEm("comercial") == null) redirect("/painel");
@@ -41,7 +41,7 @@ export default async function PaginaStockFacil({ searchParams }: PageProps<"/sto
     <>
       <TituloPagina titulo="Leads Contak"
         descricao="Lista para vender o Contak, o SaaS de gestão de estoque da Aprimora: comércios de Londrina com muitos produtos e pouco controle de estoque. Separada do funil da Aprimora."
-        acoes={<a href={`/stockfacil/exportar${qs ? `?${qs}` : ""}`} className={classeBotao("primario", "sm")}><Download className="h-4 w-4" /> Exportar Excel</a>} />
+        acoes={<a href={`/contak/exportar${qs ? `?${qs}` : ""}`} className={classeBotao("primario", "sm")}><Download className="h-4 w-4" /> Exportar Excel</a>} />
       <Buscas buscas={buscas ?? []} termosPadrao={TERMOS_PADRAO} />
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
         <span className="rounded-full bg-marca px-3 py-1 font-semibold text-marca-texto">{total ?? 0} leads</span>
