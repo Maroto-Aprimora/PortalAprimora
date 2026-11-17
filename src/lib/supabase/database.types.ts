@@ -1558,6 +1558,7 @@ export type Database = {
           created_at: string
           data_entrada: string | null
           email: string
+          emails_alternativos: string[]
           id: string
           nome: string
           telefone: string | null
@@ -1569,6 +1570,7 @@ export type Database = {
           created_at?: string
           data_entrada?: string | null
           email: string
+          emails_alternativos?: string[]
           id: string
           nome: string
           telefone?: string | null
@@ -1580,6 +1582,7 @@ export type Database = {
           created_at?: string
           data_entrada?: string | null
           email?: string
+          emails_alternativos?: string[]
           id?: string
           nome?: string
           telefone?: string | null
