@@ -3,7 +3,7 @@
  * O cálculo de cada um fica em src/lib/indicadores.ts (servidor).
  */
 export const INDICADORES_META = {
-  faturamento: { nome: "Faturamento (contratos fechados)", unidade: "R$", regra: "Soma do valor dos negócios ganhos no período." },
+  faturamento: { nome: "Faturamento (contratos fechados)", unidade: "R$", regra: "Soma do valor dos negócios ganhos no período. Por pessoa, conta o valor inteiro para cada envolvido na venda (responsável, participantes e quem apresentou a proposta)." },
   contratos: { nome: "Contratos fechados", unidade: "un", regra: "Negócios que entraram em Projetos Aprimora (ganho) no período." },
   propostas: { nome: "Propostas apresentadas", unidade: "un", regra: "Negócios que entraram em Apresentação de proposta no período." },
   diagnosticos: { nome: "Diagnósticos marcados", unidade: "un", regra: "Negócios que entraram em Diagnóstico agendado no período." },
