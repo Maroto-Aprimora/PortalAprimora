@@ -39,7 +39,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
   const [ind, { data: ligacoes }, { data: historico }, { data: criterios }, { data: plano }] = await Promise.all([
     calcularIndicadores(periodo, membro),
     supabase.from("ligacoes")
-      .select("id, inicio, duracao_seg, resumo, transcricao, gravacao_url, origem, negocio_id, negocios(titulo), resultados_ligacao(nome), avaliacoes_ligacao(media, notas, comentario)")
+      .select("id, inicio, duracao_seg, resumo, transcricao, gravacao_url, origem, negocio_id, telefone, comentario, negocios(titulo), resultados_ligacao(nome), avaliacoes_ligacao(media, notas, comentario)")
       .eq("membro_id", membro).gte("inicio", inicio).lt("inicio", fim).order("inicio", { ascending: false }).limit(100),
     supabase.from("avaliacoes_ligacao").select("media, notas, created_at").eq("membro_id", membro).gte("created_at", desde12).order("created_at"),
     supabase.from("rubrica_criterios").select("chave, nome, descricao").eq("ativo", true).order("ordem"),
@@ -111,7 +111,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
                 <li key={l.id} className="px-6 py-3 text-sm">
                   <details>
                     <summary className="flex cursor-pointer flex-wrap items-center gap-2">
-                      <span className="font-semibold">{l.negocios?.titulo ?? "Negócio"}</span>
+                      <span className="font-semibold">{l.negocios?.titulo ?? (l.negocio_id ? "Negócio" : `Número não identificado ${l.telefone ?? ""}`.trim())}</span>
                       <Selo tom={l.resultados_ligacao ? "marca" : "destaque"}>{l.resultados_ligacao?.nome ?? "Aguardando confirmação"}</Selo>
                       {av && <Selo tom={Number(av.media) >= 3 ? "sucesso" : "neutro"}>nota {nota(av.media)}</Selo>}
                       <span className="ml-auto text-xs text-texto-suave">
@@ -120,6 +120,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
                     </summary>
                     <div className="mt-3 space-y-3">
                       {l.resumo && <p className="text-texto-suave">{l.resumo}</p>}
+                      {!l.negocio_id && l.comentario && <p className="text-texto-suave">{l.comentario}</p>}
                       {av && (
                         <div className="rounded-controle border border-borda p-3">
                           <ul className="space-y-1.5">
@@ -133,7 +134,7 @@ export default async function PaginaDesempenho({ searchParams }: PageProps<"/des
                       {l.transcricao && <p className="max-h-72 overflow-y-auto whitespace-pre-line rounded-controle bg-superficie-2 p-3 text-xs">{l.transcricao}</p>}
                       <div className="flex gap-4 text-xs">
                         {l.gravacao_url && <a href={l.gravacao_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-marca underline-offset-4 hover:underline">Ouvir a gravação</a>}
-                        <Link href={`/negocios/${l.negocio_id}`} className="font-semibold text-marca underline-offset-4 hover:underline">Abrir o negócio</Link>
+                        {l.negocio_id && <Link href={`/negocios/${l.negocio_id}`} className="font-semibold text-marca underline-offset-4 hover:underline">Abrir o negócio</Link>}
                       </div>
                     </div>
                   </details>

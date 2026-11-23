@@ -1458,7 +1458,7 @@ export type Database = {
           id: string
           inicio: string
           membro_id: string
-          negocio_id: string
+          negocio_id: string | null
           origem: Database["public"]["Enums"]["origem_registro"]
           proximo_passo: string | null
           resultado_aplicado_em: string | null
@@ -1483,7 +1483,7 @@ export type Database = {
           id?: string
           inicio?: string
           membro_id?: string
-          negocio_id: string
+          negocio_id?: string | null
           origem?: Database["public"]["Enums"]["origem_registro"]
           proximo_passo?: string | null
           resultado_aplicado_em?: string | null
@@ -1508,7 +1508,7 @@ export type Database = {
           id?: string
           inicio?: string
           membro_id?: string
-          negocio_id?: string
+          negocio_id?: string | null
           origem?: Database["public"]["Enums"]["origem_registro"]
           proximo_passo?: string | null
           resultado_aplicado_em?: string | null
