@@ -12,8 +12,8 @@ import { mensagemDeErro } from "@/lib/erros";
 import { nomeCargo } from "@/lib/formatar";
 import { urlDoSite } from "@/lib/url";
 import {
-  alterarCargo, alterarDataEntrada, alterarRodizio, criarPreCadastro, definirAtivo, marcarConviteEnviado, removerPreCadastro,
-  salvarProcessoSeletivo, transferirCarteira, type Resultado,
+  alterarCargo, alterarDataEntrada, alterarRodizio, concederVisibilidade, criarPreCadastro, definirAtivo, marcarConviteEnviado, removerPreCadastro,
+  removerVisibilidade, salvarProcessoSeletivo, transferirCarteira, type Resultado,
 } from "./acoes";
 
 function avisar(r: Resultado, sucesso: string) {
@@ -251,6 +251,51 @@ export function ProcessosSeletivos({ processos }: { processos: { id: string; nom
           <Botao type="submit" tamanho="sm" carregando={pendente}><Plus className="h-3.5 w-3.5" /> Adicionar</Botao>
         </form>
       </div>
+    </Cartao>
+  );
+}
+
+/** Membros de outras diretorias que podem ver a diretoria (o diretor libera e remove). */
+export function VisibilidadeDiretoria({ diretoria, nomeDiretoria, liberados, candidatos }: {
+  diretoria: string; nomeDiretoria: string;
+  liberados: { id: string; nome: string; origem: string }[];
+  candidatos: { id: string; nome: string; origem: string }[];
+}) {
+  const [pendente, iniciar] = useTransition();
+  const [escolhido, setEscolhido] = useState("");
+  return (
+    <Cartao>
+      <CabecalhoCartao titulo={`Quem mais vê ${nomeDiretoria}`}
+        descricao={`Membros de outras diretorias que enxergam ${nomeDiretoria} no portal (menu e dados), sem fazer parte dela.`} />
+      <div className="flex flex-wrap items-center gap-2 border-b border-borda px-6 py-3">
+        <Selecao value={escolhido} onChange={(e) => setEscolhido(e.target.value)} className="h-9 min-w-56 flex-1" aria-label="Membro">
+          <option value="">Escolha um membro</option>
+          {candidatos.map((m) => <option key={m.id} value={m.id}>{m.nome} ({m.origem})</option>)}
+        </Selecao>
+        <Botao tamanho="sm" disabled={!escolhido} carregando={pendente}
+          onClick={() => iniciar(async () => {
+            const r = await concederVisibilidade(escolhido, diretoria);
+            avisar(r, "Visibilidade liberada.");
+            if (r.ok) setEscolhido("");
+          })}>
+          <Plus className="h-3.5 w-3.5" /> Liberar
+        </Botao>
+      </div>
+      {liberados.length === 0 ? (
+        <p className="px-6 py-4 text-sm text-texto-suave">Ninguém de fora da diretoria tem acesso.</p>
+      ) : (
+        <ul className="divide-y divide-borda">
+          {liberados.map((m) => (
+            <li key={m.id} className="flex items-center justify-between gap-3 px-6 py-3 text-sm">
+              <span><span className="font-semibold">{m.nome}</span> <span className="text-texto-suave">· {m.origem}</span></span>
+              <Botao tamanho="sm" variante="fantasma" disabled={pendente}
+                onClick={() => confirm(`${m.nome} deixa de ver ${nomeDiretoria}?`) && iniciar(async () => avisar(await removerVisibilidade(m.id, diretoria), "Visibilidade removida."))}>
+                <Trash2 className="h-3.5 w-3.5" /> Remover
+              </Botao>
+            </li>
+          ))}
+        </ul>
+      )}
     </Cartao>
   );
 }

@@ -131,3 +131,27 @@ export async function salvarProcessoSeletivo(id: string | null, dados: z.input<t
     revalidatePath("/membros");
   return { ok: true };
 }
+
+const idValido = z.guid("Membro inválido.");
+
+/** Deixa um membro de outra diretoria ver a sua (só o diretor da diretoria). */
+export async function concederVisibilidade(membroId: string, diretoria: string): Promise<Resultado> {
+  if (!idValido.safeParse(membroId).success) return { ok: false, erro: "Escolha o membro." };
+  const usuario = await obterUsuario();
+  if (!usuario.ehDiretorDe(diretoria)) return { ok: false, erro: "Só o diretor da diretoria libera a visibilidade." };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.from("membro_visibilidades").insert({ membro_id: membroId, diretoria, criado_por: usuario.id });
+  if (error) return { ok: false, erro: error.code === "23505" ? "Este membro já vê esta diretoria." : mensagemDeErro(error) };
+  revalidatePath("/membros");
+  return { ok: true };
+}
+
+export async function removerVisibilidade(membroId: string, diretoria: string): Promise<Resultado> {
+  if (!idValido.safeParse(membroId).success) return { ok: false, erro: "Membro inválido." };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("membro_visibilidades").delete().eq("membro_id", membroId).eq("diretoria", diretoria).select("membro_id");
+  if (error) return { ok: false, erro: mensagemDeErro(error) };
+  if (!data?.length) return { ok: false, erro: "Só o diretor da diretoria remove a visibilidade." };
+  revalidatePath("/membros");
+  return { ok: true };
+}

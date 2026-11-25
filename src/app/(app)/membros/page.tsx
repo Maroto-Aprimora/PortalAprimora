@@ -4,7 +4,7 @@ import { Avatar, Selo } from "@/components/ui/selo";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { formatarData, iniciais, nomeCargo } from "@/lib/formatar";
 import { obterUsuario } from "@/lib/usuario";
-import { AcoesMembro, AcoesPreCadastro, DataEntrada, NovoPreCadastro, ProcessosSeletivos, ReenviarPrimeiroAcesso, TransferirCarteira } from "./componentes";
+import { AcoesMembro, AcoesPreCadastro, DataEntrada, NovoPreCadastro, ProcessosSeletivos, ReenviarPrimeiroAcesso, TransferirCarteira, VisibilidadeDiretoria } from "./componentes";
 import { UserOff } from "@/components/ui/icones";
 
 export const metadata: Metadata = { title: "Membros" };
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Membros" };
 export default async function PaginaMembros() {
   const usuario = await obterUsuario();
   const supabase = await criarClienteServidor();
-  const [{ data: diretorias }, { data: membros }, { data: cargos }, { data: pre }, { data: processos }, { data: semAcessoIds }] = await Promise.all([
+  const [{ data: diretorias }, { data: membros }, { data: cargos }, { data: pre }, { data: processos }, { data: semAcessoIds }, { data: visibilidades }] = await Promise.all([
     supabase.from("diretorias").select("slug, nome").order("ordem"),
     supabase.from("membros").select("id, nome, email, ativo, data_entrada").order("nome"),
     supabase.from("membro_diretorias").select("membro_id, diretoria, cargo, participa_rodizio"),
@@ -21,12 +21,16 @@ export default async function PaginaMembros() {
       : Promise.resolve({ data: [] as never[] }),
     supabase.from("processos_seletivos").select("id, nome, data").order("data", { ascending: false }),
     usuario.ehDiretor ? supabase.rpc("membros_sem_acesso") : Promise.resolve({ data: [] as string[] }),
+    supabase.from("membro_visibilidades").select("membro_id, diretoria"),
   ]);
   // Membros com conta criada pelo convite, mas que nunca entraram no portal.
   const semAcesso = new Set<string>((semAcessoIds ?? []) as string[]);
 
   const minhasDiretorias = (diretorias ?? []).filter((d) => usuario.ehDiretorDe(d.slug));
   const ordemCargo = { diretor: 0, assessor: 1, trainee: 2 } as const;
+  const nomeDiretoria = (slug: string) => diretorias?.find((d) => d.slug === slug)?.nome ?? slug;
+  // Diretoria de origem de cada membro (para a lista de visibilidade)
+  const origem = (id: string) => (cargos ?? []).filter((c) => c.membro_id === id).map((c) => nomeDiretoria(c.diretoria)).join(", ") || "sem diretoria";
 
   return (
     <>
@@ -69,6 +73,21 @@ export default async function PaginaMembros() {
       )}
 
       {usuario.ehDiretor && <div className="mb-6"><ProcessosSeletivos processos={processos ?? []} /></div>}
+
+      {minhasDiretorias.length > 0 && (
+        <div className="mb-6 grid gap-6 xl:grid-cols-2">
+          {minhasDiretorias.map((d) => {
+            const daDiretoria = new Set((cargos ?? []).filter((c) => c.diretoria === d.slug).map((c) => c.membro_id));
+            const liberadosIds = new Set((visibilidades ?? []).filter((v) => v.diretoria === d.slug).map((v) => v.membro_id));
+            const ativos = (membros ?? []).filter((m) => m.ativo && !daDiretoria.has(m.id));
+            return (
+              <VisibilidadeDiretoria key={d.slug} diretoria={d.slug} nomeDiretoria={d.nome}
+                liberados={ativos.filter((m) => liberadosIds.has(m.id)).map((m) => ({ id: m.id, nome: m.nome, origem: origem(m.id) }))}
+                candidatos={ativos.filter((m) => !liberadosIds.has(m.id)).map((m) => ({ id: m.id, nome: m.nome, origem: origem(m.id) }))} />
+            );
+          })}
+        </div>
+      )}
 
       <div className="grid gap-6 xl:grid-cols-2">
         {(diretorias ?? []).map((d) => {

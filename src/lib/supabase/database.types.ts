@@ -1596,6 +1596,49 @@ export type Database = {
           },
         ]
       }
+      membro_visibilidades: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          diretoria: string
+          membro_id: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          diretoria: string
+          membro_id: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          diretoria?: string
+          membro_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membro_visibilidades_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "membro_visibilidades_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "membro_visibilidades_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membros: {
         Row: {
           ativo: boolean

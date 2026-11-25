@@ -28,6 +28,7 @@ export default async function LayoutApp({ children, modal }: { children: React.R
         descricaoCargo={descricao}
         diretorias={diretorias ?? []}
         minhasDiretorias={usuario.cargos.map((c) => c.diretoria)}
+        diretoriasVisiveis={usuario.diretoriasVisiveis}
         ehDiretor={usuario.ehDiretor}
         diretorDe={usuario.cargos.filter((c) => c.cargo === "diretor").map((c) => c.diretoria)}
         aprovacoesPendentes={aprovacoes ?? 0}

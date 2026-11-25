@@ -22,6 +22,8 @@ export type DadosMenu = {
   descricaoCargo: string;
   diretorias: { slug: string; nome: string }[];
   minhasDiretorias: string[];
+  /** Diretorias que a pessoa enxerga (as suas + visibilidade liberada por um diretor) */
+  diretoriasVisiveis: string[];
   ehDiretor: boolean;
   diretorDe: string[];
   aprovacoesPendentes: number;
@@ -35,7 +37,7 @@ export type DadosMenu = {
  * Menu da v2 (portal exclusivo do Comercial): seções gerais, o Comercial e o que permanece das outras diretorias
  * (Membros, Pontuação, Painel geral e Auditoria). Projetos e Marketing não têm telas.
  */
-function montarMenu({ ehDiretor, diretorDe, aprovacoesPendentes, emailsPendentes, ocorrenciasAbertas }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
+function montarMenu({ ehDiretor, diretorDe, diretoriasVisiveis, aprovacoesPendentes, emailsPendentes, ocorrenciasAbertas }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
   return {
     gerais: [
       { href: "/painel", rotulo: "Início", icone: LayoutDashboard },
@@ -43,7 +45,7 @@ function montarMenu({ ehDiretor, diretorDe, aprovacoesPendentes, emailsPendentes
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
     ],
     grupos: [
-      { slug: "comercial", itens: [
+      { slug: "comercial", itens: !diretoriasVisiveis.includes("comercial") ? [] : [
         { href: "/comercial", rotulo: "Painel comercial", icone: BarChart3 },
         { href: "/funil", rotulo: "Funil", icone: KanbanSquare, contador: emailsPendentes },
         { href: "/empresas", rotulo: "Empresas e leads", icone: Building2 },
