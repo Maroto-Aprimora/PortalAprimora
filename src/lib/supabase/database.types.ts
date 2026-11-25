@@ -2294,6 +2294,176 @@ export type Database = {
           },
         ]
       }
+      pdi_ciclos: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          decisao: string | null
+          evidencias_avaliacao: string | null
+          id: string
+          inicio: string
+          membro_id: string
+          nota_autonomia: number | null
+          nota_comprometimento: number | null
+          nota_cumprimento: number | null
+          nota_qualidade: number | null
+          proximos_passos: string | null
+          semanas: number
+          situacao: string
+          suporte_oferecido: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          decisao?: string | null
+          evidencias_avaliacao?: string | null
+          id?: string
+          inicio: string
+          membro_id: string
+          nota_autonomia?: number | null
+          nota_comprometimento?: number | null
+          nota_cumprimento?: number | null
+          nota_qualidade?: number | null
+          proximos_passos?: string | null
+          semanas?: number
+          situacao?: string
+          suporte_oferecido?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          decisao?: string | null
+          evidencias_avaliacao?: string | null
+          id?: string
+          inicio?: string
+          membro_id?: string
+          nota_autonomia?: number | null
+          nota_comprometimento?: number | null
+          nota_cumprimento?: number | null
+          nota_qualidade?: number | null
+          proximos_passos?: string | null
+          semanas?: number
+          situacao?: string
+          suporte_oferecido?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pdi_ciclos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pdi_ciclos_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pdi_metas: {
+        Row: {
+          alvo: number
+          ciclo_id: string
+          created_at: string
+          criterio_qualidade: string | null
+          evidencias: string | null
+          foco: string | null
+          id: string
+          indicador: string | null
+          meta: string
+          ordem: number
+          prazo_semana: number
+          realizado: number[]
+          updated_at: string
+        }
+        Insert: {
+          alvo: number
+          ciclo_id: string
+          created_at?: string
+          criterio_qualidade?: string | null
+          evidencias?: string | null
+          foco?: string | null
+          id?: string
+          indicador?: string | null
+          meta: string
+          ordem?: number
+          prazo_semana: number
+          realizado?: number[]
+          updated_at?: string
+        }
+        Update: {
+          alvo?: number
+          ciclo_id?: string
+          created_at?: string
+          criterio_qualidade?: string | null
+          evidencias?: string | null
+          foco?: string | null
+          id?: string
+          indicador?: string | null
+          meta?: string
+          ordem?: number
+          prazo_semana?: number
+          realizado?: number[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pdi_metas_ciclo_id_fkey"
+            columns: ["ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "pdi_ciclos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pdi_registros: {
+        Row: {
+          autor_id: string | null
+          ciclo_id: string
+          created_at: string
+          id: string
+          semana: number
+          texto: string
+        }
+        Insert: {
+          autor_id?: string | null
+          ciclo_id: string
+          created_at?: string
+          id?: string
+          semana: number
+          texto: string
+        }
+        Update: {
+          autor_id?: string | null
+          ciclo_id?: string
+          created_at?: string
+          id?: string
+          semana?: number
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pdi_registros_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pdi_registros_ciclo_id_fkey"
+            columns: ["ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "pdi_ciclos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pontuacoes: {
         Row: {
           cancelado_em: string | null

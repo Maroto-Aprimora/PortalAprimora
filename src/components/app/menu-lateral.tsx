@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BarChart3, Building2, CalendarDays, ChevronDown, Gauge, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  BarChart3, Building2, CalendarDays, ChevronDown, ClipboardCheck, Gauge, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
   PackageSearch, ShieldAlert, Target, TrendingUp, Trophy, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
@@ -49,6 +49,8 @@ function montarMenu({ ehDiretor, diretorDe, aprovacoesPendentes, emailsPendentes
         { href: "/empresas", rotulo: "Empresas e leads", icone: Building2 },
         { href: "/desempenho", rotulo: "Desempenho individual", icone: TrendingUp },
         { href: "/metas", rotulo: "Metas", icone: Target },
+        // PDI: cada membro vê o seu; o diretor comercial vê todos (RLS)
+        { href: "/pdi", rotulo: "PDI", icone: ClipboardCheck },
         // Leads Contak: prospecção do SaaS de gestão de estoque (todo o time)
         { href: "/contak", rotulo: "Leads Contak", icone: PackageSearch },
         // Erros de e-mail, fluxos do n8n, agentes e telas: só o diretor comercial
