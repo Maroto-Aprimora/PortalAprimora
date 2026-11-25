@@ -9,6 +9,7 @@ import { Cartao, CabecalhoCartao } from "@/components/ui/cartao";
 import { Dialogo } from "@/components/ui/dialogo";
 import { criarClienteConvite } from "@/lib/supabase/client";
 import { mensagemDeErro } from "@/lib/erros";
+import { nomeCargo } from "@/lib/formatar";
 import { urlDoSite } from "@/lib/url";
 import {
   alterarCargo, alterarDataEntrada, alterarRodizio, criarPreCadastro, definirAtivo, marcarConviteEnviado, removerPreCadastro,
@@ -22,6 +23,7 @@ function avisar(r: Resultado, sucesso: string) {
 
 export function NovoPreCadastro({ diretorias }: { diretorias: { slug: string; nome: string }[] }) {
   const [aberto, setAberto] = useState(false);
+  const [diretoriaEscolhida, setDiretoriaEscolhida] = useState(diretorias[0]?.slug ?? "");
   const [pendente, iniciar] = useTransition();
 
   function enviar(form: FormData) {
@@ -47,14 +49,14 @@ export function NovoPreCadastro({ diretorias }: { diretorias: { slug: string; no
           <Campo rotulo="E-mail @aprimoraej.com" obrigatorio><Entrada name="email" type="email" required /></Campo>
           <div className="grid grid-cols-2 gap-3">
             <Campo rotulo="Diretoria">
-              <Selecao name="diretoria" defaultValue={diretorias[0]?.slug}>
+              <Selecao name="diretoria" defaultValue={diretorias[0]?.slug} onChange={(e) => setDiretoriaEscolhida(e.target.value)}>
                 {diretorias.map((d) => <option key={d.slug} value={d.slug}>{d.nome}</option>)}
               </Selecao>
             </Campo>
             <Campo rotulo="Cargo">
               <Selecao name="cargo" defaultValue="assessor">
                 <option value="trainee">Trainee</option>
-                <option value="assessor">Assessor</option>
+                <option value="assessor">{nomeCargo("assessor", diretoriaEscolhida)}</option>
                 <option value="diretor">Diretor</option>
               </Selecao>
             </Campo>
@@ -150,7 +152,7 @@ export function AcoesMembro({
           });
         }}>
         <option value="trainee">Trainee</option>
-        <option value="assessor">Assessor</option>
+        <option value="assessor">{nomeCargo("assessor", diretoria)}</option>
         <option value="diretor">Diretor</option>
       </Selecao>
       {!ehVoce && (

@@ -34,6 +34,11 @@ export function iniciais(nome: string | null | undefined) {
 
 export const NOME_CARGO = { diretor: "Diretor", assessor: "Assessor", trainee: "Trainee" } as const;
 
+/** Nome do cargo na diretoria: em Projetos o assessor se chama "Gerente". */
+export function nomeCargo(cargo: keyof typeof NOME_CARGO, diretoria?: string | null): string {
+  return cargo === "assessor" && diretoria === "projetos" ? "Gerente" : NOME_CARGO[cargo];
+}
+
 /** Minutos desde um instante (ISO); nulo se não houver data. */
 export function minutosDesde(iso: string | null | undefined): number | null {
   return iso ? Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000)) : null;

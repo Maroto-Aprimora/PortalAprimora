@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Avatar, Selo } from "@/components/ui/selo";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { formatarData, iniciais, NOME_CARGO } from "@/lib/formatar";
+import { formatarData, iniciais, nomeCargo } from "@/lib/formatar";
 import { obterUsuario } from "@/lib/usuario";
 import { AcoesMembro, AcoesPreCadastro, DataEntrada, NovoPreCadastro, ProcessosSeletivos, ReenviarPrimeiroAcesso, TransferirCarteira } from "./componentes";
 import { UserOff } from "@/components/ui/icones";
@@ -52,7 +52,7 @@ export default async function PaginaMembros() {
                 <div className="flex flex-wrap items-center gap-2">
                   {p.pre_cadastro_diretorias.map((v) => (
                     <Selo key={v.diretoria} tom="marca">
-                      {NOME_CARGO[v.cargo]} · {diretorias?.find((d) => d.slug === v.diretoria)?.nome}
+                      {nomeCargo(v.cargo, v.diretoria)} · {diretorias?.find((d) => d.slug === v.diretoria)?.nome}
                     </Selo>
                   ))}
                   {p.convite_enviado_em && <Selo>Convite enviado em {formatarData(p.convite_enviado_em)}</Selo>}
@@ -116,7 +116,7 @@ export default async function PaginaMembros() {
                           mostrarRodizio={d.slug === "comercial"}
                         />
                       ) : (
-                        <Selo tom={c.cargo === "diretor" ? "destaque" : "neutro"}>{NOME_CARGO[c.cargo]}</Selo>
+                        <Selo tom={c.cargo === "diretor" ? "destaque" : "neutro"}>{nomeCargo(c.cargo, d.slug)}</Selo>
                       )}
                       </div>
                     </li>

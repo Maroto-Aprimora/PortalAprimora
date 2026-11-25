@@ -1,6 +1,6 @@
 import { MenuLateral } from "@/components/app/menu-lateral";
 import { Sino } from "@/components/app/sino";
-import { NOME_CARGO } from "@/lib/formatar";
+import { nomeCargo } from "@/lib/formatar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { obterUsuario } from "@/lib/usuario";
 
@@ -18,7 +18,7 @@ export default async function LayoutApp({ children, modal }: { children: React.R
   ]);
   const principal = usuario.cargos.find((c) => c.diretoria === "comercial") ?? usuario.cargos[0];
   const descricao = principal
-    ? `${NOME_CARGO[principal.cargo]} · ${diretorias?.find((d) => d.slug === principal.diretoria)?.nome ?? principal.diretoria}`
+    ? `${nomeCargo(principal.cargo, principal.diretoria)} · ${diretorias?.find((d) => d.slug === principal.diretoria)?.nome ?? principal.diretoria}`
     : "Sem diretoria";
 
   return (
