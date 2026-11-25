@@ -8,7 +8,7 @@ import { formatarData } from "@/lib/formatar";
 import { SITUACOES_CICLO, calcularMeta, semanasDoCiclo, situacaoDoMembro, tomDoStatus, type SituacaoCiclo } from "@/lib/pdi";
 import { obterUsuario } from "@/lib/usuario";
 import { cn } from "@/lib/utils";
-import { AvaliacaoFinal, EditarCiclo, MetasDoCiclo, NovoCiclo, RegistrosDoCiclo } from "./componentes";
+import { AvaliacaoFinal, EditarCiclo, MetasDoCiclo, NovoCiclo } from "./componentes";
 
 export const metadata: Metadata = { title: "PDI" };
 
@@ -46,9 +46,6 @@ export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
     ?? resumo.find((r) => r.ciclo.situacao === "em_andamento")
     ?? resumo[0];
 
-  const { data: registros } = atual
-    ? await supabase.from("pdi_registros").select("*, membros!pdi_registros_autor_id_fkey(nome)").eq("ciclo_id", atual.ciclo.id).order("created_at", { ascending: false })
-    : { data: [] };
   const membros = ehDiretor ? (await carregarConfiguracaoComercial()).membrosComercial : [];
   const podeLancar = !!atual && (ehDiretor || atual.ciclo.membro_id === usuario.id);
 
@@ -58,7 +55,7 @@ export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
         titulo="PDI"
         descricao={ehDiretor
           ? "Planos de desenvolvimento individual do Comercial. Você vê os PDIs de todos; cada membro vê só o seu."
-          : "Seu plano de desenvolvimento individual: metas, realizado por semana, evidências, check-ins e avaliação. Só você e o diretor comercial veem."}
+          : "Seu plano de desenvolvimento individual: metas, realizado por semana, evidências e avaliação. Só você e o diretor comercial veem."}
         acoes={ehDiretor && (
           <NovoCiclo membros={membros}
             ciclos={resumo.map((r) => ({ id: r.ciclo.id, rotulo: `${r.nome} · início ${formatarData(r.ciclo.inicio)}` }))} />
@@ -71,7 +68,7 @@ export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
         <div className="space-y-6">
           {ehDiretor && (
             <Cartao>
-              <CabecalhoCartao titulo="Situação por membro" descricao="Clique em um membro para abrir o PDI. A média de progresso é um sinalizador, não uma decisão automática." />
+              <CabecalhoCartao titulo="Situação por membro" />
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-superficie-2 text-left text-xs uppercase tracking-wide text-texto-suave">
@@ -119,25 +116,7 @@ export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
           <MetasDoCiclo cicloId={atual.ciclo.id} metas={metasDe(atual.ciclo.id)} semanas={atual.ciclo.semanas} semanaAtual={atual.emAndamento}
             podeLancar={podeLancar} ehDiretor={ehDiretor} />
 
-          <div className="grid gap-6 xl:grid-cols-2">
-            <RegistrosDoCiclo cicloId={atual.ciclo.id} semanas={atual.ciclo.semanas} semanaAtual={atual.emAndamento}
-              registros={(registros ?? []).map((r) => ({ ...r, autor: r.membros?.nome ?? null }))}
-              podeRegistrar={podeLancar} usuarioId={usuario.id} ehDiretor={ehDiretor} />
-            <AvaliacaoFinal key={atual.ciclo.updated_at} ciclo={atual.ciclo} ehDiretor={ehDiretor} />
-          </div>
-
-          <Cartao>
-            <CabecalhoCartao titulo="Rotina do PDI" />
-            <ul className="space-y-2 px-6 py-4 text-sm text-texto-suave">
-              <li><strong className="text-texto">Antes do início:</strong> alinhamento do objetivo, metas, indicadores, prazos e evidências; confirmar se as metas são viáveis.</li>
-              <li><strong className="text-texto">Durante a semana:</strong> executar e lançar o realizado na semana correspondente, com a evidência.</li>
-              <li><strong className="text-texto">Toda sexta:</strong> atualizar os números e registrar dificuldades, impedimentos e suporte necessário.</li>
-              <li><strong className="text-texto">Toda segunda (15–20 min):</strong> check-in de progresso, prioridades e encaminhamentos.</li>
-              <li><strong className="text-texto">Fim da semana 2:</strong> revisão intermediária e, se preciso, plano de recuperação.</li>
-              <li><strong className="text-texto">Fim do ciclo:</strong> avaliação final, feedback individual e registro da decisão e dos próximos passos.</li>
-            </ul>
-            <p className="border-t border-borda px-6 py-3 text-xs text-texto-suave">O PDI é uma ferramenta de desenvolvimento e acompanhamento, não uma punição.</p>
-          </Cartao>
+          <AvaliacaoFinal key={atual.ciclo.updated_at} ciclo={atual.ciclo} ehDiretor={ehDiretor} />
         </div>
       )}
     </>

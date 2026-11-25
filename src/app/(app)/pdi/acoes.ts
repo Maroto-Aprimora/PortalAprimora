@@ -76,12 +76,9 @@ const esquemaAvaliacao = z.object({
   nota_cumprimento: nota,
   nota_qualidade: nota,
   nota_autonomia: nota,
-  evidencias_avaliacao: textoOpcional,
-  suporte_oferecido: textoOpcional,
-  decisao: textoOpcional,
-  proximos_passos: textoOpcional,
 });
 
+/** Notas da avaliação final (1 a 5), só o diretor. */
 export async function salvarAvaliacao(cicloId: string, dados: Record<string, unknown>): Promise<Resultado> {
   const v = esquemaAvaliacao.safeParse(dados);
   if (!v.success || !id.safeParse(cicloId).success) return { ok: false, erro: v.error?.issues[0].message ?? "Registro inválido." };
@@ -144,35 +141,6 @@ export async function salvarRealizado(metaId: string, dados: Record<string, unkn
   const { data, error } = await supabase.from("pdi_metas").update(v.data).eq("id", metaId).select("id");
   if (error) return { ok: false, erro: mensagemDeErro(error) };
   if (!data?.length) return { ok: false, erro: "Você só pode lançar o realizado do seu próprio PDI." };
-  revalidar();
-  return { ok: true };
-}
-
-// ---------- Registros semanais (check-ins) ----------
-
-const esquemaRegistro = z.object({
-  semana: z.preprocess((v) => Number(v), z.number().int().min(1).max(12)),
-  texto: z.string().trim().min(2, "Escreva o registro.").max(5000),
-});
-
-export async function criarRegistro(cicloId: string, dados: Record<string, unknown>): Promise<Resultado> {
-  const v = esquemaRegistro.safeParse(dados);
-  if (!v.success) return { ok: false, erro: v.error.issues[0].message };
-  if (!id.safeParse(cicloId).success) return { ok: false, erro: "Registro inválido." };
-  const supabase = await criarClienteServidor();
-  const { data: auth } = await supabase.auth.getUser();
-  const { error } = await supabase.from("pdi_registros").insert({ ...v.data, ciclo_id: cicloId, autor_id: auth.user?.id });
-  if (error) return { ok: false, erro: error.code === "42501" ? "Você só registra no seu próprio PDI." : mensagemDeErro(error) };
-  revalidar();
-  return { ok: true };
-}
-
-export async function excluirRegistro(registroId: string): Promise<Resultado> {
-  if (!id.safeParse(registroId).success) return { ok: false, erro: "Registro inválido." };
-  const supabase = await criarClienteServidor();
-  const { data, error } = await supabase.from("pdi_registros").delete().eq("id", registroId).select("id");
-  if (error) return { ok: false, erro: mensagemDeErro(error) };
-  if (!data?.length) return { ok: false, erro: "Só o autor ou o diretor exclui o registro." };
   revalidar();
   return { ok: true };
 }

@@ -10,18 +10,16 @@ import { Cartao, CabecalhoCartao, Vazio } from "@/components/ui/cartao";
 import { Dialogo } from "@/components/ui/dialogo";
 import { Selo } from "@/components/ui/selo";
 import type { Tables } from "@/lib/supabase/database.types";
-import { formatarDataHora } from "@/lib/formatar";
 import {
   ESCALA_AVALIACAO, PESOS_AVALIACAO, SITUACOES_CICLO, calcularMeta, notaPonderada, resultadoSugerido, tomDoStatus,
   type ChaveNota,
 } from "@/lib/pdi";
 import {
-  criarCiclo, criarRegistro, excluirCiclo, excluirMeta, excluirRegistro, salvarAvaliacao, salvarCiclo, salvarMeta, salvarRealizado,
+  criarCiclo, excluirCiclo, excluirMeta, salvarAvaliacao, salvarCiclo, salvarMeta, salvarRealizado,
 } from "./acoes";
 
 type Meta = Tables<"pdi_metas">;
 type Ciclo = Tables<"pdi_ciclos">;
-type Registro = Tables<"pdi_registros"> & { autor: string | null };
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -154,62 +152,15 @@ export function MetasDoCiclo({ cicloId, metas, semanas, semanaAtual, podeLancar,
   );
 }
 
-// ---------- Registros semanais ----------
+// ---------- Avaliação final (gráfico de pizza) ----------
 
-export function RegistrosDoCiclo({ cicloId, registros, semanas, semanaAtual, podeRegistrar, usuarioId, ehDiretor }: {
-  cicloId: string; registros: Registro[]; semanas: number; semanaAtual: number; podeRegistrar: boolean; usuarioId: string; ehDiretor: boolean;
-}) {
-  const [pendente, iniciar] = useTransition();
-  const [texto, setTexto] = useState("");
-  return (
-    <Cartao>
-      <CabecalhoCartao titulo="Check-ins e registros"
-        descricao="Sexta: dificuldades, impedimentos e suporte necessário. Segunda: check-in com prioridades e encaminhamentos. Registre também ausências justificadas." />
-      {podeRegistrar && (
-        <form className="space-y-3 border-b border-borda px-6 py-4" action={(f) => iniciar(async () => {
-          const r = await criarRegistro(cicloId, { semana: f.get("semana"), texto });
-          if (!r.ok) return void toast.error(r.erro);
-          toast.success("Registro salvo.");
-          setTexto("");
-        })}>
-          <AreaTexto rows={3} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="O que aconteceu na semana, dificuldades, suporte necessário, encaminhamentos…" required />
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Selecao name="semana" defaultValue={Math.max(1, semanaAtual)} className="h-9 w-36">
-              {Array.from({ length: semanas }, (_, i) => <option key={i + 1} value={i + 1}>Semana {i + 1}</option>)}
-            </Selecao>
-            <Botao type="submit" tamanho="sm" carregando={pendente}>Registrar</Botao>
-          </div>
-        </form>
-      )}
-      {registros.length === 0 ? (
-        <Vazio compacto titulo="Nenhum registro ainda." />
-      ) : (
-        <ul className="divide-y divide-borda">
-          {registros.map((r) => (
-            <li key={r.id} className="px-6 py-3 text-sm">
-              <div className="flex flex-wrap items-center gap-2 text-xs text-texto-suave">
-                <Selo tom="marca">Semana {r.semana}</Selo>
-                <span>{r.autor ?? "—"} · {formatarDataHora(r.created_at)}</span>
-                {(r.autor_id === usuarioId || ehDiretor) && (
-                  <button type="button" className="ml-auto text-texto-suave hover:text-perigo" aria-label="Excluir registro"
-                    onClick={() => confirm("Excluir este registro?") && iniciar(async () => {
-                      const x = await excluirRegistro(r.id);
-                      if (!x.ok) toast.error(x.erro);
-                    })}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
-              <p className="mt-1 whitespace-pre-line text-texto">{r.texto}</p>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Cartao>
-  );
+const CORES = ["var(--serie-1)", "var(--serie-2)", "var(--serie-3)", "var(--serie-4)"];
+
+function fatia(cx: number, cy: number, r: number, ri: number, a0: number, a1: number) {
+  const p = (r0: number, a: number) => `${cx + r0 * Math.sin(a)} ${cy - r0 * Math.cos(a)}`;
+  const grande = a1 - a0 > Math.PI ? 1 : 0;
+  return `M ${p(r, a0)} A ${r} ${r} 0 ${grande} 1 ${p(r, a1)} L ${p(ri, a1)} A ${ri} ${ri} 0 ${grande} 0 ${p(ri, a0)} Z`;
 }
-
-// ---------- Avaliação final ----------
 
 export function AvaliacaoFinal({ ciclo, ehDiretor }: { ciclo: Ciclo; ehDiretor: boolean }) {
   const [pendente, iniciar] = useTransition();
@@ -217,50 +168,70 @@ export function AvaliacaoFinal({ ciclo, ehDiretor }: { ciclo: Ciclo; ehDiretor: 
     nota_comprometimento: ciclo.nota_comprometimento, nota_cumprimento: ciclo.nota_cumprimento,
     nota_qualidade: ciclo.nota_qualidade, nota_autonomia: ciclo.nota_autonomia,
   });
+  const [foco, setFoco] = useState<number | null>(null);
   const nota = notaPonderada(notas);
   const sugerido = resultadoSugerido(notas);
+  // Cada critério vale até o seu peso (nota 5 = peso inteiro); o resto até 100 fica neutro.
+  const partes = PESOS_AVALIACAO.map((p, i) => ({ ...p, cor: CORES[i], pontos: ((notas[p.chave] ?? 0) * p.peso) / 5 }));
+  const somado = partes.reduce((s, p) => s + p.pontos, 0);
+  const fatias = [...partes.filter((p) => p.pontos > 0), { chave: "resto", nome: "A conquistar", cor: "var(--serie-resto)", pontos: 100 - somado, peso: 0 }];
+  let angulo = 0;
+
+  const mudar = (chave: ChaveNota, valor: number | null) => {
+    const novas = { ...notas, [chave]: valor };
+    setNotas(novas);
+    iniciar(async () => {
+      const r = await salvarAvaliacao(ciclo.id, novas);
+      if (!r.ok) toast.error(r.erro);
+    });
+  };
 
   return (
     <Cartao>
       <CabecalhoCartao titulo="Avaliação final"
-        descricao="Notas de 1 a 5 (pesos 30/30/25/15). A nota ponderada é um apoio: a decisão considera evidências, contexto, suporte e evolução. Critério sugerido: 70 ou mais, com pelo menos 3 em comprometimento e qualidade." />
-      <form className="space-y-4 px-6 py-4" action={(f) => iniciar(async () => {
-        const g = (k: string) => String(f.get(k) ?? "");
-        const r = await salvarAvaliacao(ciclo.id, {
-          ...notas, evidencias_avaliacao: g("evidencias_avaliacao"), suporte_oferecido: g("suporte_oferecido"),
-          decisao: g("decisao"), proximos_passos: g("proximos_passos"),
-        });
-        if (!r.ok) return void toast.error(r.erro);
-        toast.success("Avaliação salva.");
-      })}>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {PESOS_AVALIACAO.map((p) => (
-            <Campo key={p.chave} rotulo={`${p.nome} (${p.peso}%)`}>
-              <Selecao value={notas[p.chave] ?? ""} disabled={!ehDiretor}
-                onChange={(e) => setNotas((n) => ({ ...n, [p.chave]: e.target.value ? Number(e.target.value) : null }))}>
-                <option value="">—</option>
-                {[1, 2, 3, 4, 5].map((v) => <option key={v} value={v} title={ESCALA_AVALIACAO[v - 1]}>{v}</option>)}
-              </Selecao>
-            </Campo>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-3 rounded-controle bg-superficie-2 px-4 py-3 text-sm">
-          <span className="text-texto-suave">Nota ponderada</span>
-          <strong className="font-titulo text-xl text-marca">{nota == null ? "—" : Math.round(nota)}</strong>
+        descricao="Cada fatia é o quanto o critério soma na nota ponderada (0 a 100): nota de 1 a 5 × peso (30/30/25/15)." />
+      <div className="flex flex-wrap items-center gap-8 px-6 py-5">
+        <svg viewBox="0 0 200 200" className="h-48 w-48 shrink-0" role="img"
+          aria-label={nota == null ? "Avaliação ainda não preenchida" : `Nota ponderada ${Math.round(nota)} de 100`}>
+          {fatias.map((f, i) => {
+            const a0 = angulo;
+            const a1 = angulo + (f.pontos / 100) * Math.PI * 2;
+            angulo = a1;
+            if (f.pontos <= 0) return null;
+            const d = f.pontos >= 100 ? null : fatia(100, 100, 92, 58, a0, a1);
+            return d ? (
+              <path key={f.chave} d={d} fill={f.cor} stroke="var(--superficie)" strokeWidth={2}
+                opacity={foco == null || foco === i ? 1 : 0.35}
+                onMouseEnter={() => setFoco(i)} onMouseLeave={() => setFoco(null)}>
+                <title>{`${f.nome}: ${Math.round(f.pontos)} pontos`}</title>
+              </path>
+            ) : <circle key={f.chave} cx={100} cy={100} r={75} fill="none" stroke={f.cor} strokeWidth={34} />;
+          })}
+          <text x={100} y={98} textAnchor="middle" className="fill-texto font-titulo text-[34px] font-bold">{nota == null ? "—" : Math.round(nota)}</text>
+          <text x={100} y={120} textAnchor="middle" className="fill-texto-suave text-[11px]">de 100</text>
+        </svg>
+        <div className="min-w-56 flex-1 space-y-3">
+          <ul className="space-y-2 text-sm">
+            {partes.map((p, i) => (
+              <li key={p.chave} className="flex items-center gap-2" onMouseEnter={() => setFoco(fatias.indexOf(p))} onMouseLeave={() => setFoco(null)}>
+                <span className="h-3 w-3 shrink-0 rounded-sm" style={{ background: CORES[i] }} />
+                <span className="flex-1 text-texto">{p.nome} <span className="text-texto-suave">({p.peso}%)</span></span>
+                {ehDiretor ? (
+                  <Selecao value={notas[p.chave] ?? ""} disabled={pendente} className="h-8 w-20" aria-label={`Nota de ${p.nome}`}
+                    onChange={(e) => mudar(p.chave, e.target.value ? Number(e.target.value) : null)}>
+                    <option value="">—</option>
+                    {[1, 2, 3, 4, 5].map((v) => <option key={v} value={v} title={ESCALA_AVALIACAO[v - 1]}>{v}</option>)}
+                  </Selecao>
+                ) : (
+                  <span className="w-10 text-right font-semibold text-texto">{notas[p.chave] ?? "—"}</span>
+                )}
+                <span className="w-14 text-right text-texto-suave">{Math.round(p.pontos)} pts</span>
+              </li>
+            ))}
+          </ul>
           <Selo tom={sugerido === "PDI pode ser concluído" ? "sucesso" : sugerido === "Preencher avaliação" ? "neutro" : "destaque"}>{sugerido}</Selo>
         </div>
-        <details className="text-xs text-texto-suave">
-          <summary className="cursor-pointer font-semibold">Escala de avaliação</summary>
-          <ul className="mt-2 space-y-1">{ESCALA_AVALIACAO.map((e) => <li key={e}>{e}</li>)}</ul>
-        </details>
-        <div className="grid gap-3 lg:grid-cols-2">
-          <Campo rotulo="Evidências / exemplos observados"><AreaTexto name="evidencias_avaliacao" rows={3} defaultValue={ciclo.evidencias_avaliacao ?? ""} disabled={!ehDiretor} /></Campo>
-          <Campo rotulo="Suporte oferecido pela diretoria"><AreaTexto name="suporte_oferecido" rows={3} defaultValue={ciclo.suporte_oferecido ?? ""} disabled={!ehDiretor} /></Campo>
-          <Campo rotulo="Decisão final"><AreaTexto name="decisao" rows={3} defaultValue={ciclo.decisao ?? ""} disabled={!ehDiretor} /></Campo>
-          <Campo rotulo="Próximos passos / data de revisão"><AreaTexto name="proximos_passos" rows={3} defaultValue={ciclo.proximos_passos ?? ""} disabled={!ehDiretor} /></Campo>
-        </div>
-        {ehDiretor && <div className="flex justify-end"><Botao type="submit" carregando={pendente}>Salvar avaliação</Botao></div>}
-      </form>
+      </div>
     </Cartao>
   );
 }

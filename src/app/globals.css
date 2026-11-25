@@ -30,6 +30,12 @@
   --sucesso-suave: #e9f6ef;
   --perigo: #c0392b;
   --perigo-suave: #fcebea;
+  /* Séries de gráfico (ordem fixa, validada para daltonismo) e o resto neutro */
+  --serie-1: #257de0;
+  --serie-2: #f47230;
+  --serie-3: #00b894;
+  --serie-4: #f2a600;
+  --serie-resto: #e4e6ea;
   /* Menu lateral: mesma superfície neutra do conteúdo */
   --menu: #ffffff;
   --menu-texto: #5f6670;
@@ -58,6 +64,11 @@
   --sucesso-suave: #16301f;
   --perigo: #ef6b5e;
   --perigo-suave: #3a1c1a;
+  --serie-1: #338ced;
+  --serie-2: #e76624;
+  --serie-3: #00a888;
+  --serie-4: #d28e05;
+  --serie-resto: #2b3038;
   --menu: #14171b;
   --menu-texto: #9aa1ab;
   --menu-ativo: #1f232a;
@@ -84,6 +95,11 @@
   --color-sucesso-suave: var(--sucesso-suave);
   --color-perigo: var(--perigo);
   --color-perigo-suave: var(--perigo-suave);
+  --color-serie-1: var(--serie-1);
+  --color-serie-2: var(--serie-2);
+  --color-serie-3: var(--serie-3);
+  --color-serie-4: var(--serie-4);
+  --color-serie-resto: var(--serie-resto);
   --color-menu: var(--menu);
   --color-menu-texto: var(--menu-texto);
   --color-menu-ativo: var(--menu-ativo);
