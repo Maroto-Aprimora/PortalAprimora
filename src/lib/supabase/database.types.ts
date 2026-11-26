@@ -596,6 +596,80 @@ export type Database = {
           },
         ]
       }
+      compromissos_1on1: {
+        Row: {
+          compartilhado: boolean
+          concluido_em: string | null
+          created_at: string
+          criado_por: string | null
+          descricao: string
+          id: string
+          membro_id: string
+          prazo: string | null
+          responsavel_id: string | null
+          reuniao_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          compartilhado?: boolean
+          concluido_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao: string
+          id?: string
+          membro_id: string
+          prazo?: string | null
+          responsavel_id?: string | null
+          reuniao_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          compartilhado?: boolean
+          concluido_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string
+          id?: string
+          membro_id?: string
+          prazo?: string | null
+          responsavel_id?: string | null
+          reuniao_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compromissos_1on1_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compromissos_1on1_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compromissos_1on1_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compromissos_1on1_reuniao_id_fkey"
+            columns: ["reuniao_id"]
+            isOneToOne: false
+            referencedRelation: "reunioes_1on1"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contatos: {
         Row: {
           cargo: string | null
@@ -1396,6 +1470,67 @@ export type Database = {
           },
         ]
       }
+      feedbacks: {
+        Row: {
+          autor_id: string | null
+          compartilhado: boolean
+          created_at: string
+          dado_em: string
+          descricao: string
+          id: string
+          membro_id: string
+          reuniao_id: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          autor_id?: string | null
+          compartilhado?: boolean
+          created_at?: string
+          dado_em?: string
+          descricao: string
+          id?: string
+          membro_id: string
+          reuniao_id?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          autor_id?: string | null
+          compartilhado?: boolean
+          created_at?: string
+          dado_em?: string
+          descricao?: string
+          id?: string
+          membro_id?: string
+          reuniao_id?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedbacks_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedbacks_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedbacks_reuniao_id_fkey"
+            columns: ["reuniao_id"]
+            isOneToOne: false
+            referencedRelation: "reunioes_1on1"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feriados: {
         Row: {
           created_at: string
@@ -2161,6 +2296,156 @@ export type Database = {
           },
         ]
       }
+      objetivo_atualizacoes: {
+        Row: {
+          autor_id: string | null
+          created_at: string
+          id: string
+          objetivo_id: string
+          status: string | null
+          texto: string
+        }
+        Insert: {
+          autor_id?: string | null
+          created_at?: string
+          id?: string
+          objetivo_id: string
+          status?: string | null
+          texto: string
+        }
+        Update: {
+          autor_id?: string | null
+          created_at?: string
+          id?: string
+          objetivo_id?: string
+          status?: string | null
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetivo_atualizacoes_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objetivo_atualizacoes_objetivo_id_fkey"
+            columns: ["objetivo_id"]
+            isOneToOne: false
+            referencedRelation: "objetivos_desenvolvimento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objetivo_etapas: {
+        Row: {
+          created_at: string
+          feita: boolean
+          id: string
+          objetivo_id: string
+          ordem: number
+          prazo: string | null
+          titulo: string
+        }
+        Insert: {
+          created_at?: string
+          feita?: boolean
+          id?: string
+          objetivo_id: string
+          ordem?: number
+          prazo?: string | null
+          titulo: string
+        }
+        Update: {
+          created_at?: string
+          feita?: boolean
+          id?: string
+          objetivo_id?: string
+          ordem?: number
+          prazo?: string | null
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetivo_etapas_objetivo_id_fkey"
+            columns: ["objetivo_id"]
+            isOneToOne: false
+            referencedRelation: "objetivos_desenvolvimento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objetivos_desenvolvimento: {
+        Row: {
+          compartilhado: boolean
+          competencia: string | null
+          concluido_em: string | null
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          id: string
+          membro_id: string
+          prazo: string | null
+          reuniao_id: string | null
+          status: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          compartilhado?: boolean
+          competencia?: string | null
+          concluido_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          membro_id: string
+          prazo?: string | null
+          reuniao_id?: string | null
+          status?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          compartilhado?: boolean
+          competencia?: string | null
+          concluido_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          membro_id?: string
+          prazo?: string | null
+          reuniao_id?: string | null
+          status?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetivos_desenvolvimento_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objetivos_desenvolvimento_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objetivos_desenvolvimento_reuniao_id_fkey"
+            columns: ["reuniao_id"]
+            isOneToOne: false
+            referencedRelation: "reunioes_1on1"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ocorrencias: {
         Row: {
           chave: string | null
@@ -2334,6 +2619,35 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "diretorias"
             referencedColumns: ["slug"]
+          },
+        ]
+      }
+      parametros_vp: {
+        Row: {
+          atualizado_por: string | null
+          frequencia_1on1_dias: number
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          atualizado_por?: string | null
+          frequencia_1on1_dias?: number
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          atualizado_por?: string | null
+          frequencia_1on1_dias?: number
+          id?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parametros_vp_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -3084,6 +3398,207 @@ export type Database = {
           },
         ]
       }
+      reuniao_1on1_privados: {
+        Row: {
+          analise: Json | null
+          analise_em: string | null
+          analise_erro: string | null
+          analise_status: string | null
+          analise_trabalho_id: string | null
+          anotacoes: string | null
+          atualizado_por: string | null
+          created_at: string
+          perguntas: string | null
+          preocupacoes: string | null
+          reuniao_id: string
+          transcricao: string | null
+          transcricao_consentimento_em: string | null
+          transcricao_consentimento_por: string | null
+          updated_at: string
+        }
+        Insert: {
+          analise?: Json | null
+          analise_em?: string | null
+          analise_erro?: string | null
+          analise_status?: string | null
+          analise_trabalho_id?: string | null
+          anotacoes?: string | null
+          atualizado_por?: string | null
+          created_at?: string
+          perguntas?: string | null
+          preocupacoes?: string | null
+          reuniao_id: string
+          transcricao?: string | null
+          transcricao_consentimento_em?: string | null
+          transcricao_consentimento_por?: string | null
+          updated_at?: string
+        }
+        Update: {
+          analise?: Json | null
+          analise_em?: string | null
+          analise_erro?: string | null
+          analise_status?: string | null
+          analise_trabalho_id?: string | null
+          anotacoes?: string | null
+          atualizado_por?: string | null
+          created_at?: string
+          perguntas?: string | null
+          preocupacoes?: string | null
+          reuniao_id?: string
+          transcricao?: string | null
+          transcricao_consentimento_em?: string | null
+          transcricao_consentimento_por?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reuniao_1on1_privados_analise_trabalho_id_fkey"
+            columns: ["analise_trabalho_id"]
+            isOneToOne: false
+            referencedRelation: "trabalhos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reuniao_1on1_privados_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reuniao_1on1_privados_reuniao_id_fkey"
+            columns: ["reuniao_id"]
+            isOneToOne: true
+            referencedRelation: "reunioes_1on1"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reuniao_1on1_privados_transcricao_consentimento_por_fkey"
+            columns: ["transcricao_consentimento_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reuniao_1on1_resumos: {
+        Row: {
+          atualizado_por: string | null
+          compartilhado: boolean
+          conteudo: Json
+          created_at: string
+          gerado_por_ia: boolean
+          reuniao_id: string
+          updated_at: string
+        }
+        Insert: {
+          atualizado_por?: string | null
+          compartilhado?: boolean
+          conteudo?: Json
+          created_at?: string
+          gerado_por_ia?: boolean
+          reuniao_id: string
+          updated_at?: string
+        }
+        Update: {
+          atualizado_por?: string | null
+          compartilhado?: boolean
+          conteudo?: Json
+          created_at?: string
+          gerado_por_ia?: boolean
+          reuniao_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reuniao_1on1_resumos_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reuniao_1on1_resumos_reuniao_id_fkey"
+            columns: ["reuniao_id"]
+            isOneToOne: true
+            referencedRelation: "reunioes_1on1"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reunioes_1on1: {
+        Row: {
+          agendada_para: string
+          conduzida_por: string | null
+          created_at: string
+          criado_por: string | null
+          duracao_min: number
+          id: string
+          local: string | null
+          membro_id: string
+          modalidade: string
+          motivo_cancelamento: string | null
+          pauta: string | null
+          realizada_em: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agendada_para: string
+          conduzida_por?: string | null
+          created_at?: string
+          criado_por?: string | null
+          duracao_min?: number
+          id?: string
+          local?: string | null
+          membro_id: string
+          modalidade?: string
+          motivo_cancelamento?: string | null
+          pauta?: string | null
+          realizada_em?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agendada_para?: string
+          conduzida_por?: string | null
+          created_at?: string
+          criado_por?: string | null
+          duracao_min?: number
+          id?: string
+          local?: string | null
+          membro_id?: string
+          modalidade?: string
+          motivo_cancelamento?: string | null
+          pauta?: string | null
+          realizada_em?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reunioes_1on1_conduzida_por_fkey"
+            columns: ["conduzida_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reunioes_1on1_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reunioes_1on1_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reunioes_recorrentes: {
         Row: {
           ativa: boolean
@@ -3519,6 +4034,7 @@ export type Database = {
     }
     Functions: {
       agenda_do_link: { Args: { _token: string }; Returns: Json }
+      alternar_agente_1on1: { Args: { _ativo: boolean }; Returns: undefined }
       concluir_diagnostico: { Args: { _diagnostico: string }; Returns: Json }
       descartar_empresa_sem_negocio: {
         Args: { _empresa: string }
@@ -3583,6 +4099,10 @@ export type Database = {
         Args: { _id: string; _resultado?: Json; _segredo: string }
         Returns: Json
       }
+      n8n_dados_1on1: {
+        Args: { _segredo: string; _trabalho: string }
+        Returns: Json
+      }
       n8n_erro: {
         Args: {
           _execucao_id?: string
@@ -3625,6 +4145,7 @@ export type Database = {
       }
       n8n_saude: { Args: { _segredo: string }; Returns: Json }
       normalizar: { Args: { _t: string }; Returns: string }
+      pedir_analise_1on1: { Args: { _reuniao: string }; Returns: string }
       plano_melhoria: { Args: { _membro: string }; Returns: Json }
       reabrir_diagnostico: {
         Args: { _diagnostico: string }

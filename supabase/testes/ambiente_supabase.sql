@@ -1,7 +1,7 @@
 -- Imitação mínima do ambiente Supabase (papéis, auth.uid(), cron, net, storage) para testar migrações localmente
 do $$ begin create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls; exception when duplicate_object then null; end $$;
 create schema auth; create schema extensions; create schema cron; create schema net; create schema storage;
-create table auth.users (id uuid primary key default gen_random_uuid(), email text, raw_user_meta_data jsonb default '{}', created_at timestamptz default now());
+create table auth.users (id uuid primary key default gen_random_uuid(), email text, raw_user_meta_data jsonb default '{}', created_at timestamptz default now(), last_sign_in_at timestamptz);
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
 create function auth.role() returns text language sql stable as $$ select current_setting('role', true) $$;
