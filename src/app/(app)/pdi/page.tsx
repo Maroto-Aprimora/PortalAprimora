@@ -3,10 +3,9 @@ import Link from "next/link";
 import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { carregarConfiguracaoComercial } from "@/lib/crm-servidor";
 import { formatarData } from "@/lib/formatar";
 import { SITUACOES_CICLO, calcularMeta, semanasDoCiclo, situacaoDoMembro, tomDoStatus, type SituacaoCiclo } from "@/lib/pdi";
-import { obterUsuario } from "@/lib/usuario";
+import { carregarPessoas, obterPapelVp } from "@/lib/vp-servidor";
 import { cn } from "@/lib/utils";
 import { AvaliacaoFinal, EditarCiclo, MetasDoCiclo, NovoCiclo } from "./componentes";
 
@@ -17,10 +16,17 @@ const media = (v: number[]) => (v.length ? v.reduce((a, b) => a + b, 0) / v.leng
 
 export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
   const sp = await searchParams;
-  const [usuario, supabase] = await Promise.all([obterUsuario(), criarClienteServidor()]);
-  const ehDiretor = usuario.ehDiretorDe("comercial");
+  const [papel, pessoas, supabase] = await Promise.all([obterPapelVp(), carregarPessoas(), criarClienteServidor()]);
+  const { usuario } = papel;
+  // Gere o PDI de alguém: o diretor de uma diretoria do membro ou o diretor da VP (nunca o próprio) — regra do banco
+  const dirige = usuario.cargos.filter((c) => c.cargo === "diretor").map((c) => c.diretoria);
+  const gere = (membro: string) => membro !== usuario.id
+    && (papel.adminVp || (pessoas.find((p) => p.id === membro)?.diretorias ?? []).some((d) => dirige.includes(d)));
+  const membros = pessoas.filter((p) => gere(p.id));
+  // Vê a tabela de todos: quem gere alguém ou a equipe da VP (que lê todos)
+  const ehDiretor = membros.length > 0 || papel.equipeVp;
 
-  // O banco só devolve o PDI do próprio membro; o diretor comercial recebe todos.
+  // O banco devolve o próprio PDI; a equipe da VP vê todos; o diretor, os da diretoria dele.
   const [{ data: ciclos }, { data: metas }] = await Promise.all([
     supabase.from("pdi_ciclos").select("*, membros!pdi_ciclos_membro_id_fkey(nome)").order("inicio", { ascending: false }),
     supabase.from("pdi_metas").select("*").order("ordem"),
@@ -46,17 +52,17 @@ export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
     ?? resumo.find((r) => r.ciclo.situacao === "em_andamento")
     ?? resumo[0];
 
-  const membros = ehDiretor ? (await carregarConfiguracaoComercial()).membrosComercial : [];
-  const podeLancar = !!atual && (ehDiretor || atual.ciclo.membro_id === usuario.id);
+  const gereAtual = !!atual && gere(atual.ciclo.membro_id);
+  const podeLancar = !!atual && (gereAtual || atual.ciclo.membro_id === usuario.id);
 
   return (
     <>
       <TituloPagina
         titulo="PDI"
         descricao={ehDiretor
-          ? "Planos de desenvolvimento individual do Comercial. Você vê os PDIs de todos; cada membro vê só o seu."
-          : "Seu plano de desenvolvimento individual: metas, realizado por semana, evidências e avaliação. Só você e o diretor comercial veem."}
-        acoes={ehDiretor && (
+          ? "Planos de desenvolvimento individual de todas as diretorias. O diretor da diretoria (e o diretor da VP) monta e avalia; a Vice-Presidência acompanha todos; cada membro vê só o seu. Chegar a 6 pontos abre um PDI em rascunho."
+          : "Seu plano de desenvolvimento individual: metas, realizado por semana, evidências e avaliação. Só você, o seu diretor e a Vice-Presidência veem."}
+        acoes={membros.length > 0 && (
           <NovoCiclo membros={membros}
             ciclos={resumo.map((r) => ({ id: r.ciclo.id, rotulo: `${r.nome} · início ${formatarData(r.ciclo.inicio)}` }))} />
         )}
@@ -110,13 +116,13 @@ export default async function PaginaPdi({ searchParams }: PageProps<"/pdi">) {
               <p>Atingido (média) <strong className="text-marca">{pct(atual.atingido)}</strong> · esperado {pct(atual.esperado)}</p>
               <p className="mt-1"><Selo tom={tomDoStatus(atual.situacao)}>{atual.situacao}</Selo></p>
             </div>
-            {ehDiretor && <div className="ml-auto"><EditarCiclo ciclo={atual.ciclo} /></div>}
+            {gereAtual && <div className="ml-auto"><EditarCiclo ciclo={atual.ciclo} /></div>}
           </Cartao>
 
           <MetasDoCiclo cicloId={atual.ciclo.id} metas={metasDe(atual.ciclo.id)} semanas={atual.ciclo.semanas} semanaAtual={atual.emAndamento}
-            podeLancar={podeLancar} ehDiretor={ehDiretor} />
+            podeLancar={podeLancar} ehDiretor={gereAtual} />
 
-          <AvaliacaoFinal key={atual.ciclo.updated_at} ciclo={atual.ciclo} ehDiretor={ehDiretor} />
+          <AvaliacaoFinal key={atual.ciclo.updated_at} ciclo={atual.ciclo} ehDiretor={gereAtual} />
         </div>
       )}
     </>

@@ -12,6 +12,7 @@ export type StatusMeta = "Concluída" | "No ritmo" | "Atenção" | "Atrasada" | 
 export type SituacaoMembro = "No ritmo" | "Atenção" | "Atrasado" | "Aguardando início" | "Avaliar conclusão" | "Revisão necessária";
 
 export const SITUACOES_CICLO = {
+  rascunho: "Rascunho (a definir)",
   em_andamento: "Em andamento",
   concluido: "Concluído",
   prorrogado: "Prorrogado",

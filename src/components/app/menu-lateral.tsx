@@ -51,8 +51,6 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         { href: "/empresas", rotulo: "Empresas e leads", icone: Building2 },
         { href: "/desempenho", rotulo: "Desempenho individual", icone: TrendingUp },
         { href: "/metas", rotulo: "Metas", icone: Target },
-        // PDI: cada membro vê o seu; o diretor comercial vê todos (RLS)
-        { href: "/pdi", rotulo: "PDI", icone: ClipboardCheck },
         // Erros de e-mail, fluxos do n8n, agentes e telas: só o diretor comercial
         ...(diretorDe.includes("comercial") ? [{ href: "/controle", rotulo: "Controle do App", icone: ShieldAlert, contador: ocorrenciasAbertas }] : []),
       ] },
@@ -61,6 +59,8 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         { href: "/vice-presidencia/1on1", rotulo: "Reuniões 1:1", icone: MessageCircle },
         { href: "/vice-presidencia/desenvolvimento", rotulo: "Desenvolvimento", icone: Sprout },
         { href: "/vice-presidencia/feedbacks", rotulo: "Feedbacks", icone: Handshake },
+        // PDI de todas as diretorias: cada membro vê o seu; o diretor, os da diretoria; a VP, todos (RLS)
+        { href: "/pdi", rotulo: "PDI", icone: ClipboardCheck },
         ...(ehDiretor || minhasDiretorias.includes("rh") ? [
           { href: "/vice-presidencia/resumo", rotulo: "Resumo dos membros", icone: User },
           { href: "/vice-presidencia/relatorios", rotulo: "Relatórios da VP", icone: BarChart3 },

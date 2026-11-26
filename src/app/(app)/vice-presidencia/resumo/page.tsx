@@ -22,7 +22,7 @@ export default async function PaginaResumo() {
     supabase.from("objetivos_desenvolvimento").select("membro_id, status").limit(5000),
     supabase.from("feedbacks").select("membro_id").limit(5000),
     supabase.from("compromissos_1on1").select("membro_id, status").limit(5000),
-    supabase.from("pontuacoes").select("membro_id, pontos, cancelado_em").limit(5000),
+    supabase.from("pontuacoes").select("membro_id, pontos, status, zerado_em").eq("status", "aprovado").limit(5000),
     supabase.from("diretorias").select("slug, nome"),
   ]);
   const nomeDiretoria = (s: string) => diretorias?.find((d) => d.slug === s)?.nome ?? s;

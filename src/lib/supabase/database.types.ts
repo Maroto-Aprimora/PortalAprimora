@@ -596,6 +596,42 @@ export type Database = {
           },
         ]
       }
+      calendario_config: {
+        Row: {
+          atualizado_por: string | null
+          diretoria: string
+          emails_copia: string
+          updated_at: string
+        }
+        Insert: {
+          atualizado_por?: string | null
+          diretoria: string
+          emails_copia?: string
+          updated_at?: string
+        }
+        Update: {
+          atualizado_por?: string | null
+          diretoria?: string
+          emails_copia?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendario_config_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendario_config_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: true
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       compromissos_1on1: {
         Row: {
           compartilhado: boolean
@@ -1138,6 +1174,51 @@ export type Database = {
           },
         ]
       }
+      emails_sistema: {
+        Row: {
+          assunto: string
+          chave: string | null
+          copia: string[]
+          created_at: string
+          enviado_em: string | null
+          erro: string | null
+          id: string
+          link: string | null
+          para: string[]
+          status: string
+          tentativas: number
+          texto: string
+        }
+        Insert: {
+          assunto: string
+          chave?: string | null
+          copia?: string[]
+          created_at?: string
+          enviado_em?: string | null
+          erro?: string | null
+          id?: string
+          link?: string | null
+          para: string[]
+          status?: string
+          tentativas?: number
+          texto: string
+        }
+        Update: {
+          assunto?: string
+          chave?: string | null
+          copia?: string[]
+          created_at?: string
+          enviado_em?: string | null
+          erro?: string | null
+          id?: string
+          link?: string | null
+          para?: string[]
+          status?: string
+          tentativas?: number
+          texto?: string
+        }
+        Relationships: []
+      }
       empresas: {
         Row: {
           cidade: string | null
@@ -1288,6 +1369,147 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "diretorias"
             referencedColumns: ["slug"]
+          },
+        ]
+      }
+      evento_anexos: {
+        Row: {
+          caminho: string | null
+          created_at: string
+          enviado_por: string | null
+          evento_id: string
+          id: string
+          nome: string
+          tamanho: number | null
+          tipo_mime: string | null
+          url: string | null
+        }
+        Insert: {
+          caminho?: string | null
+          created_at?: string
+          enviado_por?: string | null
+          evento_id: string
+          id?: string
+          nome: string
+          tamanho?: number | null
+          tipo_mime?: string | null
+          url?: string | null
+        }
+        Update: {
+          caminho?: string | null
+          created_at?: string
+          enviado_por?: string | null
+          evento_id?: string
+          id?: string
+          nome?: string
+          tamanho?: number | null
+          tipo_mime?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_anexos_enviado_por_fkey"
+            columns: ["enviado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evento_anexos_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_diretoria"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evento_lembretes_enviados: {
+        Row: {
+          dias_antes: number
+          enviado_em: string
+          evento_id: string
+        }
+        Insert: {
+          dias_antes: number
+          enviado_em?: string
+          evento_id: string
+        }
+        Update: {
+          dias_antes?: number
+          enviado_em?: string
+          evento_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_lembretes_enviados_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_diretoria"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eventos_diretoria: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          diretoria: string
+          fim: string | null
+          id: string
+          inicio: string
+          local: string | null
+          responsavel_id: string | null
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria: string
+          fim?: string | null
+          id?: string
+          inicio: string
+          local?: string | null
+          responsavel_id?: string | null
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string
+          fim?: string | null
+          id?: string
+          inicio?: string
+          local?: string | null
+          responsavel_id?: string | null
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_diretoria_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eventos_diretoria_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "eventos_diretoria_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1575,6 +1797,54 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "diretorias"
             referencedColumns: ["slug"]
+          },
+        ]
+      }
+      justificativas: {
+        Row: {
+          created_at: string
+          data_evento: string
+          id: string
+          membro_id: string
+          motivo: string
+          status: string
+          vista_em: string | null
+          vista_por: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_evento: string
+          id?: string
+          membro_id?: string
+          motivo: string
+          status?: string
+          vista_em?: string | null
+          vista_por?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_evento?: string
+          id?: string
+          membro_id?: string
+          motivo?: string
+          status?: string
+          vista_em?: string | null
+          vista_por?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "justificativas_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "justificativas_vista_por_fkey"
+            columns: ["vista_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2664,6 +2934,7 @@ export type Database = {
           nota_comprometimento: number | null
           nota_cumprimento: number | null
           nota_qualidade: number | null
+          origem: string
           proximos_passos: string | null
           semanas: number
           situacao: string
@@ -2682,6 +2953,7 @@ export type Database = {
           nota_comprometimento?: number | null
           nota_cumprimento?: number | null
           nota_qualidade?: number | null
+          origem?: string
           proximos_passos?: string | null
           semanas?: number
           situacao?: string
@@ -2700,6 +2972,7 @@ export type Database = {
           nota_comprometimento?: number | null
           nota_cumprimento?: number | null
           nota_qualidade?: number | null
+          origem?: string
           proximos_passos?: string | null
           semanas?: number
           situacao?: string
@@ -2823,49 +3096,58 @@ export type Database = {
       }
       pontuacoes: {
         Row: {
-          cancelado_em: string | null
-          cancelado_por: string | null
           created_at: string
           criado_por: string | null
           data: string
+          decidido_em: string | null
+          decidido_por: string | null
           id: string
           membro_id: string
           motivo: string
-          pontos: number
+          observacao: string | null
+          pontos: number | null
+          status: string
+          zerado_em: string | null
         }
         Insert: {
-          cancelado_em?: string | null
-          cancelado_por?: string | null
           created_at?: string
           criado_por?: string | null
           data?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
           id?: string
           membro_id: string
           motivo: string
-          pontos: number
+          observacao?: string | null
+          pontos?: number | null
+          status?: string
+          zerado_em?: string | null
         }
         Update: {
-          cancelado_em?: string | null
-          cancelado_por?: string | null
           created_at?: string
           criado_por?: string | null
           data?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
           id?: string
           membro_id?: string
           motivo?: string
-          pontos?: number
+          observacao?: string | null
+          pontos?: number | null
+          status?: string
+          zerado_em?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "pontuacoes_cancelado_por_fkey"
-            columns: ["cancelado_por"]
+            foreignKeyName: "pontuacoes_criado_por_fkey"
+            columns: ["criado_por"]
             isOneToOne: false
             referencedRelation: "membros"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pontuacoes_criado_por_fkey"
-            columns: ["criado_por"]
+            foreignKeyName: "pontuacoes_decidido_por_fkey"
+            columns: ["decidido_por"]
             isOneToOne: false
             referencedRelation: "membros"
             referencedColumns: ["id"]
@@ -3823,11 +4105,15 @@ export type Database = {
         Row: {
           atividade_id: string | null
           chave: string | null
+          comprovante_caminho: string | null
+          comprovante_em: string | null
+          comprovante_texto: string | null
           concluida_em: string | null
           created_at: string
           criado_por: string | null
           descricao: string | null
           diretoria: string
+          exige_comprovante: boolean
           id: string
           negocio_id: string | null
           origem: Database["public"]["Enums"]["origem_registro"]
@@ -3840,11 +4126,15 @@ export type Database = {
         Insert: {
           atividade_id?: string | null
           chave?: string | null
+          comprovante_caminho?: string | null
+          comprovante_em?: string | null
+          comprovante_texto?: string | null
           concluida_em?: string | null
           created_at?: string
           criado_por?: string | null
           descricao?: string | null
           diretoria: string
+          exige_comprovante?: boolean
           id?: string
           negocio_id?: string | null
           origem?: Database["public"]["Enums"]["origem_registro"]
@@ -3857,11 +4147,15 @@ export type Database = {
         Update: {
           atividade_id?: string | null
           chave?: string | null
+          comprovante_caminho?: string | null
+          comprovante_em?: string | null
+          comprovante_texto?: string | null
           concluida_em?: string | null
           created_at?: string
           criado_por?: string | null
           descricao?: string | null
           diretoria?: string
+          exige_comprovante?: boolean
           id?: string
           negocio_id?: string | null
           origem?: Database["public"]["Enums"]["origem_registro"]
@@ -4036,8 +4330,21 @@ export type Database = {
       agenda_do_link: { Args: { _token: string }; Returns: Json }
       alternar_agente_1on1: { Args: { _ativo: boolean }; Returns: undefined }
       concluir_diagnostico: { Args: { _diagnostico: string }; Returns: Json }
+      decidir_ponto: {
+        Args: {
+          _aprovar: boolean
+          _id: string
+          _observacao?: string
+          _pontos?: number
+        }
+        Returns: number
+      }
       descartar_empresa_sem_negocio: {
         Args: { _empresa: string }
+        Returns: undefined
+      }
+      email_resultado: {
+        Args: { _erro?: string; _id: string; _ok: boolean; _segredo: string }
         Returns: undefined
       }
       empresas_semelhantes: {
@@ -4074,6 +4381,10 @@ export type Database = {
       indicadores_email: {
         Args: { _ate: string; _de: string; _responsavel?: string }
         Returns: Json
+      }
+      marcar_justificativa: {
+        Args: { _id: string; _vista: boolean }
+        Returns: undefined
       }
       membros_sem_acesso: { Args: never; Returns: string[] }
       mover_negocio: {
@@ -4146,6 +4457,10 @@ export type Database = {
       n8n_saude: { Args: { _segredo: string }; Returns: Json }
       normalizar: { Args: { _t: string }; Returns: string }
       pedir_analise_1on1: { Args: { _reuniao: string }; Returns: string }
+      pedir_ponto: {
+        Args: { _data?: string; _membro: string; _motivo: string }
+        Returns: string
+      }
       plano_melhoria: { Args: { _membro: string }; Returns: Json }
       reabrir_diagnostico: {
         Args: { _diagnostico: string }
@@ -4168,6 +4483,10 @@ export type Database = {
         }
         Returns: string
       }
+      retirar_ponto: {
+        Args: { _id: string; _observacao?: string }
+        Returns: undefined
+      }
       saude_fila: { Args: never; Returns: Json }
       so_digitos: { Args: { _t: string }; Returns: string }
       transferir_carteira: {
@@ -4178,6 +4497,7 @@ export type Database = {
         Args: { _ate: string; _chave: string; _de: string; _membro?: string }
         Returns: number
       }
+      zerar_pontos: { Args: { _membro?: string }; Returns: number }
     }
     Enums: {
       acao_sla: "alertar" | "mover"

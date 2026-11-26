@@ -34,8 +34,8 @@ export default async function PaginaPainelGeral() {
       .order("prazo", { ascending: true, nullsFirst: false }).limit(20),
     supabase.from("reunioes_recorrentes").select("*").eq("ativa", true),
     supabase.from("tipos_atividade").select("id, nome, cor"),
-    // Diretores enxergam todos os lançamentos (RLS); os demais, só os próprios.
-    supabase.from("pontuacoes").select("membro_id, pontos, cancelado_em").is("cancelado_em", null),
+    // Pontos aprovados e não zerados: a VP e os diretores (da diretoria do membro) veem; os demais, só os próprios (RLS).
+    supabase.from("pontuacoes").select("membro_id, pontos, status, zerado_em").eq("status", "aprovado").is("zerado_em", null),
     supabase.from("diretorias").select("slug, nome").order("ordem"),
     resumoComercial(usuario.id),
   ]);
@@ -59,7 +59,7 @@ export default async function PaginaPainelGeral() {
 
   const minhaPontuacao = totalPontos((pontos ?? []).filter((p) => p.membro_id === usuario.id));
   const porMembro = new Map<string, number>();
-  for (const p of pontos ?? []) porMembro.set(p.membro_id, (porMembro.get(p.membro_id) ?? 0) + p.pontos);
+  for (const p of pontos ?? []) porMembro.set(p.membro_id, (porMembro.get(p.membro_id) ?? 0) + (p.pontos ?? 0));
   const noMarco = [...porMembro.values()].filter((v) => v >= PONTOS_MARCO).length;
   const nomeDiretoria = (slug: string) => diretorias?.find((d) => d.slug === slug)?.nome ?? slug;
 

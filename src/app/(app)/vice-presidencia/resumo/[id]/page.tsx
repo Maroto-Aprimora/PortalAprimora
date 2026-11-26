@@ -28,7 +28,7 @@ export default async function PaginaResumoMembro({ params }: PageProps<"/vice-pr
     supabase.from("objetivo_etapas").select("objetivo_id, feita"),
     supabase.from("feedbacks").select("*").eq("membro_id", id).order("dado_em", { ascending: false }),
     supabase.from("compromissos_1on1").select("*").eq("membro_id", id).order("created_at", { ascending: false }),
-    supabase.from("pontuacoes").select("pontos, cancelado_em").eq("membro_id", id),
+    supabase.from("pontuacoes").select("pontos, status, zerado_em").eq("membro_id", id).eq("status", "aprovado"),
     supabase.from("pdi_ciclos").select("id, inicio, semanas, situacao").eq("membro_id", id).order("inicio", { ascending: false }),
     supabase.from("diretorias").select("slug, nome"),
   ]);

@@ -15,7 +15,7 @@ function revalidar() {
   revalidatePath("/pdi");
 }
 
-const SO_DIRETOR = "Só o diretor comercial altera o PDI.";
+const SO_DIRETOR = "Só o diretor da diretoria do membro (ou o diretor da VP) altera o PDI.";
 
 // ---------- Ciclo (diretor) ----------
 
@@ -47,7 +47,7 @@ export async function criarCiclo(dados: Record<string, unknown>, copiarDe: strin
 const esquemaEdicaoCiclo = z.object({
   inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Informe a data de início."),
   semanas: z.preprocess((v) => Number(v), z.number().int().min(1).max(12)),
-  situacao: z.enum(["em_andamento", "concluido", "prorrogado", "encerrado"]),
+  situacao: z.enum(["rascunho", "em_andamento", "concluido", "prorrogado", "encerrado"]),
 });
 
 export async function salvarCiclo(cicloId: string, dados: Record<string, unknown>): Promise<Resultado> {
