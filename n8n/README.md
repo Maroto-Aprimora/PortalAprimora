@@ -43,6 +43,13 @@ Padrão de nome: `APRIMORA | Área | Ação`. Coloque a etiqueta `aprimora` em t
 | `10-agente-redator.sdk.js` | Agente · A5 Redator (Fase 3) | A cada 2 min | Reserva até 5 trabalhos do Redator. `redigir_email`: o Gemini gratuito preenche as `{{variáveis}}` da copy com os dados do lead (recusa se sobrar alguma) e o portal cria "Aprovar e-mail" em Tarefas. `enviar_email` (só aprovado, dias úteis no horário de envio): monta a mensagem e envia pela API do Gmail com a credencial **Gmail comercial@** (OAuth2), no mesmo fio do e-mail anterior da cadência (`threadId` + `In-Reply-To`). Publicado em 20/10/2026 (id `dGTzi72KkZXB03qG`) |
 | `11-agente-monitor-respostas.sdk.js` | Agente · A6 Monitor de respostas (Fase 3) | 5 min (caixa) e 2 min (classificar) | Lista a caixa da comercial@ (`in:inbox newer_than:2d -from:me`), lê cada mensagem sem a parte citada e entrega ao portal (`POST /api/n8n/emails/respostas`); o portal guarda só as que respondem um fio da cadência, uma vez cada. Depois reserva as classificações e o Gemini classifica (interessado, retornar depois, recusa, descadastro, automática, outro). Publicado em 20/10/2026 (id `g3mahbT6lB1YmRlx`) |
 
+**Etiqueta SAAS (26/11/2026)**: cada trabalho reservado traz `etiquetas` (nomes das etiquetas do card). No A5 Redator, o nó
+"Tem etiqueta SAAS?" (logo depois de "Separar trabalhos") cancela no portal os trabalhos de cards SAAS antes de redigir ou enviar.
+O portal já não cria esses trabalhos; o nó é a segunda conferência.
+
+**Fluxo 13 (Leads StockFacil/Contak) desativado em 26/11/2026**: a tela e as tabelas saíram do portal (os leads estão no funil).
+Arquive o fluxo `hSJfnqVuBNx0sDCE` no n8n e, se quiser, apague o projeto `gmaps-aprimora` no Docker Manager.
+
 Os fluxos 10 e 11 estão guardados como código do **Workflow SDK** do n8n (`.sdk.js`), o mesmo que foi usado para
 criá-los pelo conector. Os fluxos 02 e 03 são da versão antiga e foram substituídos por eles.
 
@@ -117,6 +124,7 @@ chama uma função `n8n_*` do banco, que confere o segredo de novo (hash em `pri
 | `POST /api/n8n/trabalhos/reservar` | `{ agente?, limite? }` (até 20) | `{ trabalhos: [{ id, agente, tipo, negocio_id, payload, tentativa }] }` — marca como "processando"; só agentes ligados; o que ficar processando por mais de 30 min volta à fila |
 | `POST /api/n8n/trabalhos/:id/resultado` | `{ resultado: { …, aprovacao?: { tipo, titulo, resumo?, conteudo: {campo: texto}, responsavel_id? } } }` | `{ ok }` — com `aprovacao`, o item vai para a Caixa de aprovação do responsável do negócio |
 | `POST /api/n8n/trabalhos/:id/falha` | `{ etapa?, mensagem? }` | `{ ok, tentativas, max_tentativas, status }` — volta à fila em 5/10 min; na 3ª falha fica com erro e avisa os diretores |
+| `POST /api/n8n/trabalhos/:id/cancelar` | `{ motivo? }` | `{ ok }` — cancela de vez (não volta à fila); usado pelo A5 Redator para cards com a etiqueta SAAS |
 | `GET /api/n8n/saude` | — | `{ pendentes, processando, mais_antiga_minutos, erros_24h, concluidos_24h, ultimo_concluido_em, aprovacoes_pendentes }` |
 | `POST /api/n8n/alerta` | `{ tipo, detalhes }` | `{ ok }` (auditoria + notificação aos diretores) |
 | `POST /api/n8n/erro` | `{ fluxo, execucao_id, execucao_url, no, mensagem }` | `{ ok }` (auditoria + notificação) |

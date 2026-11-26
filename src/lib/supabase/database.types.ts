@@ -3274,163 +3274,6 @@ export type Database = {
           },
         ]
       }
-      stockfacil_buscas: {
-        Row: {
-          cidade: string
-          concluida_em: string | null
-          created_at: string
-          criado_por: string | null
-          encontrados: number | null
-          erro: string | null
-          id: string
-          novos: number | null
-          status: string
-          termos: string[]
-          trabalho_id: string | null
-        }
-        Insert: {
-          cidade?: string
-          concluida_em?: string | null
-          created_at?: string
-          criado_por?: string | null
-          encontrados?: number | null
-          erro?: string | null
-          id?: string
-          novos?: number | null
-          status?: string
-          termos: string[]
-          trabalho_id?: string | null
-        }
-        Update: {
-          cidade?: string
-          concluida_em?: string | null
-          created_at?: string
-          criado_por?: string | null
-          encontrados?: number | null
-          erro?: string | null
-          id?: string
-          novos?: number | null
-          status?: string
-          termos?: string[]
-          trabalho_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "stockfacil_buscas_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "membros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "stockfacil_buscas_trabalho_id_fkey"
-            columns: ["trabalho_id"]
-            isOneToOne: false
-            referencedRelation: "trabalhos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      stockfacil_leads: {
-        Row: {
-          atualizado_por: string | null
-          avaliacoes: number | null
-          bairro: string | null
-          busca_id: string | null
-          categoria: string | null
-          created_at: string
-          emails: string | null
-          endereco: string | null
-          id: string
-          latitude: number | null
-          link_maps: string | null
-          longitude: number | null
-          nome: string
-          nota: number | null
-          observacoes: string | null
-          place_id: string | null
-          responsavel_id: string | null
-          site: string | null
-          situacao: string
-          telefone: string | null
-          telefone_digitos: string | null
-          termo: string | null
-          updated_at: string
-        }
-        Insert: {
-          atualizado_por?: string | null
-          avaliacoes?: number | null
-          bairro?: string | null
-          busca_id?: string | null
-          categoria?: string | null
-          created_at?: string
-          emails?: string | null
-          endereco?: string | null
-          id?: string
-          latitude?: number | null
-          link_maps?: string | null
-          longitude?: number | null
-          nome: string
-          nota?: number | null
-          observacoes?: string | null
-          place_id?: string | null
-          responsavel_id?: string | null
-          site?: string | null
-          situacao?: string
-          telefone?: string | null
-          telefone_digitos?: string | null
-          termo?: string | null
-          updated_at?: string
-        }
-        Update: {
-          atualizado_por?: string | null
-          avaliacoes?: number | null
-          bairro?: string | null
-          busca_id?: string | null
-          categoria?: string | null
-          created_at?: string
-          emails?: string | null
-          endereco?: string | null
-          id?: string
-          latitude?: number | null
-          link_maps?: string | null
-          longitude?: number | null
-          nome?: string
-          nota?: number | null
-          observacoes?: string | null
-          place_id?: string | null
-          responsavel_id?: string | null
-          site?: string | null
-          situacao?: string
-          telefone?: string | null
-          telefone_digitos?: string | null
-          termo?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "stockfacil_leads_atualizado_por_fkey"
-            columns: ["atualizado_por"]
-            isOneToOne: false
-            referencedRelation: "membros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "stockfacil_leads_busca_id_fkey"
-            columns: ["busca_id"]
-            isOneToOne: false
-            referencedRelation: "stockfacil_buscas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "stockfacil_leads_responsavel_id_fkey"
-            columns: ["responsavel_id"]
-            isOneToOne: false
-            referencedRelation: "membros"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       tarefa_responsaveis: {
         Row: {
           membro_id: string
@@ -3676,10 +3519,6 @@ export type Database = {
     }
     Functions: {
       agenda_do_link: { Args: { _token: string }; Returns: Json }
-      buscar_leads_stockfacil: {
-        Args: { _cidade?: string; _termos: string[] }
-        Returns: string
-      }
       concluir_diagnostico: { Args: { _diagnostico: string }; Returns: Json }
       descartar_empresa_sem_negocio: {
         Args: { _empresa: string }
@@ -3736,6 +3575,10 @@ export type Database = {
         Args: { _detalhes?: Json; _segredo: string; _tipo: string }
         Returns: Json
       }
+      n8n_cancelar: {
+        Args: { _id: string; _motivo?: string; _segredo: string }
+        Returns: Json
+      }
       n8n_concluir: {
         Args: { _id: string; _resultado?: Json; _segredo: string }
         Returns: Json
@@ -3781,10 +3624,6 @@ export type Database = {
         Returns: Json
       }
       n8n_saude: { Args: { _segredo: string }; Returns: Json }
-      n8n_stockfacil_iniciada: {
-        Args: { _busca: string; _segredo: string }
-        Returns: undefined
-      }
       normalizar: { Args: { _t: string }; Returns: string }
       plano_melhoria: { Args: { _membro: string }; Returns: Json }
       reabrir_diagnostico: {

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
   BarChart3, Building2, CalendarDays, ChevronDown, ClipboardCheck, Gauge, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
-  PackageSearch, ShieldAlert, Target, TrendingUp, Trophy, Users, X,
+  ShieldAlert, Target, TrendingUp, Trophy, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
 import { sair } from "@/app/acoes-sessao";
@@ -53,8 +53,6 @@ function montarMenu({ ehDiretor, diretorDe, diretoriasVisiveis, aprovacoesPenden
         { href: "/metas", rotulo: "Metas", icone: Target },
         // PDI: cada membro vê o seu; o diretor comercial vê todos (RLS)
         { href: "/pdi", rotulo: "PDI", icone: ClipboardCheck },
-        // Leads Contak: prospecção do SaaS de gestão de estoque (todo o time)
-        { href: "/contak", rotulo: "Leads Contak", icone: PackageSearch },
         // Erros de e-mail, fluxos do n8n, agentes e telas: só o diretor comercial
         ...(diretorDe.includes("comercial") ? [{ href: "/controle", rotulo: "Controle do App", icone: ShieldAlert, contador: ocorrenciasAbertas }] : []),
       ] },

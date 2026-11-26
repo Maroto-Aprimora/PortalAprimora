@@ -2,7 +2,7 @@ import { workflow, node, trigger, sticky, newCredential, switchCase, ifElse, exp
 
 const H = { parameters: [{ name: 'x-n8n-segredo', value: '={{ $env.PORTAL_N8N_SEGREDO }}' }] };
 
-const nota = sticky('## APRIMORA | Agente | A5 Redator\nA cada 2 minutos reserva até 5 trabalhos do Redator.\n\n**redigir_email**: o Gemini gratuito preenche as {{variáveis}} da copy com os dados do lead e devolve assunto e corpo; o portal cria o "Aprovar e-mail" em Tarefas.\n\n**enviar_email** (só depois de aprovado, na janela de horário comercial): envia pela conta da **comercial@** (credencial Gmail OAuth2), no mesmo fio dos e-mails anteriores do lead, e devolve os ids do Gmail ao portal.', { width: 900, height: 230, color: 4 });
+const nota = sticky('## APRIMORA | Agente | A5 Redator\nA cada 2 minutos reserva até 5 trabalhos do Redator. Card com a etiqueta **SAAS** é cancelado no portal (fora da cadência de e-mail).\n\n**redigir_email**: o Gemini gratuito preenche as {{variáveis}} da copy com os dados do lead e devolve assunto e corpo; o portal cria o "Aprovar e-mail" em Tarefas.\n\n**enviar_email** (só depois de aprovado, na janela de horário comercial): envia pela conta da **comercial@** (credencial Gmail OAuth2), no mesmo fio dos e-mails anteriores do lead, e devolve os ids do Gmail ao portal.', { width: 900, height: 230, color: 4 });
 
 const cron = trigger({ type: 'n8n-nodes-base.scheduleTrigger', version: 1.2, config: { name: 'A cada 2 minutos',
   parameters: { rule: { interval: [{ field: 'minutes', minutesInterval: 2 }] } } } });
@@ -13,6 +13,18 @@ const reservar = node({ type: 'n8n-nodes-base.httpRequest', version: 4.2, config
 
 const separar = node({ type: 'n8n-nodes-base.splitOut', version: 1, config: { name: 'Separar trabalhos',
   parameters: { fieldToSplitOut: 'trabalhos', options: {} } } });
+
+// Etiqueta SAAS: o card não participa da cadência de e-mail. O portal já bloqueia; aqui é a segunda conferência.
+const ehSaas = ifElse({ version: 2.2, config: { name: 'Tem etiqueta SAAS?', parameters: { conditions: {
+  options: { caseSensitive: false, leftValue: '', typeValidation: 'loose' },
+  conditions: [{ leftValue: expr("{{ ($json.etiquetas || []).map((e) => String(e).toUpperCase()).includes('SAAS') }}"), operator: { type: 'boolean', operation: 'true', singleValue: true } }],
+  combinator: 'and' } } } });
+
+const cancelarSaas = node({ type: 'n8n-nodes-base.httpRequest', version: 4.2, config: { name: 'Cancelar no portal (SAAS)', parameters: {
+  method: 'POST', url: '={{ $env.PORTAL_URL }}/api/n8n/trabalhos/{{ $json.id }}/cancelar', sendHeaders: true, headerParameters: H,
+  sendBody: true, specifyBody: 'json',
+  jsonBody: "={{ JSON.stringify({ motivo: 'Card com a etiqueta SAAS: fora da cadência de e-mail (' + $json.tipo + ')' }) }}",
+  options: { timeout: 30000 } } } });
 
 const porTipo = switchCase({ version: 3.2, config: { name: 'Redigir ou enviar?', parameters: {
   rules: { values: [{ outputKey: 'redigir', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.tipo }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'redigir_email' }], combinator: 'and' } }, { outputKey: 'enviar', conditions: { options: { caseSensitive: true, leftValue: '', typeValidation: 'strict' }, conditions: [{ leftValue: expr('{{ $json.tipo }}'), operator: { type: 'string', operation: 'equals' }, rightValue: 'enviar_email' }], combinator: 'and' } }] }, options: {} } } });
@@ -130,9 +142,11 @@ const falha = node({ type: 'n8n-nodes-base.httpRequest', version: 4.2, config: {
 
 export default workflow('a5-redator', 'APRIMORA | Agente | A5 Redator')
   .add(nota)
-  .add(cron).to(reservar).to(separar).to(porTipo
+  .add(cron).to(reservar).to(separar).to(ehSaas
+    .onTrue(cancelarSaas)
+    .onFalse(porTipo
     .onCase(0, montarPedido.onError(falha).to(gemini.onError(falha).to(lerRedacao.onError(falha).to(devolver))))
     .onCase(1, temFio
       .onTrue(anterior.onError(falha).to(montarEmail))
-      .onFalse(montarEmail)))
+      .onFalse(montarEmail))))
   .add(montarEmail.onError(falha).to(enviar.onError(falha).to(lerEnvio.onError(falha).to(devolver))));
