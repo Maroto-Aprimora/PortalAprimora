@@ -14,6 +14,6 @@ psql -q -d postgres -c "drop database if exists portal" -c "create database port
 psql -q -v ON_ERROR_STOP=1 -d portal -f "$RAIZ/supabase/testes/ambiente_supabase.sql" >/dev/null
 for f in "$RAIZ"/supabase/migrations/*.sql; do
   # pg_cron e pg_net não existem no Postgres comum: a imitação cria os schemas cron e net
-  sed -E '/create extension if not exists (pg_cron|pg_net)/d' "$f" | psql -q -v ON_ERROR_STOP=1 -d portal -f - >/dev/null
+  sed -E '/create extension if not exists (pg_cron|pg_net)/d' "$f" | psql -q -1 -v ON_ERROR_STOP=1 -d portal -f - >/dev/null
   echo "ok $(basename "$f")"
 done
