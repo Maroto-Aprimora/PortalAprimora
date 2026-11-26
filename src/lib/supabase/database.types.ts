@@ -706,6 +706,89 @@ export type Database = {
           },
         ]
       }
+      conhecimentos: {
+        Row: {
+          ano: number
+          autor_id: string | null
+          categoria: string | null
+          compartilhado: boolean
+          conteudo: string | null
+          created_at: string
+          diretoria: string | null
+          id: string
+          membro_id: string | null
+          projeto_id: string | null
+          resumo: string | null
+          tags: string[]
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ano?: number
+          autor_id?: string | null
+          categoria?: string | null
+          compartilhado?: boolean
+          conteudo?: string | null
+          created_at?: string
+          diretoria?: string | null
+          id?: string
+          membro_id?: string | null
+          projeto_id?: string | null
+          resumo?: string | null
+          tags?: string[]
+          tipo?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          autor_id?: string | null
+          categoria?: string | null
+          compartilhado?: boolean
+          conteudo?: string | null
+          created_at?: string
+          diretoria?: string | null
+          id?: string
+          membro_id?: string | null
+          projeto_id?: string | null
+          resumo?: string | null
+          tags?: string[]
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conhecimentos_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conhecimentos_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "conhecimentos_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conhecimentos_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos_internos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contatos: {
         Row: {
           cargo: string | null
@@ -867,6 +950,176 @@ export type Database = {
             columns: ["passo_id"]
             isOneToOne: false
             referencedRelation: "cadencia_passos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curso_inscricoes: {
+        Row: {
+          atualizado_por: string | null
+          concluido_em: string | null
+          created_at: string
+          curso_id: string
+          id: string
+          iniciado_em: string | null
+          membro_id: string
+          observacoes: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          atualizado_por?: string | null
+          concluido_em?: string | null
+          created_at?: string
+          curso_id: string
+          id?: string
+          iniciado_em?: string | null
+          membro_id: string
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          atualizado_por?: string | null
+          concluido_em?: string | null
+          created_at?: string
+          curso_id?: string
+          id?: string
+          iniciado_em?: string | null
+          membro_id?: string
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_inscricoes_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_inscricoes_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_inscricoes_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curso_publicos: {
+        Row: {
+          curso_id: string
+          diretoria: string | null
+          id: string
+          membro_id: string | null
+        }
+        Insert: {
+          curso_id: string
+          diretoria?: string | null
+          id?: string
+          membro_id?: string | null
+        }
+        Update: {
+          curso_id?: string
+          diretoria?: string | null
+          id?: string
+          membro_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curso_publicos_curso_id_fkey"
+            columns: ["curso_id"]
+            isOneToOne: false
+            referencedRelation: "cursos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curso_publicos_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "curso_publicos_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cursos: {
+        Row: {
+          ativo: boolean
+          carga_horas: number | null
+          competencias: string[]
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          id: string
+          objetivo_anual_id: string | null
+          plataforma: string | null
+          prazo: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          carga_horas?: number | null
+          competencias?: string[]
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          objetivo_anual_id?: string | null
+          plataforma?: string | null
+          prazo?: string | null
+          tipo?: string
+          titulo: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          carga_horas?: number | null
+          competencias?: string[]
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          objetivo_anual_id?: string | null
+          plataforma?: string | null
+          prazo?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cursos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cursos_objetivo_anual_id_fkey"
+            columns: ["objetivo_anual_id"]
+            isOneToOne: false
+            referencedRelation: "objetivos_anuais"
             referencedColumns: ["id"]
           },
         ]
@@ -1851,6 +2104,53 @@ export type Database = {
           },
         ]
       }
+      jad_anexos: {
+        Row: {
+          caminho: string | null
+          created_at: string
+          dono_id: string
+          dono_tipo: string
+          enviado_por: string | null
+          id: string
+          nome: string
+          tamanho: number | null
+          tipo_mime: string | null
+          url: string | null
+        }
+        Insert: {
+          caminho?: string | null
+          created_at?: string
+          dono_id: string
+          dono_tipo: string
+          enviado_por?: string | null
+          id?: string
+          nome: string
+          tamanho?: number | null
+          tipo_mime?: string | null
+          url?: string | null
+        }
+        Update: {
+          caminho?: string | null
+          created_at?: string
+          dono_id?: string
+          dono_tipo?: string
+          enviado_por?: string | null
+          id?: string
+          nome?: string
+          tamanho?: number | null
+          tipo_mime?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jad_anexos_enviado_por_fkey"
+            columns: ["enviado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jornal_textos: {
         Row: {
           autor_id: string
@@ -2290,6 +2590,7 @@ export type Database = {
           indicador: string | null
           membro_id: string | null
           objetivo: string
+          objetivo_anual_id: string | null
           ordem: number
           peso: number
           realizado_manual: number | null
@@ -2306,6 +2607,7 @@ export type Database = {
           indicador?: string | null
           membro_id?: string | null
           objetivo: string
+          objetivo_anual_id?: string | null
           ordem?: number
           peso?: number
           realizado_manual?: number | null
@@ -2322,6 +2624,7 @@ export type Database = {
           indicador?: string | null
           membro_id?: string | null
           objetivo?: string
+          objetivo_anual_id?: string | null
           ordem?: number
           peso?: number
           realizado_manual?: number | null
@@ -2342,6 +2645,13 @@ export type Database = {
             columns: ["membro_id"]
             isOneToOne: false
             referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "metas_objetivo_anual_id_fkey"
+            columns: ["objetivo_anual_id"]
+            isOneToOne: false
+            referencedRelation: "objetivos_anuais"
             referencedColumns: ["id"]
           },
         ]
@@ -2876,6 +3186,111 @@ export type Database = {
           },
         ]
       }
+      objetivo_anual_indicadores: {
+        Row: {
+          alvo: number
+          created_at: string
+          id: string
+          nome: string
+          objetivo_id: string
+          ordem: number
+          prazo: string | null
+          responsavel_id: string | null
+          unidade: string | null
+          updated_at: string
+          valor_atual: number
+          valor_inicial: number
+        }
+        Insert: {
+          alvo: number
+          created_at?: string
+          id?: string
+          nome: string
+          objetivo_id: string
+          ordem?: number
+          prazo?: string | null
+          responsavel_id?: string | null
+          unidade?: string | null
+          updated_at?: string
+          valor_atual?: number
+          valor_inicial?: number
+        }
+        Update: {
+          alvo?: number
+          created_at?: string
+          id?: string
+          nome?: string
+          objetivo_id?: string
+          ordem?: number
+          prazo?: string | null
+          responsavel_id?: string | null
+          unidade?: string | null
+          updated_at?: string
+          valor_atual?: number
+          valor_inicial?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetivo_anual_indicadores_objetivo_id_fkey"
+            columns: ["objetivo_id"]
+            isOneToOne: false
+            referencedRelation: "objetivos_anuais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objetivo_anual_indicadores_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objetivo_anual_registros: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          evidencia_url: string | null
+          id: string
+          indicador_id: string
+          nota: string | null
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          evidencia_url?: string | null
+          id?: string
+          indicador_id: string
+          nota?: string | null
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          evidencia_url?: string | null
+          id?: string
+          indicador_id?: string
+          nota?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetivo_anual_registros_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objetivo_anual_registros_indicador_id_fkey"
+            columns: ["indicador_id"]
+            isOneToOne: false
+            referencedRelation: "objetivo_anual_indicadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objetivo_atualizacoes: {
         Row: {
           autor_id: string | null
@@ -2952,6 +3367,73 @@ export type Database = {
             columns: ["objetivo_id"]
             isOneToOne: false
             referencedRelation: "objetivos_desenvolvimento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objetivos_anuais: {
+        Row: {
+          ano: number
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          diretoria: string | null
+          id: string
+          ordem: number
+          prazo: string | null
+          responsavel_id: string | null
+          resultado_esperado: string | null
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string | null
+          id?: string
+          ordem?: number
+          prazo?: string | null
+          responsavel_id?: string | null
+          resultado_esperado?: string | null
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string | null
+          id?: string
+          ordem?: number
+          prazo?: string | null
+          responsavel_id?: string | null
+          resultado_esperado?: string | null
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objetivos_anuais_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objetivos_anuais_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "objetivos_anuais_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
             referencedColumns: ["id"]
           },
         ]
@@ -3647,6 +4129,227 @@ export type Database = {
           nome?: string
         }
         Relationships: []
+      }
+      projeto_atividades: {
+        Row: {
+          concluida_em: string | null
+          created_at: string
+          descricao: string | null
+          etapa: string | null
+          id: string
+          ordem: number
+          prazo: string | null
+          projeto_id: string
+          responsavel_id: string | null
+          status: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          concluida_em?: string | null
+          created_at?: string
+          descricao?: string | null
+          etapa?: string | null
+          id?: string
+          ordem?: number
+          prazo?: string | null
+          projeto_id: string
+          responsavel_id?: string | null
+          status?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          concluida_em?: string | null
+          created_at?: string
+          descricao?: string | null
+          etapa?: string | null
+          id?: string
+          ordem?: number
+          prazo?: string | null
+          projeto_id?: string
+          responsavel_id?: string | null
+          status?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projeto_atividades_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos_internos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projeto_atividades_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projeto_atualizacoes: {
+        Row: {
+          autor_id: string | null
+          created_at: string
+          id: string
+          projeto_id: string
+          status: string | null
+          texto: string
+        }
+        Insert: {
+          autor_id?: string | null
+          created_at?: string
+          id?: string
+          projeto_id: string
+          status?: string | null
+          texto: string
+        }
+        Update: {
+          autor_id?: string | null
+          created_at?: string
+          id?: string
+          projeto_id?: string
+          status?: string | null
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projeto_atualizacoes_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projeto_atualizacoes_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos_internos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projeto_participantes: {
+        Row: {
+          membro_id: string
+          papel: string | null
+          projeto_id: string
+        }
+        Insert: {
+          membro_id: string
+          papel?: string | null
+          projeto_id: string
+        }
+        Update: {
+          membro_id?: string
+          papel?: string | null
+          projeto_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projeto_participantes_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projeto_participantes_projeto_id_fkey"
+            columns: ["projeto_id"]
+            isOneToOne: false
+            referencedRelation: "projetos_internos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projetos_internos: {
+        Row: {
+          concluido_em: string | null
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          diretoria: string | null
+          id: string
+          inicio: string | null
+          licoes: string | null
+          nome: string
+          objetivo: string | null
+          objetivo_anual_id: string | null
+          prazo: string | null
+          responsavel_id: string | null
+          resultados: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          concluido_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string | null
+          id?: string
+          inicio?: string | null
+          licoes?: string | null
+          nome: string
+          objetivo?: string | null
+          objetivo_anual_id?: string | null
+          prazo?: string | null
+          responsavel_id?: string | null
+          resultados?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          concluido_em?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          diretoria?: string | null
+          id?: string
+          inicio?: string | null
+          licoes?: string | null
+          nome?: string
+          objetivo?: string | null
+          objetivo_anual_id?: string | null
+          prazo?: string | null
+          responsavel_id?: string | null
+          resultados?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projetos_internos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projetos_internos_diretoria_fkey"
+            columns: ["diretoria"]
+            isOneToOne: false
+            referencedRelation: "diretorias"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "projetos_internos_objetivo_anual_id_fkey"
+            columns: ["objetivo_anual_id"]
+            isOneToOne: false
+            referencedRelation: "objetivos_anuais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projetos_internos_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       propostas: {
         Row: {
@@ -4837,6 +5540,7 @@ export type Database = {
         Returns: string
       }
       plano_melhoria: { Args: { _membro: string }; Returns: Json }
+      publicar_curso: { Args: { _curso: string }; Returns: number }
       reabrir_diagnostico: {
         Args: { _diagnostico: string }
         Returns: undefined
@@ -4848,6 +5552,15 @@ export type Database = {
       registrar_evento_integracao: {
         Args: { _origem: string; _payload: Json; _token: string }
         Returns: Json
+      }
+      registrar_valor_indicador: {
+        Args: {
+          _evidencia?: string
+          _indicador: string
+          _nota?: string
+          _valor: number
+        }
+        Returns: string
       }
       remarcar_atividade: {
         Args: {
