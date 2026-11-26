@@ -36,9 +36,10 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
   const responsavel = typeof sp.resp === "string" ? sp.resp : "";
   const usuario = await obterUsuario();
   const supabase = await criarClienteServidor();
-  // Valor total do pipeline (hoje): soma do valor dos negócios ativos do funil comercial, sem ponderar.
-  let consultaPipeline = supabase.from("negocios").select("valor, funis!inner(diretoria, chave)")
-    .is("encerrado_em", null).eq("funis.diretoria", "comercial").eq("funis.chave", "comercial").limit(10000);
+  // Valor total do pipeline (hoje): soma do valor, sem ponderar, dos negócios ativos em Diagnóstico, Escopo e Proposta.
+  let consultaPipeline = supabase.from("negocios").select("valor, funis!inner(diretoria, chave), fases!inner(chave)")
+    .is("encerrado_em", null).eq("funis.diretoria", "comercial").eq("funis.chave", "comercial")
+    .in("fases.chave", ["diagnostico", "escopo", "proposta"]).limit(10000);
   if (responsavel) consultaPipeline = consultaPipeline.eq("responsavel_id", responsavel);
   const [ind, dados, atual, { data: emailBruto }, { data: ativos }] = await Promise.all([
     calcularIndicadores(periodo, responsavel || null), carregarAtividadesEquipe(periodo), resumoComercial(usuario.id),
@@ -85,7 +86,7 @@ export default async function PaginaPainelComercial({ searchParams }: PageProps<
         <Numero rotulo="Contratos fechados" valor={String(r.contratos)} detalhe={formatarMoeda(r.faturamento)} />
         <Numero rotulo="Ticket médio" valor={r.ticketMedio == null ? "—" : formatarMoeda(r.ticketMedio)} />
         <Numero rotulo="Taxa de ganho" valor={pct(r.taxaGanho)} detalhe={`${r.contratos} ganhos × ${r.perdidos} não vendidos`} />
-        <Numero rotulo="Valor total do pipeline (hoje)" valor={formatarMoeda(pipelineTotal)} detalhe={`${comValor} de ${(ativos ?? []).length} negócios ativos com valor · soma sem ponderar`} />
+        <Numero rotulo="Valor total do pipeline (hoje)" valor={formatarMoeda(pipelineTotal)} detalhe={`${(ativos ?? []).length} negócios em diagnóstico, escopo e proposta${comValor < (ativos ?? []).length ? ` · ${(ativos ?? []).length - comValor} sem valor` : ""} · soma sem ponderar`} />
         <Numero rotulo="Pipeline ponderado (hoje)" valor={formatarMoeda(r.pipelinePonderado)} detalhe={`${r.negociosAtivos} negócios ativos · valor × probabilidade da fase (pelo histórico real)`} />
       </div>
 
