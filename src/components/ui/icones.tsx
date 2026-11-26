@@ -70,6 +70,7 @@ import {
   IconRobot,
   IconRosetteDiscountCheck,
   IconRotate,
+  IconSchool,
   IconSearch,
   IconSearchOff,
   IconSelector,
@@ -167,6 +168,7 @@ export const Plus = comTraco(IconPlus, "Plus");
 export const Printer = comTraco(IconPrinter, "Printer");
 export const RefreshCw = comTraco(IconRefresh, "RefreshCw");
 export const RotateCcw = comTraco(IconRotate, "RotateCcw");
+export const GraduationCap = comTraco(IconSchool, "GraduationCap");
 export const Search = comTraco(IconSearch, "Search");
 export const Send = comTraco(IconSend, "Send");
 export const Settings = comTraco(IconSettings, "Settings");

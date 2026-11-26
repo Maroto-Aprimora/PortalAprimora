@@ -16,7 +16,9 @@ type Meta = Tables<"metas">;
 const UNIDADES = [["un", "Quantidade"], ["R$", "R$"], ["%", "%"]] as const;
 const COLUNAS = "lg:grid-cols-[1.2fr_64px_1.5fr_1.2fr_100px_80px_100px_64px_auto]";
 
-function LinhaMeta({ meta, trimestre, objetivos, aoCriar }: { meta: Meta | null; trimestre: string; objetivos: string[]; aoCriar?: () => void }) {
+type ObjetivoAnual = { id: string; titulo: string };
+
+function LinhaMeta({ meta, trimestre, objetivos, anuais, aoCriar }: { meta: Meta | null; trimestre: string; objetivos: string[]; anuais: ObjetivoAnual[]; aoCriar?: () => void }) {
   const [pendente, iniciar] = useTransition();
   const listaId = `objetivos-${meta?.id ?? "nova"}`;
   return (
@@ -27,6 +29,7 @@ function LinhaMeta({ meta, trimestre, objetivos, aoCriar }: { meta: Meta | null;
         const r = await salvarMeta(meta?.id ?? null, {
           trimestre, objetivo: g("objetivo"), codigo: g("codigo"), titulo: g("titulo"), alvo: g("alvo"), unidade: g("unidade"),
           realizado_manual: g("realizado_manual"), peso: g("peso"), ordem: meta?.ordem ?? 99, indicador: g("indicador"),
+          objetivo_anual_id: g("objetivo_anual_id"),
         });
         if (!r.ok) return void toast.error(r.erro);
         toast.success(meta ? "Meta salva." : "Meta adicionada.");
@@ -60,11 +63,17 @@ function LinhaMeta({ meta, trimestre, objetivos, aoCriar }: { meta: Meta | null;
           </Botao>
         )}
       </div>
+      {anuais.length > 0 && (
+        <Selecao name="objetivo_anual_id" defaultValue={meta?.objetivo_anual_id ?? ""} className="h-8 text-xs sm:col-span-2 lg:col-span-full" aria-label="Objetivo anual">
+          <option value="">Sem objetivo anual</option>
+          {anuais.map((o) => <option key={o.id} value={o.id}>Objetivo anual: {o.titulo}</option>)}
+        </Selecao>
+      )}
     </form>
   );
 }
 
-export function EditorMetas({ trimestre, metas }: { trimestre: string; metas: Meta[] }) {
+export function EditorMetas({ trimestre, metas, anuais = [] }: { trimestre: string; metas: Meta[]; anuais?: ObjetivoAnual[] }) {
   const [novas, setNovas] = useState(metas.length === 0 ? 1 : 0);
   const objetivos = [...new Set(metas.map((m) => m.objetivo))];
   return (
@@ -78,9 +87,9 @@ export function EditorMetas({ trimestre, metas }: { trimestre: string; metas: Me
         <span>Objetivo</span><span>KR</span><span>Resultado-chave</span><span>Cálculo</span><span>Alvo</span><span>Unidade</span><span>Realizado / ajuste</span><span>Peso</span><span />
       </div>
       <div className="divide-y divide-borda">
-        {metas.map((m) => <LinhaMeta key={m.id} meta={m} trimestre={trimestre} objetivos={objetivos} />)}
+        {metas.map((m) => <LinhaMeta key={m.id} meta={m} trimestre={trimestre} objetivos={objetivos} anuais={anuais} />)}
         {Array.from({ length: novas }, (_, i) => (
-          <LinhaMeta key={`nova-${i}`} meta={null} trimestre={trimestre} objetivos={objetivos} aoCriar={() => setNovas((n) => Math.max(0, n - 1))} />
+          <LinhaMeta key={`nova-${i}`} meta={null} trimestre={trimestre} objetivos={objetivos} anuais={anuais} aoCriar={() => setNovas((n) => Math.max(0, n - 1))} />
         ))}
         {metas.length === 0 && novas === 0 && <Vazio titulo="Nenhuma meta neste trimestre" />}
       </div>

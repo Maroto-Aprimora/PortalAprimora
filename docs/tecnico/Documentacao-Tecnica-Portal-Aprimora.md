@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.48 |
+| Versão do documento | 1.49 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -102,7 +102,8 @@ Pipefy) e foi estruturado para receber as demais diretorias.
 | Vice-Presidência | Integração do app 1on1 (EI-PA-003), Fase 1: Reuniões 1:1 (registro, conteúdo privado, transcrição, A13 Analista de 1:1), compromissos, Desenvolvimento, Feedbacks, Resumo dos membros, Relatórios da VP | EM PRODUÇÃO no portal; fluxo 14 do n8n a publicar |
 | Vice-Presidência | Integração do 1on1, Fase 2: Pontuação no fluxo do 1on1 (pedido → VP define 1 a 6 → PDI aos 6), Justificativas, PDI para todas as diretorias, Tarefas da VP com comprovante em foto, Calendários por diretoria (anexos, lembretes, feed .ics), e-mail do sistema | EM PRODUÇÃO (e-mail depende de GMAIL_USER/GMAIL_APP_PASSWORD na Vercel) |
 | Vice-Presidência | Integração do 1on1, Fase 3: Mural de elogios (mensal, anônimo opcional), Moedas e lojinha (diretores dão moedas e aprovam; VP pede moedas), Jornal da Apri (edição mensal) | EM PRODUÇÃO |
-| Vice-Presidência | Integração do 1on1, Fases 4 e 5 (JAD, objetivos anuais em Metas, migração dos dados) | A FAZER (EI-PA-003) |
+| Vice-Presidência | Integração do 1on1, Fase 4: JAD (capacitações com público e certificado, gestão do conhecimento, projetos internos) e Objetivos anuais em Metas (indicadores com histórico; metas, cursos e projetos ligados) | EM PRODUÇÃO |
+| Vice-Presidência | Integração do 1on1, Fase 5 (migração dos dados do app antigo) | A FAZER (aguarda o dump SQL) |
 | Comercial | Funil (kanban), Empresas e leads, Negócio, Anexos | EM PRODUÇÃO |
 | Comercial | Painel comercial (indicadores), Exportação xlsx/csv, Metas (automáticas e manuais) | EM PRODUÇÃO |
 | Comercial | Configurações do funil (fases, SLA, campos, cadastros auxiliares) | EM PRODUÇÃO |
@@ -418,6 +419,18 @@ O feed `.ics` da Agenda (`agenda_do_link`) passou a incluir os eventos dos calen
 
 `dar_moedas(membros[], valor, motivo)`: só diretores, tudo ou nada (nenhum saldo fica negativo), nunca para si; avisa cada membro.
 
+## 7.8 JAD e objetivos anuais (EI-PA-003, Fase 4)
+
+Gestão do JAD (`privado.eh_gestao_jad`) = diretores e qualquer cargo na VP. O membro só vê o que é dele.
+
+| Tabela | Função e acesso |
+|---|---|
+| `objetivos_anuais`, `objetivo_anual_indicadores`, `objetivo_anual_registros` | Objetivo do ano (diretoria nula = Aprimora toda) com indicadores (valor inicial, alvo, atual, responsável) e histórico (valor, nota, link de evidência). Leem: todos (da Aprimora) ou quem vê a diretoria e a gestão. Gerem: diretor da VP e da Presidência (todos) e o diretor da diretoria (os dela). `registrar_valor_indicador` (quem gere ou o responsável) grava o histórico e atualiza o valor atual. `metas.objetivo_anual_id` liga a meta trimestral |
+| `cursos`, `curso_publicos`, `curso_inscricoes` | Curso (obrigatório/recomendado/opcional, plataforma, link, carga, prazo, competências, objetivo anual). Sem linhas em `curso_publicos` = todos (inclusive quem entrar depois); senão diretorias e/ou pessoas. Lê quem é do público, quem tem inscrição e a gestão; cria a gestão; edita a VP ou quem criou. Andamento: o próprio membro, a VP ou o diretor dele (`privado.acompanha_capacitacao`). `publicar_curso` avisa o público do obrigatório |
+| `projetos_internos`, `projeto_participantes`, `projeto_atividades`, `projeto_atualizacoes` | Projetos da própria Aprimora: veem a gestão, o responsável, quem criou, participantes e responsáveis por atividade; editam a VP, o responsável e quem criou; o responsável por uma atividade só muda o andamento (`limitar_atividade_projeto`); participantes registram atualizações. Avisos: entrou no projeto, atividade atribuída |
+| `conhecimentos` | Biblioteca (tipo, diretoria, categoria, tags, ano, quem produziu, projeto). Qualquer membro registra; veem o autor, o membro citado, a gestão ou todos se `compartilhado` (só a gestão libera); edita o autor ou a VP |
+| `jad_anexos` | Arquivo (bucket privado `jad`, `<tipo>/<dono>/…`, até 25 MB) ou link de certificado (`inscricao`), `conhecimento`, `projeto` ou evidência (`registro`); acesso pelo dono (`privado.ve_dono_jad`, `privado.anexa_dono_jad`) |
+
 ## 7.5 Vice-Presidência: acompanhamento individual (EI-PA-003, Fase 1)
 
 Papéis: **equipe da VP** = qualquer cargo na diretoria `rh` (`privado.eh_equipe_vp`), agenda, registra e gere; **diretor
@@ -531,6 +544,8 @@ evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra 
 | F-VP-11 | `/mural` | todos (moderar: equipe da VP) | Mural do mês com post-its coloridos, anônimo opcional, navegação pelos meses, "só os meus", editar/excluir o próprio no mês | EM PRODUÇÃO |
 | F-VP-12 | `/vice-presidencia/moedas` | todos (dar/aprovar/lojinha: diretores; pedir moedas: equipe da VP) | Minhas moedas (saldo, reservado, extrato, meus pedidos), Lojinha, Para aprovar, Saldos e Pedidos | EM PRODUÇÃO |
 | F-VP-13 | `/vice-presidencia/jornal` | todos (moderar: equipe da VP) | Edição do mês por autor, edições anteriores, escrever/editar o próprio texto no mês | EM PRODUÇÃO |
+| F-VP-14 | `/jad` (+ `/jad/capacitacoes`, `/jad/conhecimento`, `/jad/projetos` e páginas de cada item) | todos (cada um vê o seu; gestão vê tudo) | Painel (pendências, atividades, conclusão dos obrigatórios), capacitações com público, andamento e certificado, biblioteca com busca e filtros, projetos internos com participantes, atividades por etapa, atualizações, resultados e lições, anexos | EM PRODUÇÃO |
+| F-COM-09 | `/metas/anuais` | todos (gerir: diretor da VP, Presidência e diretor da diretoria) | Objetivos anuais por ano e diretoria, indicadores com barra, registrar valor com nota e evidência, histórico, itens ligados (metas, cursos, projetos); no editor de metas, cada meta escolhe o objetivo anual | EM PRODUÇÃO |
 | F-GER-07 | `/calendario/[diretoria]` | quem vê a diretoria e a VP (editar: diretor e assessores) | Calendário por diretoria: próximos/anteriores por mês, evento com responsável, anexos (arquivo ou link), cópia dos lembretes | EM PRODUÇÃO |
 | F-VP-04 | `/vice-presidencia/1on1`, `/vice-presidencia/1on1/[id]` | todos ("Minhas 1:1"); agendar: equipe da VP; registrar: quem conduz e o diretor da VP; diretores só leem | Lista por situação (próximas, sem registro, realizadas, canceladas), filtro por membro, acompanhamento por membro ("em dia"); agendar/editar/cancelar/reabrir/excluir; registro com resumo compartilhável e campos privados; transcrição colada ou anexada (.txt/.vtt/.srt) com consentimento; "Analisar com IA" (A13) e "Usar no formulário"; compromissos com andamento; Configurações (frequência, A13) | EM PRODUÇÃO (fluxo 14 a publicar) |
 | F-VP-05 | `/vice-presidencia/desenvolvimento` | todos (gestão: equipe da VP; diretores leem) | Objetivos de desenvolvimento com etapas (checklist e progresso), histórico de evolução que muda a situação, compartilhar com o membro | EM PRODUÇÃO |
@@ -822,6 +837,7 @@ Escopo v1.0 (Seção 14).
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
 | 1.28 | 04/11/2026 | Ícones do portal refeitos a partir dos logos oficiais (só o símbolo, sem o nome cortado): `favicon.ico` 16/32/48 com traço engrossado para ficar legível na aba e nos favoritos, `icon.png`, `apple-icon.png`, `icone-192/512.png` e `icone-maskable-512.png` (margem para o recorte do Android, citado no `manifest.ts`). Tile `marca-app.png` no menu e no topo do celular; logo vertical transparente (`logo-vertical-branca.png`) no login. Gerados por `scripts/gerar-icones.py`; `logo-branca.png` e `logo-quadrada.jpg` removidos |
 | 1.27 | 04/11/2026 | Sistema de design: ícones trocados de Lucide para Tabler Icons (ponto único `src/components/ui/icones.tsx`); micro-interações em Lottie (`<Animacao>`: vazio e sucesso); base neutra (fundo, superfícies e menu lateral em cinza, sem gradiente; azul só em ações principais e item ativo, laranja só em sinais de atenção, botão `destaque` removido); 2 sombras, 2 raios, escala fechada de texto e de espaçamento, bordas de 1px; estados vazios padronizados com `<Vazio>` (bloco com animação/ícone ou linha compacta); painel do login sem formas coloridas |
+| 1.49 | 27/11/2026 | Integração do 1on1, Fase 4 (migração `20261127180000`): JAD (Seção 7.8, menu Vice-Presidência → JAD) e Objetivos anuais fundidos em Metas (`/metas/anuais`, botão em Metas, campo no editor de metas). Roteiro de permissões em `supabase/testes/vp_fase4_jad.sql` |
 | 1.48 | 27/11/2026 | Painel geral da v1 (`/vice-presidencia/painel-geral`) eliminado: saiu do menu da Vice-Presidência e o endereço redireciona para o Mural |
 | 1.47 | 27/11/2026 | "Mural de elogios" passa a se chamar **Mural**, sai do menu da Vice-Presidência para a parte geral e vira a página inicial (`/mural`). A página Início (`/painel`, Minhas tarefas) foi eliminada; `/painel` e o endereço antigo do Mural redirecionam para `/mural`. As tarefas continuam em Tarefas |
 | 1.46 | 27/11/2026 | Integração do 1on1, Fase 3 (migração `20261127150000`): Mural de elogios, Moedas e lojinha e Jornal da Apri (Seção 7.7), itens no menu da Vice-Presidência, tokens de cor `postit-*`. Pedidos de moedas e da lojinha avisam os diretores pelo sino (não pela Caixa de aprovação, que é dos agentes). Roteiro de permissões em `supabase/testes/vp_fase3_engajamento.sql` |

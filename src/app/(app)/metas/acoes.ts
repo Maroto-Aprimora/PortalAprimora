@@ -23,11 +23,13 @@ const esquemaMeta = z.object({
   peso: z.preprocess((v) => Number(v), z.number().positive("O peso precisa ser maior que zero.").max(999)),
   ordem: z.preprocess((v) => Number(v ?? 0), z.number().int().min(0).max(32000)),
   indicador: z.preprocess((v) => (v === "" || v == null ? null : v), z.enum(CHAVES_INDICADOR as [ChaveIndicador, ...ChaveIndicador[]]).nullable()),
+  objetivo_anual_id: z.preprocess((v) => (v === "" || v == null ? null : v), z.guid().nullable()).optional(),
 });
 
 function revalidar() {
   revalidatePath("/metas");
   revalidatePath("/metas/configuracoes");
+  revalidatePath("/metas/anuais");
 }
 
 /** Cria ou altera uma meta (resultado-chave) do Comercial. O banco só deixa o diretor da diretoria. */

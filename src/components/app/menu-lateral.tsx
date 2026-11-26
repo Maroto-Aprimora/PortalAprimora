@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, Handshake, History, KanbanSquare, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, GraduationCap, Handshake, History, KanbanSquare, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
   MessageCircle, ShieldAlert, Sprout, Star, Target, TrendingUp, Trophy, User, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
@@ -62,6 +62,8 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         { href: "/vice-presidencia/desenvolvimento", rotulo: "Desenvolvimento", icone: Sprout },
         { href: "/vice-presidencia/feedbacks", rotulo: "Feedbacks", icone: Handshake },
         { href: "/vice-presidencia/tarefas", rotulo: "Tarefas da VP", icone: ListChecks },
+        // JAD: capacitações, conhecimento, projetos internos e objetivos anuais (cada membro vê o seu; a gestão, tudo)
+        { href: "/jad", rotulo: "JAD", icone: GraduationCap },
         // Engajamento (todos): moedas e lojinha, jornal do mês
         { href: "/vice-presidencia/moedas", rotulo: "Moedas e lojinha", icone: BadgeDollarSign },
         { href: "/vice-presidencia/jornal", rotulo: "Jornal da Apri", icone: FileText },

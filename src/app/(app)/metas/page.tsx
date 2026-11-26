@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Settings } from "@/components/ui/icones";
+import { Settings, Target } from "@/components/ui/icones";
 import { classeBotao } from "@/components/ui/botao";
 import { Cartao, CabecalhoCartao, TituloPagina, Vazio } from "@/components/ui/cartao";
 import { Selo } from "@/components/ui/selo";
@@ -22,7 +22,10 @@ function trimestreAtual() {
 export default async function PaginaMetas({ searchParams }: PageProps<"/metas">) {
   const sp = await searchParams;
   const [usuario, supabase] = await Promise.all([obterUsuario(), criarClienteServidor()]);
-  const { data: metas } = await supabase.from("metas").select("*").eq("diretoria", "comercial").order("ordem");
+  const [{ data: metas }, { data: anuais }] = await Promise.all([
+    supabase.from("metas").select("*").eq("diretoria", "comercial").order("ordem"),
+    supabase.from("objetivos_anuais").select("id, titulo"),
+  ]);
   const trimestres = [...new Set((metas ?? []).map((m) => m.trimestre))].sort((a, b) => b.slice(2).localeCompare(a.slice(2)) || b.localeCompare(a));
   const pedido = typeof sp.t === "string" ? sp.t : "";
   const atual = trimestres.includes(pedido) ? pedido : trimestres.includes(trimestreAtual()) ? trimestreAtual() : trimestres[0];
@@ -44,11 +47,14 @@ export default async function PaginaMetas({ searchParams }: PageProps<"/metas">)
       <TituloPagina
         titulo="Metas trimestrais"
         descricao="OKRs do Comercial. As metas marcadas como automáticas são calculadas pelo funil e pela agenda; as demais são preenchidas pelo diretor."
-        acoes={usuario.ehDiretorDe("comercial") && (
-          <Link href={atual ? `/metas/configuracoes?t=${atual}` : "/metas/configuracoes"} className={classeBotao("secundario")}>
-            <Settings className="h-4 w-4" /> Configurações
-          </Link>
-        )}
+        acoes={<>
+          <Link href="/metas/anuais" className={classeBotao("secundario")}><Target className="h-4 w-4" /> Objetivos anuais</Link>
+          {usuario.ehDiretorDe("comercial") && (
+            <Link href={atual ? `/metas/configuracoes?t=${atual}` : "/metas/configuracoes"} className={classeBotao("secundario")}>
+              <Settings className="h-4 w-4" /> Configurações
+            </Link>
+          )}
+        </>}
       />
       <div className="mb-4 flex flex-wrap gap-2">
         {trimestres.map((t) => (
@@ -81,7 +87,8 @@ export default async function PaginaMetas({ searchParams }: PageProps<"/metas">)
                     return (
                       <li key={m.id} className="grid gap-2 px-6 py-3 sm:grid-cols-[1fr_220px_90px] sm:items-center">
                         <div>
-                          <p className="font-semibold">{m.codigo && <span className="mr-2 text-xs text-texto-suave">{m.codigo}</span>}{m.titulo}</p>
+                          <p className="font-semibold">{m.codigo && <span className="mr-2 text-xs text-texto-suave">{m.codigo}</span>}{m.titulo}
+                            {m.objetivo_anual_id && <Link href="/metas/anuais" className="ml-2"><Selo>{(anuais ?? []).find((o) => o.id === m.objetivo_anual_id)?.titulo ?? "objetivo anual"}</Selo></Link>}</p>
                           <p className="text-xs text-texto-suave">
                             {valor(m, m.realizado)} de {valor(m, m.alvo)}
                             {m.automatico != null ? (

@@ -17,7 +17,10 @@ export default async function PaginaConfigurarMetas({ searchParams }: PageProps<
   if (!usuario.ehDiretorDe("comercial")) redirect("/metas");
   const sp = await searchParams;
   const supabase = await criarClienteServidor();
-  const { data: metas } = await supabase.from("metas").select("*").eq("diretoria", "comercial").order("ordem");
+  const [{ data: metas }, { data: anuais }] = await Promise.all([
+    supabase.from("metas").select("*").eq("diretoria", "comercial").order("ordem"),
+    supabase.from("objetivos_anuais").select("id, titulo, ano, diretoria").order("ano", { ascending: false }),
+  ]);
   const trimestres = [...new Set((metas ?? []).map((m) => m.trimestre))].sort((a, b) => ordemTrimestre(b).localeCompare(ordemTrimestre(a)));
   const pedido = typeof sp.t === "string" && /^[1-4]T\d{4}$/.test(sp.t) ? sp.t : null;
   const atual = pedido ?? trimestres[0] ?? null;
@@ -41,7 +44,8 @@ export default async function PaginaConfigurarMetas({ searchParams }: PageProps<
           </Link>
         ))}
       </div>
-      {atual && <EditorMetas key={atual} trimestre={atual} metas={(metas ?? []).filter((m) => m.trimestre === atual)} />}
+      {atual && <EditorMetas key={atual} trimestre={atual} metas={(metas ?? []).filter((m) => m.trimestre === atual)}
+        anuais={(anuais ?? []).filter((o) => String(o.ano) === atual.slice(2) && (!o.diretoria || o.diretoria === "comercial")).map((o) => ({ id: o.id, titulo: o.titulo }))} />}
     </>
   );
 }
