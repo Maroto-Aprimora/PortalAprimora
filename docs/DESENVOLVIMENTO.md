@@ -85,6 +85,7 @@ de texto soltos (`#24476f`, `rounded-[12px]`, `text-[13px]`): se faltar algo, cr
 | Auditoria | Só diretores leem |
 | Pontuação | Cada um vê a sua; diretores veem todas; só a Vice-Presidência (slug `rh`) lança e cancela |
 | Metas | Todos leem; o diretor da diretoria cria, edita e exclui (Metas → Configurações) |
+| 1:1, desenvolvimento e feedbacks (VP) | A equipe da VP (qualquer cargo em `rh`) agenda e gere, nunca sobre si; o registro e o conteúdo privado (anotações, preocupações, perguntas, transcrição) são de quem conduziu e do diretor da VP; diretores de outras diretorias só leem a própria diretoria; o membro vê o que foi compartilhado (EI-PA-003) |
 
 ### Regras automáticas do funil (no banco)
 

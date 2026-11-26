@@ -50,6 +50,7 @@ import {
   IconList,
   IconListCheck,
   IconLoader2,
+  IconLock,
   IconLogout,
   IconMail,
   IconMapPin,
@@ -76,6 +77,7 @@ import {
   IconSettings,
   IconShieldExclamation,
   IconSignature,
+  IconSeedling,
   IconSparkles,
   IconStar,
   IconSun,
@@ -85,6 +87,7 @@ import {
   IconTrash,
   IconTrendingUp,
   IconTrophy,
+  IconUpload,
   IconUser,
   IconUserOff,
   IconUserPlus,
@@ -145,6 +148,7 @@ export const LayoutDashboard = comTraco(IconLayoutDashboard, "LayoutDashboard");
 export const List = comTraco(IconList, "List");
 export const ListChecks = comTraco(IconListCheck, "ListChecks");
 export const Loader2 = comTraco(IconLoader2, "Loader2");
+export const Lock = comTraco(IconLock, "Lock");
 export const LogOut = comTraco(IconLogout, "LogOut");
 export const Mail = comTraco(IconMail, "Mail");
 export const MapPin = comTraco(IconMapPin, "MapPin");
@@ -168,6 +172,7 @@ export const Send = comTraco(IconSend, "Send");
 export const Settings = comTraco(IconSettings, "Settings");
 export const ShieldAlert = comTraco(IconShieldExclamation, "ShieldAlert");
 export const Sparkles = comTraco(IconSparkles, "Sparkles");
+export const Sprout = comTraco(IconSeedling, "Sprout");
 export const Star = comTraco(IconStar, "Star");
 export const Sun = comTraco(IconSun, "Sun");
 export const Tag = comTraco(IconTag, "Tag");
@@ -176,6 +181,7 @@ export const Trash2 = comTraco(IconTrash, "Trash2");
 export const TrendingUp = comTraco(IconTrendingUp, "TrendingUp");
 export const Trophy = comTraco(IconTrophy, "Trophy");
 export const Undo2 = comTraco(IconArrowBackUp, "Undo2");
+export const Upload = comTraco(IconUpload, "Upload");
 export const User = comTraco(IconUser, "User");
 export const UserPlus = comTraco(IconUserPlus, "UserPlus");
 export const Users = comTraco(IconUsers, "Users");

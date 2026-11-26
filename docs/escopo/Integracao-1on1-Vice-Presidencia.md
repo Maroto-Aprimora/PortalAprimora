@@ -54,7 +54,7 @@ só quem conduziu a 1:1 e o diretor da VP.
 
 | Fase | Conteúdo | Situação |
 |---|---|---|
-| 1 | Núcleo 1:1: reuniões, registro, conteúdo privado, transcrição, agente A13 (n8n), compromissos, desenvolvimento, feedbacks, resumo dos membros, relatórios | Em implementação |
+| 1 | Núcleo 1:1: reuniões, registro, conteúdo privado, transcrição, agente A13 (n8n), compromissos, desenvolvimento, feedbacks, resumo dos membros, relatórios | Entregue em 26/11/2026 (fluxo 14 do n8n a publicar; roteiro em `docs/testes/Roteiro-VP-Fase-1-1on1.md`) |
 | 2 | Rotina da VP: pontos e justificativas (D2), PDI para todos com gatilho (D3), tarefas com comprovante em foto, calendários por diretoria (D8) com lembretes e `.ics`, e-mail (D9) | A fazer |
 | 3 | Engajamento: mural de elogios, moedas e lojinha (D10), Jornal da Apri | A fazer |
 | 4 | JAD: capacitações, conhecimento, projetos internos; objetivos anuais em Metas (D13) | A fazer |

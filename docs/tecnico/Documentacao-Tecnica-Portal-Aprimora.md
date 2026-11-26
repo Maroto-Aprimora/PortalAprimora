@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.42 |
+| Versão do documento | 1.43 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -99,6 +99,8 @@ Pipefy) e foi estruturado para receber as demais diretorias.
 | Presidência | Auditoria (só diretores) | EM PRODUÇÃO |
 | Vice-Presidência | Membros (pré-cadastro, cargos, data de entrada, processos seletivos, transferência de carteira) | EM PRODUÇÃO |
 | Vice-Presidência | Pontuação (0 a 12, marco em 6) | EM PRODUÇÃO |
+| Vice-Presidência | Integração do app 1on1 (EI-PA-003), Fase 1: Reuniões 1:1 (registro, conteúdo privado, transcrição, A13 Analista de 1:1), compromissos, Desenvolvimento, Feedbacks, Resumo dos membros, Relatórios da VP | EM PRODUÇÃO no portal; fluxo 14 do n8n a publicar |
+| Vice-Presidência | Integração do 1on1, Fases 2 a 5 (pontos e justificativas, PDI para todos, tarefas com comprovante, calendários por diretoria, mural, moedas, jornal, JAD, migração dos dados) | A FAZER (EI-PA-003) |
 | Comercial | Funil (kanban), Empresas e leads, Negócio, Anexos | EM PRODUÇÃO |
 | Comercial | Painel comercial (indicadores), Exportação xlsx/csv, Metas (automáticas e manuais) | EM PRODUÇÃO |
 | Comercial | Configurações do funil (fases, SLA, campos, cadastros auxiliares) | EM PRODUÇÃO |
@@ -389,6 +391,31 @@ vendido e Lead não qualificado (perdas, exigem motivo).
 | `push_assinaturas` | membro_id, endpoint, p256dh, auth, user_agent | Aparelhos inscritos no Web Push |
 | `privado.config` | chave, valor | `push_url` e `push_segredo` (fora da API) |
 
+## 7.5 Vice-Presidência: acompanhamento individual (EI-PA-003, Fase 1)
+
+Papéis: **equipe da VP** = qualquer cargo na diretoria `rh` (`privado.eh_equipe_vp`), agenda, registra e gere; **diretor
+da VP** (`privado.eh_admin_vp`) também lê o conteúdo privado de qualquer 1:1, exclui 1:1 e configura; **diretor de outra
+diretoria** só lê o acompanhamento dos membros das diretorias que dirige (`privado.eh_diretor_do_membro`); **membro** vê só o
+que foi compartilhado. Ninguém gere o próprio acompanhamento (`privado.gere_membro_vp` exclui a própria pessoa).
+
+| Tabela | Colunas principais | Função e acesso |
+|---|---|---|
+| `parametros_vp` | frequencia_1on1_dias (30) | Linha única; "em dia" nos relatórios. Só o diretor da VP altera |
+| `reunioes_1on1` | membro_id, conduzida_por (sempre alguém da VP), agendada_para, duracao_min, modalidade, local, pauta, status (agendada/realizada/cancelada), realizada_em, motivo_cancelamento | Lê: o membro, a equipe da VP, o diretor do membro. Escreve: equipe da VP. Exclui: diretor da VP. Avisa o membro ao agendar, remarcar e cancelar |
+| `reuniao_1on1_resumos` | reuniao_id, conteudo (jsonb: resumo, pontos_positivos, pontos_melhoria, interesses, objetivos, retomar), gerado_por_ia, compartilhado | Equipe da VP lê; membro e diretor só quando `compartilhado` (aviso ao membro). Escreve: quem conduziu ou o diretor da VP (`privado.pode_registrar_1on1`) |
+| `reuniao_1on1_privados` | reuniao_id, anotacoes, preocupacoes, perguntas, transcricao (+ consentimento obrigatório), analise (jsonb do A13), analise_status/erro/em, analise_trabalho_id | **Só quem conduziu e o diretor da VP** (nem o próprio membro, nem diretores) |
+| `compromissos_1on1` | reuniao_id, membro_id (vem da reunião), descricao, responsavel_id, prazo, status, compartilhado | Quem registra a 1:1 cria e exclui; o responsável e o membro (se compartilhado) só mudam o andamento |
+| `objetivos_desenvolvimento`, `objetivo_etapas`, `objetivo_atualizacoes` | membro_id, titulo, descricao, competencia, prazo, status, compartilhado, reuniao_id / titulo, feita, ordem / texto, status, autor_id | Equipe da VP gere; diretor do membro lê; membro lê os compartilhados |
+| `feedbacks` | membro_id, autor_id, tipo (positivo/construtivo/reconhecimento/ponto_desenvolvimento), descricao, dado_em, compartilhado, reuniao_id | Equipe da VP registra; edita/exclui o autor ou o diretor da VP; diretor do membro lê; membro lê os compartilhados (aviso) |
+
+**A13 Analista de 1:1** (`agentes.chave = 'analista_1on1'`, liga/desliga em 1:1 → Configurações, pelo diretor da VP com
+`alternar_agente_1on1`). `pedir_analise_1on1(reuniao)` enfileira um trabalho com **só o `reuniao_id`** no payload (a fila é
+lida por todo membro ativo); o fluxo 14 busca transcrição, pauta e até 3 resumos anteriores em `POST /api/n8n/1on1/[trabalho]`
+(`n8n_dados_1on1`, exige o segredo e trabalho do A13 em processamento) e devolve pelo `resultado` de sempre.
+`privado.aplicar_analise_1on1` grava a sugestão em `reuniao_1on1_privados.analise`, **apaga o resultado da fila** e avisa
+quem pediu; falha definitiva marca `analise_status = 'erro'` (gatilho `analise_1on1_com_erro`). Quem conduz revisa e aplica
+a sugestão no formulário; os compromissos citados podem ser adicionados com um clique.
+
 ---
 
 # 8. Regras de negócio no banco de dados
@@ -446,6 +473,7 @@ Funções internas (schema `privado`): `destinatario_negocio(negocio, reserva)` 
 |---|---|---|---|
 | `aplicar-slas-diario` | 11:05 UTC (08:05 Brasília) | `privado.aplicar_slas()` | Move negócios com SLA estourado em fases com ação "mover" (Oportunidade: 15 dias → E-mail); devolve ao funil os da Reciclagem com data de retorno vencida |
 | `tarefas-diarias` | 10:30 UTC (07:30 Brasília) | `privado.gerar_tarefas_diarias()` | Só em dia útil: tarefas dos toques da cadência que vencem no dia (ou nos dias não úteis anteriores), sem duplicar ligação já marcada por um resultado; toque de e-mail com Redator ligado, copy e e-mail do lead vira trabalho do Redator (senão, tarefa manual); resposta real do lead pausa a contagem; follow-up pós-proposta N dias úteis depois de entrar em Apresentação de proposta; A7 Organizador: notificação "Seu dia" (`resumo_dia`) para cada membro; D21 sem contato efetivo → Reciclagem com retorno em 90 dias; tarefa "Hoje às…" para cada compromisso ligado a lead |
+| `notificacoes-1on1` | 11:12 UTC (08:12 Brasília) | `privado.notificacoes_1on1()` | 1:1 do dia para o membro e quem conduz (`1on1_hoje`); 1:1 que passou há mais de um dia sem registro nem cancelamento, para quem conduz (`1on1_registrar`, uma vez) |
 | `notificacoes-diarias` | 11:10 UTC (08:10 Brasília) | `privado.gerar_notificacoes_diarias()` | SLA a 80% (`sla_proximo`) e estourado (`sla_estourado`); tarefa vencendo hoje (`tarefa_hoje`); R.I/R.G do dia (`reuniao_hoje`); atividade de amanhã ainda não confirmada, para os diretores (`atividade_sem_confirmacao`) |
 
 ---
@@ -453,7 +481,7 @@ Funções internas (schema `privado`): `destinatario_negocio(negocio, reserva)` 
 # 9. Módulos funcionais
 
 Menu lateral (`src/components/app/menu-lateral.tsx`): **Início, Agenda, Tarefas** (gerais) e seções retráteis:
-Comercial, Vice-Presidência (Membros, Pontuação, Painel geral) e Presidência (Auditoria, só diretores). Desde a v2 o
+Comercial, Vice-Presidência (Reuniões 1:1, Desenvolvimento, Feedbacks, Resumo dos membros e Relatórios da VP para a equipe da VP e diretores, Membros, Pontuação, Painel geral) e Presidência (Auditoria, só diretores). Desde a v2 o
 portal é exclusivo do Comercial: Projetos e Marketing não aparecem no menu (as diretorias continuam no banco, sem
 evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra de ícones
 (preferência no `localStorage`). O sino de notificações fica no canto superior direito.
@@ -469,6 +497,11 @@ evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra 
 | F-PRE-01 | `/auditoria` | diretores | Últimas 200 ações sensíveis com filtro por tipo | EM PRODUÇÃO |
 | F-VP-01 | `/membros` | todos (gestão: diretores) | Pré-cadastro e convite, cargos, rodízio, ativação, data de entrada, transferência de carteira, processos seletivos | EM PRODUÇÃO |
 | F-VP-02 | `/vice-presidencia/pontuacao` | todos (lançar: diretoria `rh`) | Medidor 0–12 com marco em 6; ranking (diretores); lançar/abonar/cancelar; histórico | EM PRODUÇÃO |
+| F-VP-04 | `/vice-presidencia/1on1`, `/vice-presidencia/1on1/[id]` | todos ("Minhas 1:1"); agendar: equipe da VP; registrar: quem conduz e o diretor da VP; diretores só leem | Lista por situação (próximas, sem registro, realizadas, canceladas), filtro por membro, acompanhamento por membro ("em dia"); agendar/editar/cancelar/reabrir/excluir; registro com resumo compartilhável e campos privados; transcrição colada ou anexada (.txt/.vtt/.srt) com consentimento; "Analisar com IA" (A13) e "Usar no formulário"; compromissos com andamento; Configurações (frequência, A13) | EM PRODUÇÃO (fluxo 14 a publicar) |
+| F-VP-05 | `/vice-presidencia/desenvolvimento` | todos (gestão: equipe da VP; diretores leem) | Objetivos de desenvolvimento com etapas (checklist e progresso), histórico de evolução que muda a situação, compartilhar com o membro | EM PRODUÇÃO |
+| F-VP-06 | `/vice-presidencia/feedbacks` | todos (registrar: equipe da VP; diretores leem) | Feedbacks por tipo, filtros, compartilhar com o membro (aviso) | EM PRODUÇÃO |
+| F-VP-07 | `/vice-presidencia/resumo`, `/vice-presidencia/resumo/[id]` | equipe da VP e diretores (só a própria diretoria) | Tabela por membro (1:1, última/próxima, objetivos, feedbacks, compromissos, pontos, em dia) e visão 360 do membro (1:1, objetivos, feedbacks, compromissos, pontuação, PDI), sem conteúdo privado | EM PRODUÇÃO |
+| F-VP-08 | `/vice-presidencia/relatorios`, `/vice-presidencia/relatorios/exportar` | equipe da VP e diretores | Indicadores do período (1:1 realizadas, em dia, sem registro, canceladas, objetivos, feedbacks, compromissos atrasados), barras por mês, diretoria e tipo de feedback, tabela por membro; exportação .xlsx | EM PRODUÇÃO |
 | F-COM-01 | `/comercial` | todos (visão por membro: diretor) | Painel comercial com indicadores do período calculados no banco (Seção 10), incluindo coldcall, ticket por solução, % no SLA e destinos, motivos por fase; SLA estourado; só para o diretor: desempenho por responsável da época, motivos por membro e atividades da equipe | EM PRODUÇÃO |
 | F-COM-02 | `/comercial/exportar` | todos | Exporta indicadores (várias abas) ou lista de negócios em .xlsx/.csv, com os filtros da tela | EM PRODUÇÃO |
 | F-COM-03 | `/funil` | todos | Kanban com arrastar e soltar; filtros retráteis (busca, responsável, origem, segmento); destaque de SLA; diálogo de motivo nas perdas (comentário obrigatório no "Outro"); selo da última ligação e registro rápido de ligação no card | EM PRODUÇÃO |
@@ -717,7 +750,8 @@ Escopo v1.0 (Seção 14).
 | F-VP-03 | Transferência de carteira | 2 | EM PRODUÇÃO | `transferir_carteira` |
 | F-GER-01 | Início (Minhas tarefas) | v2 F0 | EM PRODUÇÃO | `/painel` |
 | F-GER-06 | Painel geral da v1 (comparação) | 2b | EM PRODUÇÃO | `/vice-presidencia/painel-geral` |
-| F-VP-02 | Pontuação | 2b | EM PRODUÇÃO (regras L12 pendentes) | `/vice-presidencia/pontuacao` |
+| F-VP-02 | Pontuação | 2b | EM PRODUÇÃO (regras L12 pendentes; serão as do 1on1 na Fase 2 do EI-PA-003) | `/vice-presidencia/pontuacao` |
+| F-VP-04 a 08 | Integração do 1on1, Fase 1: 1:1, A13, compromissos, desenvolvimento, feedbacks, resumo e relatórios da VP | EI-PA-003 F1 | EM PRODUÇÃO (fluxo 14 a publicar) | `reunioes_1on1` e tabelas da Seção 7.5, `/vice-presidencia/*`, `n8n/fluxos/14-agente-analista-1on1.sdk.js` |
 | F-COM-01 | Indicadores do funil e atividades da equipe | 3 | EM PRODUÇÃO | `/comercial` |
 | F-COM-02 | Exportação xlsx/csv | 3 | EM PRODUÇÃO | `/comercial/exportar` |
 | F-COM-07 | Metas automáticas e configuráveis | 3 | EM PRODUÇÃO | `/metas` |
@@ -753,6 +787,7 @@ Escopo v1.0 (Seção 14).
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
 | 1.28 | 04/11/2026 | Ícones do portal refeitos a partir dos logos oficiais (só o símbolo, sem o nome cortado): `favicon.ico` 16/32/48 com traço engrossado para ficar legível na aba e nos favoritos, `icon.png`, `apple-icon.png`, `icone-192/512.png` e `icone-maskable-512.png` (margem para o recorte do Android, citado no `manifest.ts`). Tile `marca-app.png` no menu e no topo do celular; logo vertical transparente (`logo-vertical-branca.png`) no login. Gerados por `scripts/gerar-icones.py`; `logo-branca.png` e `logo-quadrada.jpg` removidos |
 | 1.27 | 04/11/2026 | Sistema de design: ícones trocados de Lucide para Tabler Icons (ponto único `src/components/ui/icones.tsx`); micro-interações em Lottie (`<Animacao>`: vazio e sucesso); base neutra (fundo, superfícies e menu lateral em cinza, sem gradiente; azul só em ações principais e item ativo, laranja só em sinais de atenção, botão `destaque` removido); 2 sombras, 2 raios, escala fechada de texto e de espaçamento, bordas de 1px; estados vazios padronizados com `<Vazio>` (bloco com animação/ícone ou linha compacta); painel do login sem formas coloridas |
+| 1.43 | 26/11/2026 | Integração do app "Aprimora · Gestão de 1:1" da Vice-Presidência, Fase 1 (escopo e decisões em `docs/escopo/Integracao-1on1-Vice-Presidencia.md`, EI-PA-003; migração `20261126170000`). Novas tabelas da Seção 7.5 (1:1, resumo compartilhável, conteúdo privado com transcrição, compromissos, objetivos com etapas e histórico, feedbacks, parâmetros da VP) com RLS por papel (equipe da VP, diretor da VP, diretor de outra diretoria só leitura, membro só o compartilhado). Agente A13 Analista de 1:1 na fila do n8n sem expor a transcrição na fila (`n8n_dados_1on1`, rota `/api/n8n/1on1/[id]`, fluxo 14). Telas Reuniões 1:1, Desenvolvimento, Feedbacks, Resumo dos membros e Relatórios da VP (com Excel) no menu da Vice-Presidência; job `notificacoes-1on1`. Roteiro de teste das permissões em `supabase/testes/vp_fase1_1on1.sql` |
 | 1.42 | 26/11/2026 | Leads Contak no funil e fim da tela Leads Contak (migração `20261126120000`). Os 628 leads de `stockfacil_leads` viraram empresa + card com a etiqueta SAAS, origem "Extração (Google)", detalhe "Contak" e R$ 1.800: 70 que já tinham empresa/card (mesmo telefone ou nome) ficaram como estavam; 140 já ligados (situação diferente de "novo" ou número nas chamadas da API4COM) foram para Lead não qualificado (motivo "Outro", 134) ou, se interessado/demonstração, para Oportunidade (6); nunca ligados com telefone e endereço foram para Coleta de dados concluída (405) e os demais para Enriquecimento (13, sem disparar o Enriquecedor). Responsável: o do lead ou quem ligou por último; sem avisos em massa. Cada card ganhou uma anotação com categoria, bairro, nota e link do Google Maps e as observações antigas. Os dados antigos ficam em `privado.contak_leads_arquivo`/`contak_buscas_arquivo`; tabelas, funções e o agente `stockfacil` foram removidos, a página `/contak` saiu do menu e `/contak` e `/stockfacil` redirecionam para o Funil. Ligações: as chamadas da API4COM que estavam paradas ("Nenhum negócio aberto…", 269) e as ligações sem card foram ligadas aos cards por telefone (sem aprovações nem transcrições); `privado.processar_eventos_api4com` passa a procurar o card pelo telefone também entre os encerrados (`privado.negocio_por_telefone`) e, sem card, registra a ligação sem card em vez de deixá-la parada. Etiqueta SAAS fora da cadência de e-mail (`privado.tem_etiqueta_saas`): não há redação (`enfileirar_redacao`), liberação da Coleta para E-mail nem aprovação de envio; marcar SAAS cancela o que estiver na fila de e-mail do card (gatilho `saas_fora_da_cadencia`). A reserva da fila (`n8n_reservar`) entrega `etiquetas` de cada trabalho e o fluxo A5 Redator ganhou o nó "Tem etiqueta SAAS?", que cancela pelo novo `POST /api/n8n/trabalhos/:id/cancelar` (`n8n_cancelar`) |
 | 1.41 | 26/11/2026 | KPI "Valor total do pipeline (hoje)" do Painel comercial passa a somar, sem ponderar, só os negócios ativos nas fases Diagnóstico agendado, Elaboração de escopo e Apresentação de proposta (chaves `diagnostico`, `escopo`, `proposta`) |
 | 1.40 | 25/11/2026 | Membros atualizados pela planilha da diretoria (nome completo, diretoria e cargo; quem não é diretor é assessor). Diretores: Fabricio e Arthur (Comercial), Eduardo Aguilera e Felipe Lorusso (Marketing), Lívia (VP), Lucas Akio (Presidência) e Mateus Pegoraro (Projetos). 19 pessoas pré-cadastradas; Eduarda foi para a VP e Eduardo Sartorelli para Projetos; Letícia Cavassani desativada. Em Projetos o assessor aparece como "Gerente" (`nomeCargo` em `src/lib/formatar.ts`). Visibilidade entre diretorias (`membro_visibilidades`, `privado.ve_diretoria`, migração `20261125130000`): o diretor libera, em Membros, que alguém de outra diretoria veja a sua (ex.: Eduarda, da VP, vê o Comercial). A leitura dos dados do Comercial (negócios, empresas, contatos, ligações, anotações, anexos, e-mails, diagnósticos, propostas, leads Contak, copies e metas) passou a exigir ser do Comercial ou ter essa visibilidade; configurações e agenda seguem abertas a todo membro ativo. O grupo Comercial do menu só aparece para quem vê o Comercial. Painel comercial ganhou o KPI "Valor total do pipeline (hoje)": soma do valor dos negócios ativos do funil, sem ponderar |

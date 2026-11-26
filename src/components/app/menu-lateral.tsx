@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BarChart3, Building2, CalendarDays, ChevronDown, ClipboardCheck, Gauge, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
-  ShieldAlert, Target, TrendingUp, Trophy, Users, X,
+  BarChart3, Building2, CalendarDays, ChevronDown, ClipboardCheck, Gauge, Handshake, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  MessageCircle, ShieldAlert, Sprout, Target, TrendingUp, Trophy, User, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
 import { sair } from "@/app/acoes-sessao";
@@ -37,7 +37,7 @@ export type DadosMenu = {
  * Menu da v2 (portal exclusivo do Comercial): seções gerais, o Comercial e o que permanece das outras diretorias
  * (Membros, Pontuação, Painel geral e Auditoria). Projetos e Marketing não têm telas.
  */
-function montarMenu({ ehDiretor, diretorDe, diretoriasVisiveis, aprovacoesPendentes, emailsPendentes, ocorrenciasAbertas }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
+function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis, aprovacoesPendentes, emailsPendentes, ocorrenciasAbertas }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
   return {
     gerais: [
       { href: "/painel", rotulo: "Início", icone: LayoutDashboard },
@@ -57,6 +57,14 @@ function montarMenu({ ehDiretor, diretorDe, diretoriasVisiveis, aprovacoesPenden
         ...(diretorDe.includes("comercial") ? [{ href: "/controle", rotulo: "Controle do App", icone: ShieldAlert, contador: ocorrenciasAbertas }] : []),
       ] },
       { slug: "rh", itens: [
+        // 1:1, desenvolvimento e feedbacks: todos (cada membro vê o que é seu); resumo e relatórios: equipe da VP e diretores
+        { href: "/vice-presidencia/1on1", rotulo: "Reuniões 1:1", icone: MessageCircle },
+        { href: "/vice-presidencia/desenvolvimento", rotulo: "Desenvolvimento", icone: Sprout },
+        { href: "/vice-presidencia/feedbacks", rotulo: "Feedbacks", icone: Handshake },
+        ...(ehDiretor || minhasDiretorias.includes("rh") ? [
+          { href: "/vice-presidencia/resumo", rotulo: "Resumo dos membros", icone: User },
+          { href: "/vice-presidencia/relatorios", rotulo: "Relatórios da VP", icone: BarChart3 },
+        ] : []),
         { href: "/membros", rotulo: "Membros", icone: Users },
         { href: "/vice-presidencia/pontuacao", rotulo: "Pontuação", icone: Trophy },
         { href: "/vice-presidencia/painel-geral", rotulo: "Painel geral", icone: Gauge },
