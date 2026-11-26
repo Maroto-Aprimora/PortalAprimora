@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, Gauge, Handshake, History, KanbanSquare, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, Handshake, History, KanbanSquare, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
   MessageCircle, ShieldAlert, Sprout, Star, Target, TrendingUp, Trophy, User, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
@@ -73,7 +73,6 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         ] : []),
         { href: "/membros", rotulo: "Membros", icone: Users },
         { href: "/vice-presidencia/pontuacao", rotulo: "Pontuação", icone: Trophy },
-        { href: "/vice-presidencia/painel-geral", rotulo: "Painel geral", icone: Gauge },
       ] },
       { slug: "presidencia", itens: ehDiretor ? [{ href: "/auditoria", rotulo: "Auditoria", icone: History }] : [] },
     ].filter((g) => g.itens.length > 0),

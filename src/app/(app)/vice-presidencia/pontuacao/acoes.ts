@@ -13,7 +13,6 @@ const data = z.preprocess((v) => (v === "" ? null : v), z.string().regex(/^\d{4}
 function revalidar() {
   revalidatePath("/vice-presidencia/pontuacao");
   revalidatePath("/vice-presidencia/resumo", "layout");
-  revalidatePath("/vice-presidencia/painel-geral");
   revalidatePath("/pdi");
 }
 const rpc = async (fn: () => PromiseLike<{ data: unknown; error: { message: string } | null }>): Promise<Resultado> => {
