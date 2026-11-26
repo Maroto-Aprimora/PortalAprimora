@@ -55,7 +55,7 @@ criá-los pelo conector. Os fluxos 02 e 03 são da versão antiga e foram substi
 
 | `12-agente-assistente-proposta.sdk.js` | Agente · A9 Assistente de proposta (Fase 4) | A cada 2 min | Reserva 1 diagnóstico concluído; o Gemini gratuito devolve resumo do diagnóstico, até 3 serviços sugeridos (só ids da Carta, pelo `responseSchema`), rascunho de escopo e de proposta. Publicado em 15/10/2026 (id `Qi0qL10XvG89MQHf`) |
 
-| `14-agente-analista-1on1.sdk.js` | Agente · A13 Analista de 1:1 (Vice-Presidência, EI-PA-003) | A cada 2 min | Reserva 1 análise pedida na tela da 1:1; busca transcrição, pauta e até 3 resumos anteriores em `POST /api/n8n/1on1/{trabalho}` (a transcrição **não** vai no payload da fila); o Gemini gratuito devolve os campos do registro, preocupações, perguntas para a próxima e compromissos citados (JSON pelo `responseSchema`). O portal guarda só no conteúdo privado da 1:1 e apaga o resultado da fila. **A publicar** |
+| `14-agente-analista-1on1.sdk.js` | Agente · A13 Analista de 1:1 (Vice-Presidência, EI-PA-003) | A cada 2 min | Reserva 1 análise pedida na tela da 1:1; busca transcrição, pauta e até 3 resumos anteriores em `POST /api/n8n/1on1/{trabalho}` (a transcrição **não** vai no payload da fila); o Gemini gratuito devolve os campos do registro, preocupações, perguntas para a próxima e compromissos citados (JSON pelo `responseSchema`). O portal guarda só no conteúdo privado da 1:1 e apaga o resultado da fila. Publicado em 26/11/2026 (id `2HhXjeg0OPHHt4i7`) |
 
 O A10 Passagem para Projetos não usa o n8n: é uma regra no banco (tarefa + aviso quando o card entra em Projetos Aprimora) e o dossiê é a página `/negocios/[id]/dossie`, salva em PDF pelo navegador.
 
