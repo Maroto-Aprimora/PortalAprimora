@@ -1042,6 +1042,57 @@ export type Database = {
         }
         Relationships: []
       }
+      elogios: {
+        Row: {
+          anonimo: boolean
+          autor_id: string | null
+          cor: string
+          created_at: string
+          destinatario_id: string
+          id: string
+          mensagem: string
+          mes: string
+          updated_at: string
+        }
+        Insert: {
+          anonimo?: boolean
+          autor_id?: string | null
+          cor?: string
+          created_at?: string
+          destinatario_id: string
+          id?: string
+          mensagem: string
+          mes?: string
+          updated_at?: string
+        }
+        Update: {
+          anonimo?: boolean
+          autor_id?: string | null
+          cor?: string
+          created_at?: string
+          destinatario_id?: string
+          id?: string
+          mensagem?: string
+          mes?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elogios_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elogios_destinatario_id_fkey"
+            columns: ["destinatario_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       emails: {
         Row: {
           aprovado_por: string | null
@@ -1800,6 +1851,44 @@ export type Database = {
           },
         ]
       }
+      jornal_textos: {
+        Row: {
+          autor_id: string
+          conteudo: string
+          created_at: string
+          id: string
+          mes: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          autor_id?: string
+          conteudo: string
+          created_at?: string
+          id?: string
+          mes?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          autor_id?: string
+          conteudo?: string
+          created_at?: string
+          id?: string
+          mes?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jornal_textos_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       justificativas: {
         Row: {
           created_at: string
@@ -1958,6 +2047,114 @@ export type Database = {
             columns: ["resultado_id"]
             isOneToOne: false
             referencedRelation: "resultados_ligacao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loja_itens: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          estoque: number | null
+          id: string
+          nome: string
+          preco: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          estoque?: number | null
+          id?: string
+          nome: string
+          preco: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          estoque?: number | null
+          id?: string
+          nome?: string
+          preco?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loja_itens_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loja_pedidos: {
+        Row: {
+          created_at: string
+          decidido_em: string | null
+          decidido_por: string | null
+          id: string
+          item_id: string | null
+          item_nome: string
+          membro_id: string
+          observacao: string | null
+          preco: number
+          resposta: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          id?: string
+          item_id?: string | null
+          item_nome: string
+          membro_id: string
+          observacao?: string | null
+          preco: number
+          resposta?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          id?: string
+          item_id?: string | null
+          item_nome?: string
+          membro_id?: string
+          observacao?: string | null
+          preco?: number
+          resposta?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loja_pedidos_decidido_por_fkey"
+            columns: ["decidido_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loja_pedidos_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "loja_itens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loja_pedidos_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
             referencedColumns: ["id"]
           },
         ]
@@ -2143,6 +2340,119 @@ export type Database = {
           {
             foreignKeyName: "metas_membro_id_fkey"
             columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moedas_lancamentos: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          id: string
+          membro_id: string
+          motivo: string
+          pedido_item_id: string | null
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          membro_id: string
+          motivo: string
+          pedido_item_id?: string | null
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          id?: string
+          membro_id?: string
+          motivo?: string
+          pedido_item_id?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moedas_lancamentos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moedas_lancamentos_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moedas_lancamentos_pedido_fk"
+            columns: ["pedido_item_id"]
+            isOneToOne: false
+            referencedRelation: "loja_pedidos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moedas_pedidos: {
+        Row: {
+          created_at: string
+          decidido_em: string | null
+          decidido_por: string | null
+          id: string
+          membro_id: string
+          motivo: string
+          pedido_por: string | null
+          resposta: string | null
+          status: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          id?: string
+          membro_id: string
+          motivo: string
+          pedido_por?: string | null
+          resposta?: string | null
+          status?: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          id?: string
+          membro_id?: string
+          motivo?: string
+          pedido_por?: string | null
+          resposta?: string | null
+          status?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moedas_pedidos_decidido_por_fkey"
+            columns: ["decidido_por"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moedas_pedidos_membro_id_fkey"
+            columns: ["membro_id"]
+            isOneToOne: false
+            referencedRelation: "membros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moedas_pedidos_pedido_por_fkey"
+            columns: ["pedido_por"]
             isOneToOne: false
             referencedRelation: "membros"
             referencedColumns: ["id"]
@@ -4329,7 +4639,30 @@ export type Database = {
     Functions: {
       agenda_do_link: { Args: { _token: string }; Returns: Json }
       alternar_agente_1on1: { Args: { _ativo: boolean }; Returns: undefined }
+      cancelar_pedido_item: { Args: { _id: string }; Returns: undefined }
+      cancelar_pedido_moedas: { Args: { _id: string }; Returns: undefined }
       concluir_diagnostico: { Args: { _diagnostico: string }; Returns: Json }
+      criar_elogio: {
+        Args: {
+          _anonimo: boolean
+          _cor: string
+          _destinatario: string
+          _mensagem: string
+        }
+        Returns: string
+      }
+      dar_moedas: {
+        Args: { _membros: string[]; _motivo: string; _valor: number }
+        Returns: number
+      }
+      decidir_pedido_item: {
+        Args: { _aprovar: boolean; _id: string; _resposta?: string }
+        Returns: undefined
+      }
+      decidir_pedido_moedas: {
+        Args: { _aprovar: boolean; _id: string; _resposta?: string }
+        Returns: undefined
+      }
       decidir_ponto: {
         Args: {
           _aprovar: boolean
@@ -4341,6 +4674,16 @@ export type Database = {
       }
       descartar_empresa_sem_negocio: {
         Args: { _empresa: string }
+        Returns: undefined
+      }
+      editar_elogio: {
+        Args: {
+          _anonimo: boolean
+          _cor: string
+          _destinatario: string
+          _id: string
+          _mensagem: string
+        }
         Returns: undefined
       }
       email_resultado: {
@@ -4365,6 +4708,7 @@ export type Database = {
       }
       enriquecer_negocio: { Args: { _negocio: string }; Returns: string }
       enviar_trabalho_teste: { Args: never; Returns: string }
+      excluir_elogio: { Args: { _id: string }; Returns: undefined }
       excluir_fase: {
         Args: { _destino?: string; _fase: string }
         Returns: Json
@@ -4382,11 +4726,34 @@ export type Database = {
         Args: { _ate: string; _de: string; _responsavel?: string }
         Returns: Json
       }
+      listar_elogios: {
+        Args: { _mes: string }
+        Returns: {
+          anonimo: boolean
+          autor: string
+          cor: string
+          created_at: string
+          destinatario: string
+          destinatario_id: string
+          id: string
+          mensagem: string
+          mes: string
+          meu: boolean
+          para_mim: boolean
+        }[]
+      }
       marcar_justificativa: {
         Args: { _id: string; _vista: boolean }
         Returns: undefined
       }
       membros_sem_acesso: { Args: never; Returns: string[] }
+      meses_elogios: {
+        Args: never
+        Returns: {
+          mes: string
+          total: number
+        }[]
+      }
       mover_negocio: {
         Args: {
           _comentario?: string
@@ -4457,6 +4824,14 @@ export type Database = {
       n8n_saude: { Args: { _segredo: string }; Returns: Json }
       normalizar: { Args: { _t: string }; Returns: string }
       pedir_analise_1on1: { Args: { _reuniao: string }; Returns: string }
+      pedir_item: {
+        Args: { _item: string; _observacao?: string }
+        Returns: string
+      }
+      pedir_moedas: {
+        Args: { _membros: string[]; _motivo: string; _valor: number }
+        Returns: number
+      }
       pedir_ponto: {
         Args: { _data?: string; _membro: string; _motivo: string }
         Returns: string
@@ -4486,6 +4861,15 @@ export type Database = {
       retirar_ponto: {
         Args: { _id: string; _observacao?: string }
         Returns: undefined
+      }
+      saldos_moedas: {
+        Args: never
+        Returns: {
+          membro_id: string
+          nome: string
+          reservado: number
+          saldo: number
+        }[]
       }
       saude_fila: { Args: never; Returns: Json }
       so_digitos: { Args: { _t: string }; Returns: string }

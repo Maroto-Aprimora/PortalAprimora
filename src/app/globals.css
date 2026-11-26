@@ -36,6 +36,13 @@
   --serie-3: #00b894;
   --serie-4: #f2a600;
   --serie-resto: #e4e6ea;
+  /* Post-its do Mural de elogios (fundo suave + texto escuro legível) */
+  --postit-amarelo: #fff4b8;
+  --postit-rosa: #ffd9e6;
+  --postit-azul: #d6e9ff;
+  --postit-verde: #d4f5e2;
+  --postit-laranja: #ffe0c7;
+  --postit-texto: #2b2b2b;
   /* Menu lateral: mesma superfície neutra do conteúdo */
   --menu: #ffffff;
   --menu-texto: #5f6670;
@@ -69,6 +76,12 @@
   --serie-3: #00a888;
   --serie-4: #d28e05;
   --serie-resto: #2b3038;
+  --postit-amarelo: #4a4320;
+  --postit-rosa: #4d2a37;
+  --postit-azul: #23384f;
+  --postit-verde: #1f4231;
+  --postit-laranja: #4d3322;
+  --postit-texto: #f2f2f2;
   --menu: #14171b;
   --menu-texto: #9aa1ab;
   --menu-ativo: #1f232a;
@@ -100,6 +113,12 @@
   --color-serie-3: var(--serie-3);
   --color-serie-4: var(--serie-4);
   --color-serie-resto: var(--serie-resto);
+  --color-postit-amarelo: var(--postit-amarelo);
+  --color-postit-rosa: var(--postit-rosa);
+  --color-postit-azul: var(--postit-azul);
+  --color-postit-verde: var(--postit-verde);
+  --color-postit-laranja: var(--postit-laranja);
+  --color-postit-texto: var(--postit-texto);
   --color-menu: var(--menu);
   --color-menu-texto: var(--menu-texto);
   --color-menu-ativo: var(--menu-ativo);

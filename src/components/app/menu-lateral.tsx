@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, Gauge, Handshake, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
-  MessageCircle, ShieldAlert, Sprout, Target, TrendingUp, Trophy, User, Users, X,
+  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, Gauge, Handshake, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  MessageCircle, ShieldAlert, Sprout, Star, Target, TrendingUp, Trophy, User, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
 import { sair } from "@/app/acoes-sessao";
@@ -61,6 +61,10 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         { href: "/vice-presidencia/desenvolvimento", rotulo: "Desenvolvimento", icone: Sprout },
         { href: "/vice-presidencia/feedbacks", rotulo: "Feedbacks", icone: Handshake },
         { href: "/vice-presidencia/tarefas", rotulo: "Tarefas da VP", icone: ListChecks },
+        // Engajamento (todos): mural de elogios, moedas e lojinha, jornal do mês
+        { href: "/vice-presidencia/mural", rotulo: "Mural de elogios", icone: Star },
+        { href: "/vice-presidencia/moedas", rotulo: "Moedas e lojinha", icone: BadgeDollarSign },
+        { href: "/vice-presidencia/jornal", rotulo: "Jornal da Apri", icone: FileText },
         // PDI de todas as diretorias: cada membro vê o seu; o diretor, os da diretoria; a VP, todos (RLS)
         { href: "/pdi", rotulo: "PDI", icone: ClipboardCheck },
         ...(ehDiretor || minhasDiretorias.includes("rh") ? [
