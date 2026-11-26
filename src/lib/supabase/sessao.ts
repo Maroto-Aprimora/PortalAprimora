@@ -37,7 +37,7 @@ export async function atualizarSessao(request: NextRequest) {
   }
   if (logado && (caminho === "/entrar" || caminho === "/primeiro-acesso")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/painel";
+    url.pathname = "/mural";
     url.search = "";
     return NextResponse.redirect(url);
   }

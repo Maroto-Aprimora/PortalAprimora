@@ -13,7 +13,6 @@ const SEM_PERMISSAO = "Só a equipe da Vice-Presidência dá, devolve e exclui t
 function revalidar() {
   revalidatePath("/vice-presidencia/tarefas");
   revalidatePath("/tarefas");
-  revalidatePath("/painel");
 }
 
 const esquema = z.object({

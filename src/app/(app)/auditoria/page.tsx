@@ -45,7 +45,7 @@ function descrever(acao: string, dados: Dados, nomes: Map<string, string>, alvo:
 
 export default async function PaginaAuditoria({ searchParams }: PageProps<"/auditoria">) {
   const usuario = await obterUsuario();
-  if (!usuario.ehDiretor) redirect("/painel");
+  if (!usuario.ehDiretor) redirect("/mural");
   const sp = await searchParams;
   const filtro = typeof sp.acao === "string" ? sp.acao : "";
 

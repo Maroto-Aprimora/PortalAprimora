@@ -20,7 +20,6 @@ const esquema = z.object({
 
 function revalidar() {
   revalidatePath("/tarefas");
-  revalidatePath("/painel");
 }
 
 /**

@@ -29,7 +29,7 @@ const TIPOS: Record<string, { rotulo: string; tom: "perigo" | "destaque" | "marc
  */
 export default async function PaginaControle({ searchParams }: PageProps<"/controle">) {
   const usuario = await obterUsuario();
-  if (!usuario.ehDiretorDe("comercial")) redirect("/painel");
+  if (!usuario.ehDiretorDe("comercial")) redirect("/mural");
   const sp = await searchParams;
   const verResolvidas = sp.ver === "resolvidas";
   const tipo = typeof sp.tipo === "string" && sp.tipo in TIPOS ? sp.tipo : "";

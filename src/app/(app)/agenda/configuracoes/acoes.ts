@@ -10,7 +10,6 @@ export type Resultado = { ok: true } | { ok: false; erro: string };
 function revalidar() {
   revalidatePath("/agenda/configuracoes");
   revalidatePath("/agenda");
-  revalidatePath("/painel");
 }
 
 const hora = z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, "Horário inválido.");

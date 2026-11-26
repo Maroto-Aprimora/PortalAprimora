@@ -26,7 +26,6 @@ const esquema = z.object({
 
 function revalidar(negocioId?: string | null) {
   revalidatePath("/agenda");
-  revalidatePath("/painel");
   if (negocioId) revalidatePath(`/negocios/${negocioId}`);
   revalidatePath("/empresas", "layout");
 }

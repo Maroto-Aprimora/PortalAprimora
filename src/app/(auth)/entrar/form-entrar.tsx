@@ -24,7 +24,7 @@ export function FormEntrar({ voltar }: { voltar: string }) {
       setCarregando(false);
       return;
     }
-    router.replace(voltar.startsWith("/") ? voltar : "/painel");
+    router.replace(voltar.startsWith("/") ? voltar : "/mural");
     router.refresh();
   }
 

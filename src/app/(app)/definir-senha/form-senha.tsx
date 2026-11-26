@@ -30,7 +30,7 @@ export function FormSenha() {
       return;
     }
     toast.success("Senha definida! Bem-vindo(a) ao Portal Aprimora.");
-    router.replace("/painel");
+    router.replace("/mural");
   }
 
   return (

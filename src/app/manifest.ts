@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Portal Aprimora",
     short_name: "Aprimora",
     description: "Portal interno da Aprimora — Empresa Júnior de Engenharia de Produção da UTFPR Londrina.",
-    start_url: "/painel",
+    start_url: "/mural",
     display: "standalone",
     background_color: "#24476f",
     theme_color: "#24476f",

@@ -18,8 +18,8 @@ export default function PaginaConfirmar() {
     async function confirmar() {
       const supabase = criarClienteNavegador();
       const url = new URL(window.location.href);
-      const proximoBruto = url.searchParams.get("proximo") ?? "/painel";
-      const proximo = proximoBruto.startsWith("/") ? proximoBruto : "/painel";
+      const proximoBruto = url.searchParams.get("proximo") ?? "/mural";
+      const proximo = proximoBruto.startsWith("/") ? proximoBruto : "/mural";
       const hash = new URLSearchParams(url.hash.slice(1));
 
       let falha: string | null = hash.get("error_description");

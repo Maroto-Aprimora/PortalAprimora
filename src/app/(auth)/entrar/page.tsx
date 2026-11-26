@@ -15,7 +15,7 @@ export default async function PaginaEntrar({ searchParams }: PageProps<"/entrar"
           Seu acesso está desativado. Fale com o diretor da sua diretoria.
         </p>
       )}
-      <FormEntrar voltar={typeof voltar === "string" ? voltar : "/painel"} />
+      <FormEntrar voltar={typeof voltar === "string" ? voltar : "/mural"} />
     </>
   );
 }

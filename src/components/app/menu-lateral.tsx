@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, Gauge, Handshake, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  BadgeDollarSign, BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, FileText, Gauge, Handshake, History, KanbanSquare, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
   MessageCircle, ShieldAlert, Sprout, Star, Target, TrendingUp, Trophy, User, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,8 @@ export type DadosMenu = {
 function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis, aprovacoesPendentes, emailsPendentes, ocorrenciasAbertas }: DadosMenu): { gerais: Item[]; grupos: Grupo[] } {
   return {
     gerais: [
-      { href: "/painel", rotulo: "Início", icone: LayoutDashboard },
+      // Página inicial do portal: o Mural (geral, não pertence a uma diretoria)
+      { href: "/mural", rotulo: "Mural", icone: Star },
       { href: "/tarefas", rotulo: "Tarefas", icone: ListChecks, contador: aprovacoesPendentes },
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
       { href: "/calendario", rotulo: "Calendários", icone: CalendarClock },
@@ -61,8 +62,7 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         { href: "/vice-presidencia/desenvolvimento", rotulo: "Desenvolvimento", icone: Sprout },
         { href: "/vice-presidencia/feedbacks", rotulo: "Feedbacks", icone: Handshake },
         { href: "/vice-presidencia/tarefas", rotulo: "Tarefas da VP", icone: ListChecks },
-        // Engajamento (todos): mural de elogios, moedas e lojinha, jornal do mês
-        { href: "/vice-presidencia/mural", rotulo: "Mural de elogios", icone: Star },
+        // Engajamento (todos): moedas e lojinha, jornal do mês
         { href: "/vice-presidencia/moedas", rotulo: "Moedas e lojinha", icone: BadgeDollarSign },
         { href: "/vice-presidencia/jornal", rotulo: "Jornal da Apri", icone: FileText },
         // PDI de todas as diretorias: cada membro vê o seu; o diretor, os da diretoria; a VP, todos (RLS)
@@ -151,7 +151,7 @@ export function MenuLateral(dados: DadosMenu) {
         <button onClick={() => setAberto(true)} aria-label="Abrir menu" className="rounded-controle p-1 hover:bg-superficie-2">
           <Menu className="h-6 w-6" />
         </button>
-        <Link href="/painel" className="flex items-center gap-2">
+        <Link href="/mural" className="flex items-center gap-2">
           <Image src="/marca-app.png" alt="" width={96} height={96} className="h-7 w-7" />
           <span className="font-titulo text-sm font-bold text-texto">Portal Aprimora</span>
         </Link>
@@ -168,7 +168,7 @@ export function MenuLateral(dados: DadosMenu) {
         )}
       >
         <div className={cn("flex items-center justify-between px-6 pb-4 pt-6", so("lg:flex-col lg:gap-3 lg:px-2"))}>
-          <Link href="/painel" className="flex items-center gap-2" onClick={() => setAberto(false)}>
+          <Link href="/mural" className="flex items-center gap-2" onClick={() => setAberto(false)}>
             <Image src="/marca-app.png" alt="" width={96} height={96} className={cn("h-9 w-9 shrink-0", so("lg:h-8 lg:w-8"))} />
             <span className={cn("font-titulo text-sm font-bold leading-tight text-texto", so("lg:hidden"))}>
               Portal<br /><span className="text-2xs font-semibold tracking-[0.2em] text-texto-suave">APRIMORA</span>

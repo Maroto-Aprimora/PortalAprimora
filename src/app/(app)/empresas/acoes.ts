@@ -103,7 +103,6 @@ export async function criarLead(entrada: unknown): Promise<Resultado<{ negocioId
 
   revalidatePath("/funil");
   revalidatePath("/empresas");
-  revalidatePath("/painel");
   revalidatePath("/comercial");
   return { ok: true, dados: { negocioId: negocio.id } };
 }

@@ -23,7 +23,7 @@ export async function salvarElogio(id: string | null, dados: Record<string, unkn
     ? await supabase.rpc("editar_elogio", { _id: id, _destinatario: v.data.destinatario, _mensagem: v.data.mensagem, _anonimo: v.data.anonimo, _cor: v.data.cor })
     : await supabase.rpc("criar_elogio", { _destinatario: v.data.destinatario, _mensagem: v.data.mensagem, _anonimo: v.data.anonimo, _cor: v.data.cor });
   if (error) return { ok: false, erro: mensagemDeErro(error) };
-  revalidatePath("/vice-presidencia/mural");
+  revalidatePath("/mural");
   return { ok: true };
 }
 
@@ -32,6 +32,6 @@ export async function excluirElogio(id: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc("excluir_elogio", { _id: id });
   if (error) return { ok: false, erro: mensagemDeErro(error) };
-  revalidatePath("/vice-presidencia/mural");
+  revalidatePath("/mural");
   return { ok: true };
 }

@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.46 |
+| Versão do documento | 1.47 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -509,7 +509,7 @@ Funções internas (schema `privado`): `destinatario_negocio(negocio, reserva)` 
 
 # 9. Módulos funcionais
 
-Menu lateral (`src/components/app/menu-lateral.tsx`): **Início, Agenda, Tarefas** (gerais) e seções retráteis:
+Menu lateral (`src/components/app/menu-lateral.tsx`): **Mural (página inicial), Tarefas, Agenda, Calendários** (gerais) e seções retráteis:
 Comercial, Vice-Presidência (Reuniões 1:1, Desenvolvimento, Feedbacks, Resumo dos membros e Relatórios da VP para a equipe da VP e diretores, Membros, Pontuação, Painel geral) e Presidência (Auditoria, só diretores). Desde a v2 o
 portal é exclusivo do Comercial: Projetos e Marketing não aparecem no menu (as diretorias continuam no banco, sem
 evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra de ícones
@@ -517,7 +517,7 @@ evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra 
 
 | Código | Rota | Quem acessa | Funcionalidade | Status |
 |---|---|---|---|---|
-| F-GER-01 | `/painel` | todos | **Início (Minhas tarefas)**: fila do dia (atrasadas, hoje, próximos 7 dias, sem prazo) com concluir, registrar ligação e abrir o negócio em um toque; compromissos de hoje | EM PRODUÇÃO |
+| F-GER-01 | `/mural` | todos (moderar: equipe da VP) | **Página inicial: Mural** (antes Mural de elogios, na VP). A antiga Início (`/painel`, Minhas tarefas) foi eliminada em 27/11/2026: `/painel` e `/vice-presidencia/mural` redirecionam para `/mural`; login, PWA (`start_url`) e o logo abrem o Mural | EM PRODUÇÃO |
 | F-GER-06 | `/vice-presidencia/painel-geral` | todos | Painel geral da v1 (agenda, R.I/R.G, tarefas, pontuação, cartões da Vice-Presidência e do Comercial), mantido para comparação; sem cartões "Em breve" | EM PRODUÇÃO |
 | F-GER-02 | `/agenda` | todos | Visão mês/lista, filtro por pessoa, criar/editar atividades, confirmar/realizar/**remarcar**/cancelar; reuniões recorrentes somente leitura | EM PRODUÇÃO |
 | F-GER-03 | `/agenda/configuracoes` | diretores | Reuniões recorrentes (dia, horário, local, vigência) e tipos de atividade (cor, exige confirmação, ligada a lead) | EM PRODUÇÃO |
@@ -528,7 +528,7 @@ evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra 
 | F-VP-02 | `/vice-presidencia/pontuacao` | todos (analisar: equipe da VP) | Abas Minha pontuação (medidor 0–12, marco 6), Pedidos em análise (VP aprova definindo 1 a 6 ou recusa), Membros (ranking, histórico, retirar, zerar; zerar todos só o diretor da VP), Justificativas, Pedidos que fiz; botões Pedir ponto e Enviar justificativa | EM PRODUÇÃO |
 | F-VP-09 | `/pdi` | todos (gerir: diretor do membro e diretor da VP; VP lê todos) | PDI de todas as diretorias, com ciclo em rascunho aberto aos 6 pontos | EM PRODUÇÃO |
 | F-VP-10 | `/vice-presidencia/tarefas` | todos (dar/devolver: equipe da VP) | Dar a mesma tarefa a vários membros (uma por pessoa), exige comprovante, enviar foto + texto (câmera no celular), ver foto, devolver, excluir; no quadro de Tarefas o botão vira "Concluir com comprovante" | EM PRODUÇÃO |
-| F-VP-11 | `/vice-presidencia/mural` | todos (moderar: equipe da VP) | Mural do mês com post-its coloridos, anônimo opcional, navegação pelos meses, "só os meus", editar/excluir o próprio no mês | EM PRODUÇÃO |
+| F-VP-11 | `/mural` | todos (moderar: equipe da VP) | Mural do mês com post-its coloridos, anônimo opcional, navegação pelos meses, "só os meus", editar/excluir o próprio no mês | EM PRODUÇÃO |
 | F-VP-12 | `/vice-presidencia/moedas` | todos (dar/aprovar/lojinha: diretores; pedir moedas: equipe da VP) | Minhas moedas (saldo, reservado, extrato, meus pedidos), Lojinha, Para aprovar, Saldos e Pedidos | EM PRODUÇÃO |
 | F-VP-13 | `/vice-presidencia/jornal` | todos (moderar: equipe da VP) | Edição do mês por autor, edições anteriores, escrever/editar o próprio texto no mês | EM PRODUÇÃO |
 | F-GER-07 | `/calendario/[diretoria]` | quem vê a diretoria e a VP (editar: diretor e assessores) | Calendário por diretoria: próximos/anteriores por mês, evento com responsável, anexos (arquivo ou link), cópia dos lembretes | EM PRODUÇÃO |
@@ -783,7 +783,7 @@ Escopo v1.0 (Seção 14).
 | F-GER-04 | Tarefas | 2 | EM PRODUÇÃO | `/tarefas` |
 | F-GER-05 | Notificações no app e push | 2 | EM PRODUÇÃO | sino, `/api/push` |
 | F-VP-03 | Transferência de carteira | 2 | EM PRODUÇÃO | `transferir_carteira` |
-| F-GER-01 | Início (Minhas tarefas) | v2 F0 | EM PRODUÇÃO | `/painel` |
+| F-GER-01 | Mural como página inicial (substituiu Início/Minhas tarefas em 27/11/2026) | v2 F0 | EM PRODUÇÃO | `/mural` |
 | F-GER-06 | Painel geral da v1 (comparação) | 2b | EM PRODUÇÃO | `/vice-presidencia/painel-geral` |
 | F-VP-02 | Pontuação | 2b | EM PRODUÇÃO (regras L12 pendentes; serão as do 1on1 na Fase 2 do EI-PA-003) | `/vice-presidencia/pontuacao` |
 | F-VP-04 a 08 | Integração do 1on1, Fase 1: 1:1, A13, compromissos, desenvolvimento, feedbacks, resumo e relatórios da VP | EI-PA-003 F1 | EM PRODUÇÃO (fluxo 14 a publicar) | `reunioes_1on1` e tabelas da Seção 7.5, `/vice-presidencia/*`, `n8n/fluxos/14-agente-analista-1on1.sdk.js` |
@@ -822,6 +822,7 @@ Escopo v1.0 (Seção 14).
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
 | 1.28 | 04/11/2026 | Ícones do portal refeitos a partir dos logos oficiais (só o símbolo, sem o nome cortado): `favicon.ico` 16/32/48 com traço engrossado para ficar legível na aba e nos favoritos, `icon.png`, `apple-icon.png`, `icone-192/512.png` e `icone-maskable-512.png` (margem para o recorte do Android, citado no `manifest.ts`). Tile `marca-app.png` no menu e no topo do celular; logo vertical transparente (`logo-vertical-branca.png`) no login. Gerados por `scripts/gerar-icones.py`; `logo-branca.png` e `logo-quadrada.jpg` removidos |
 | 1.27 | 04/11/2026 | Sistema de design: ícones trocados de Lucide para Tabler Icons (ponto único `src/components/ui/icones.tsx`); micro-interações em Lottie (`<Animacao>`: vazio e sucesso); base neutra (fundo, superfícies e menu lateral em cinza, sem gradiente; azul só em ações principais e item ativo, laranja só em sinais de atenção, botão `destaque` removido); 2 sombras, 2 raios, escala fechada de texto e de espaçamento, bordas de 1px; estados vazios padronizados com `<Vazio>` (bloco com animação/ícone ou linha compacta); painel do login sem formas coloridas |
+| 1.47 | 27/11/2026 | "Mural de elogios" passa a se chamar **Mural**, sai do menu da Vice-Presidência para a parte geral e vira a página inicial (`/mural`). A página Início (`/painel`, Minhas tarefas) foi eliminada; `/painel` e o endereço antigo do Mural redirecionam para `/mural`. As tarefas continuam em Tarefas |
 | 1.46 | 27/11/2026 | Integração do 1on1, Fase 3 (migração `20261127150000`): Mural de elogios, Moedas e lojinha e Jornal da Apri (Seção 7.7), itens no menu da Vice-Presidência, tokens de cor `postit-*`. Pedidos de moedas e da lojinha avisam os diretores pelo sino (não pela Caixa de aprovação, que é dos agentes). Roteiro de permissões em `supabase/testes/vp_fase3_engajamento.sql` |
 | 1.45 | 26/11/2026 | Ligações da API4COM de qualquer membro ativo (de qualquer diretoria, ex.: Projetos) entram e contam nos indicadores comerciais de quem ligou. As que chegam sem card passam a ser ligadas ao card sozinhas quando o número aparece depois: novo contato ou telefone de contato, telefone da empresa ou novo card (`privado.vincular_ligacoes_soltas`, gatilhos `vincular_ligacoes_soltas` em `contatos`, `empresas` e `negocios`; ligações dos últimos 90 dias; migração `20261128120000`). Ligação do Eduardo Sartorelli para a Jeniffer Brinquedos (26/11) entrou no card ao cadastrar a contato Adriane |
 | 1.44 | 27/11/2026 | Integração do 1on1, Fase 2 (migração `20261127120000`): Pontuação no fluxo do 1on1 (resolve L12), Justificativas, PDI para todas as diretorias com rascunho aos 6 pontos, Tarefas da VP com comprovante em foto, Calendários por diretoria com anexos, lembretes e feed .ics, e-mail do sistema (fila + `/api/email` pelo Gmail; variáveis GMAIL_USER e GMAIL_APP_PASSWORD). Seção 7.6. Roteiro de permissões em `supabase/testes/vp_fase2_rotina.sql`; `recriar.sh` roda cada migração numa transação |
