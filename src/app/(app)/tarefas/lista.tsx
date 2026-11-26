@@ -18,6 +18,8 @@ type Tarefa = {
   status: "pendente" | "em_andamento" | "concluida"; negocioId: string | null; negocioTitulo: string | null; responsaveis: string[];
   diretoria: string; origem: "manual" | "sistema" | "agente"; podeGerir: boolean;
   negocioAberto: boolean; contatoId: string | null; criadaEm: string; concluidaEm: string | null;
+  /** Tarefa da VP que só conclui com foto + texto (em /vice-presidencia/tarefas) */
+  exigeComprovante?: boolean;
 };
 
 export const NOME_PRIORIDADE = { alta: "Alta", media: "Média", baixa: "Baixa" } as const;

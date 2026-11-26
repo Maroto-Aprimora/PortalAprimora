@@ -33,7 +33,7 @@ export default async function PaginaTarefas() {
     diretoria: t.diretoria, origem: t.origem,
     podeGerir: usuario.ehDiretorDe(t.diretoria) || (t.origem === "manual" && t.criado_por === usuario.id),
     negocioAberto: !!t.negocios && !t.negocios.encerrado_em, contatoId: t.negocios?.contato_id ?? null,
-    criadaEm: t.created_at, concluidaEm: t.concluida_em,
+    criadaEm: t.created_at, concluidaEm: t.concluida_em, exigeComprovante: t.exige_comprovante,
   }));
   const itensAprovacao: Aprovacao[] = (aprovacoes ?? []).map((a) => ({
     id: a.id, titulo: a.titulo, resumo: a.resumo, agente: a.agentes?.nome ?? "Agente", tipo: a.tipo, criadoEm: a.created_at,

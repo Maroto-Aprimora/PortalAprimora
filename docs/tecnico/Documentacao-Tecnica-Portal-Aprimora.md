@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.43 |
+| Versão do documento | 1.44 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -100,7 +100,8 @@ Pipefy) e foi estruturado para receber as demais diretorias.
 | Vice-Presidência | Membros (pré-cadastro, cargos, data de entrada, processos seletivos, transferência de carteira) | EM PRODUÇÃO |
 | Vice-Presidência | Pontuação (0 a 12, marco em 6) | EM PRODUÇÃO |
 | Vice-Presidência | Integração do app 1on1 (EI-PA-003), Fase 1: Reuniões 1:1 (registro, conteúdo privado, transcrição, A13 Analista de 1:1), compromissos, Desenvolvimento, Feedbacks, Resumo dos membros, Relatórios da VP | EM PRODUÇÃO no portal; fluxo 14 do n8n a publicar |
-| Vice-Presidência | Integração do 1on1, Fases 2 a 5 (pontos e justificativas, PDI para todos, tarefas com comprovante, calendários por diretoria, mural, moedas, jornal, JAD, migração dos dados) | A FAZER (EI-PA-003) |
+| Vice-Presidência | Integração do 1on1, Fase 2: Pontuação no fluxo do 1on1 (pedido → VP define 1 a 6 → PDI aos 6), Justificativas, PDI para todas as diretorias, Tarefas da VP com comprovante em foto, Calendários por diretoria (anexos, lembretes, feed .ics), e-mail do sistema | EM PRODUÇÃO (e-mail depende de GMAIL_USER/GMAIL_APP_PASSWORD na Vercel) |
+| Vice-Presidência | Integração do 1on1, Fases 3 a 5 (mural, moedas, jornal, JAD, migração dos dados) | A FAZER (EI-PA-003) |
 | Comercial | Funil (kanban), Empresas e leads, Negócio, Anexos | EM PRODUÇÃO |
 | Comercial | Painel comercial (indicadores), Exportação xlsx/csv, Metas (automáticas e manuais) | EM PRODUÇÃO |
 | Comercial | Configurações do funil (fases, SLA, campos, cadastros auxiliares) | EM PRODUÇÃO |
@@ -329,7 +330,8 @@ identity). Colunas `created_at`/`updated_at` em `timestamptz`.
 | `pre_cadastros` / `pre_cadastro_diretorias` | email, nome, data_entrada, convite_enviado_em, aceito_em / cargo por diretoria | Lista de quem pode criar conta |
 | `processos_seletivos` | nome, data | Define quem é "membro novo" (entrou a partir do último processo) |
 | `auditoria` | autor_id, acao, entidade, entidade_id, dados (jsonb) | Ações sensíveis (cargos, ativação, carteira, exclusão de fase) |
-| `pontuacoes` | membro_id, pontos (−12 a 12, ≠ 0), motivo, data, cancelado_em/por, criado_por | Lançamentos de pontos; total = soma dos não cancelados, limitado a 0..12 |
+| `pontuacoes` | membro_id, pontos (1 a 6, definido na aprovação), motivo (o que aconteceu), data, status (pendente/aprovado/recusado/retirado), criado_por (quem pediu), decidido_por/em, observacao, zerado_em | Pedidos de ponto (regra do 1on1, desde 27/11/2026). Total = aprovados não zerados (`privado.total_pontos`). Só funções escrevem: `pedir_ponto`, `decidir_ponto`, `retirar_ponto`, `zerar_pontos` |
+| `justificativas` | membro_id, data_evento, motivo, status (nova/vista), vista_por/em | O membro justifica uma falta; só ele e a equipe da VP leem; `marcar_justificativa` |
 
 ## 7.3 CRM (Comercial)
 
@@ -390,6 +392,17 @@ vendido e Lead não qualificado (perdas, exigem motivo).
 | `notificacoes` | membro_id, tipo, titulo, mensagem, link, chave (única por membro), lida_em | Avisos do sino; `chave` impede duplicidade |
 | `push_assinaturas` | membro_id, endpoint, p256dh, auth, user_agent | Aparelhos inscritos no Web Push |
 | `privado.config` | chave, valor | `push_url` e `push_segredo` (fora da API) |
+
+## 7.6 Vice-Presidência: rotina (EI-PA-003, Fase 2)
+
+| Tabela / coluna | Função e acesso |
+|---|---|
+| `emails_sistema` | Fila de e-mails (para, copia, assunto, texto, link, status, tentativas, chave única). Inserir dispara `privado.disparar_email` → `net.http_post` para `/api/email` (URL do push trocando `/api/push` por `/api/email`, mesmo segredo `push_segredo`); a rota envia pelo Gmail e responde com `email_resultado`. Job `reenviar-emails` a cada 20 min (até 3 tentativas em 1 dia). Só o diretor da VP lê |
+| `pdi_ciclos.situacao = 'rascunho'`, `pdi_ciclos.origem` | Ciclo aberto automaticamente aos 6 pontos (`privado.disparar_pdi`: sino para membro, VP e diretores; e-mail para VP e diretores com cópia ao membro; início na próxima segunda, 4 semanas). PDI de todas as diretorias: gere `privado.gere_pdi` (diretor de uma diretoria do membro ou diretor da VP); a equipe da VP lê todos |
+| `tarefas.exige_comprovante`, `comprovante_caminho/texto/em` | Tarefas da VP (`diretoria = 'rh'`): a equipe da VP cria, devolve e exclui (`privado.gere_tarefa_da_diretoria`). Concluir uma tarefa com comprovante exige foto (bucket privado `comprovantes`, `tarefas/<id>/…`, só imagens até 10 MB) e texto (`proteger_tarefa`); devolver apaga o comprovante. Avisos: comprovante enviado / tarefa devolvida |
+| `eventos_diretoria`, `evento_anexos`, `calendario_config`, `evento_lembretes_enviados` | Calendário por diretoria: diretor e assessores editam (`privado.edita_calendario`); a diretoria, quem tem visibilidade e a VP leem. Anexos em arquivo (bucket `eventos`, até 25 MB) ou link. Lembretes 2 e 1 dia antes (job `lembretes-eventos`, 08:00): sino e e-mail ao responsável com cópia para `calendario_config.emails_copia`. Mudar a data reabre os lembretes |
+
+O feed `.ics` da Agenda (`agenda_do_link`) passou a incluir os eventos dos calendários que a pessoa vê e as próprias 1:1.
 
 ## 7.5 Vice-Presidência: acompanhamento individual (EI-PA-003, Fase 1)
 
@@ -473,6 +486,8 @@ Funções internas (schema `privado`): `destinatario_negocio(negocio, reserva)` 
 |---|---|---|---|
 | `aplicar-slas-diario` | 11:05 UTC (08:05 Brasília) | `privado.aplicar_slas()` | Move negócios com SLA estourado em fases com ação "mover" (Oportunidade: 15 dias → E-mail); devolve ao funil os da Reciclagem com data de retorno vencida |
 | `tarefas-diarias` | 10:30 UTC (07:30 Brasília) | `privado.gerar_tarefas_diarias()` | Só em dia útil: tarefas dos toques da cadência que vencem no dia (ou nos dias não úteis anteriores), sem duplicar ligação já marcada por um resultado; toque de e-mail com Redator ligado, copy e e-mail do lead vira trabalho do Redator (senão, tarefa manual); resposta real do lead pausa a contagem; follow-up pós-proposta N dias úteis depois de entrar em Apresentação de proposta; A7 Organizador: notificação "Seu dia" (`resumo_dia`) para cada membro; D21 sem contato efetivo → Reciclagem com retorno em 90 dias; tarefa "Hoje às…" para cada compromisso ligado a lead |
+| `lembretes-eventos` | 11:00 UTC (08:00 Brasília) | `privado.lembretes_eventos()` | Eventos dos calendários daqui a 2 dias e amanhã: sino e e-mail ao responsável, com cópia configurada |
+| `reenviar-emails` | a cada 20 min | `privado.reenviar_emails()` | Reenvia e-mails pendentes ou com erro (até 3 tentativas, por 1 dia) |
 | `notificacoes-1on1` | 11:12 UTC (08:12 Brasília) | `privado.notificacoes_1on1()` | 1:1 do dia para o membro e quem conduz (`1on1_hoje`); 1:1 que passou há mais de um dia sem registro nem cancelamento, para quem conduz (`1on1_registrar`, uma vez) |
 | `notificacoes-diarias` | 11:10 UTC (08:10 Brasília) | `privado.gerar_notificacoes_diarias()` | SLA a 80% (`sla_proximo`) e estourado (`sla_estourado`); tarefa vencendo hoje (`tarefa_hoje`); R.I/R.G do dia (`reuniao_hoje`); atividade de amanhã ainda não confirmada, para os diretores (`atividade_sem_confirmacao`) |
 
@@ -496,7 +511,10 @@ evolução). Grupos sem itens não são exibidos. O menu recolhe para uma barra 
 | F-GER-05 | sino + `/api/push` | todos | Notificações no app e push no aparelho | EM PRODUÇÃO (push só em produção) |
 | F-PRE-01 | `/auditoria` | diretores | Últimas 200 ações sensíveis com filtro por tipo | EM PRODUÇÃO |
 | F-VP-01 | `/membros` | todos (gestão: diretores) | Pré-cadastro e convite, cargos, rodízio, ativação, data de entrada, transferência de carteira, processos seletivos | EM PRODUÇÃO |
-| F-VP-02 | `/vice-presidencia/pontuacao` | todos (lançar: diretoria `rh`) | Medidor 0–12 com marco em 6; ranking (diretores); lançar/abonar/cancelar; histórico | EM PRODUÇÃO |
+| F-VP-02 | `/vice-presidencia/pontuacao` | todos (analisar: equipe da VP) | Abas Minha pontuação (medidor 0–12, marco 6), Pedidos em análise (VP aprova definindo 1 a 6 ou recusa), Membros (ranking, histórico, retirar, zerar; zerar todos só o diretor da VP), Justificativas, Pedidos que fiz; botões Pedir ponto e Enviar justificativa | EM PRODUÇÃO |
+| F-VP-09 | `/pdi` | todos (gerir: diretor do membro e diretor da VP; VP lê todos) | PDI de todas as diretorias, com ciclo em rascunho aberto aos 6 pontos | EM PRODUÇÃO |
+| F-VP-10 | `/vice-presidencia/tarefas` | todos (dar/devolver: equipe da VP) | Dar a mesma tarefa a vários membros (uma por pessoa), exige comprovante, enviar foto + texto (câmera no celular), ver foto, devolver, excluir; no quadro de Tarefas o botão vira "Concluir com comprovante" | EM PRODUÇÃO |
+| F-GER-07 | `/calendario/[diretoria]` | quem vê a diretoria e a VP (editar: diretor e assessores) | Calendário por diretoria: próximos/anteriores por mês, evento com responsável, anexos (arquivo ou link), cópia dos lembretes | EM PRODUÇÃO |
 | F-VP-04 | `/vice-presidencia/1on1`, `/vice-presidencia/1on1/[id]` | todos ("Minhas 1:1"); agendar: equipe da VP; registrar: quem conduz e o diretor da VP; diretores só leem | Lista por situação (próximas, sem registro, realizadas, canceladas), filtro por membro, acompanhamento por membro ("em dia"); agendar/editar/cancelar/reabrir/excluir; registro com resumo compartilhável e campos privados; transcrição colada ou anexada (.txt/.vtt/.srt) com consentimento; "Analisar com IA" (A13) e "Usar no formulário"; compromissos com andamento; Configurações (frequência, A13) | EM PRODUÇÃO (fluxo 14 a publicar) |
 | F-VP-05 | `/vice-presidencia/desenvolvimento` | todos (gestão: equipe da VP; diretores leem) | Objetivos de desenvolvimento com etapas (checklist e progresso), histórico de evolução que muda a situação, compartilhar com o membro | EM PRODUÇÃO |
 | F-VP-06 | `/vice-presidencia/feedbacks` | todos (registrar: equipe da VP; diretores leem) | Feedbacks por tipo, filtros, compartilhar com o membro (aviso) | EM PRODUÇÃO |
@@ -705,7 +723,7 @@ trabalho, então trocar o n8n de servidor não exige mudar o portal.
 | L9 | Áreas de Projetos e Marketing sem telas | Fora do escopo da v2 (PE-PA-002) | — |
 | L10 | Slug da Vice-Presidência continua `rh` | Só cosmético no código | Manter (trocar exige migrar referências) |
 | L11 | Proteção contra senhas vazadas desativada | Senhas fracas conhecidas são aceitas | Plano pago do Supabase |
-| L12 | Regras da pontuação incompletas (zerar por semestre, ações ao atingir 6 e 12) | Total acumula indefinidamente | Definir com a Vice-Presidência |
+| L12 | ~~Regras da pontuação incompletas~~ | Resolvido em 27/11/2026: regra do 1on1 (pedido, aprovação 1–6, PDI aos 6, zerar) | — |
 | L13 | Conector usado na manutenção não executa `delete` direto no banco | Exclusões em massa precisam do SQL Editor do Supabase | Operacional |
 
 ---
@@ -787,6 +805,7 @@ Escopo v1.0 (Seção 14).
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
 | 1.28 | 04/11/2026 | Ícones do portal refeitos a partir dos logos oficiais (só o símbolo, sem o nome cortado): `favicon.ico` 16/32/48 com traço engrossado para ficar legível na aba e nos favoritos, `icon.png`, `apple-icon.png`, `icone-192/512.png` e `icone-maskable-512.png` (margem para o recorte do Android, citado no `manifest.ts`). Tile `marca-app.png` no menu e no topo do celular; logo vertical transparente (`logo-vertical-branca.png`) no login. Gerados por `scripts/gerar-icones.py`; `logo-branca.png` e `logo-quadrada.jpg` removidos |
 | 1.27 | 04/11/2026 | Sistema de design: ícones trocados de Lucide para Tabler Icons (ponto único `src/components/ui/icones.tsx`); micro-interações em Lottie (`<Animacao>`: vazio e sucesso); base neutra (fundo, superfícies e menu lateral em cinza, sem gradiente; azul só em ações principais e item ativo, laranja só em sinais de atenção, botão `destaque` removido); 2 sombras, 2 raios, escala fechada de texto e de espaçamento, bordas de 1px; estados vazios padronizados com `<Vazio>` (bloco com animação/ícone ou linha compacta); painel do login sem formas coloridas |
+| 1.44 | 27/11/2026 | Integração do 1on1, Fase 2 (migração `20261127120000`): Pontuação no fluxo do 1on1 (resolve L12), Justificativas, PDI para todas as diretorias com rascunho aos 6 pontos, Tarefas da VP com comprovante em foto, Calendários por diretoria com anexos, lembretes e feed .ics, e-mail do sistema (fila + `/api/email` pelo Gmail; variáveis GMAIL_USER e GMAIL_APP_PASSWORD). Seção 7.6. Roteiro de permissões em `supabase/testes/vp_fase2_rotina.sql`; `recriar.sh` roda cada migração numa transação |
 | 1.43 | 26/11/2026 | Integração do app "Aprimora · Gestão de 1:1" da Vice-Presidência, Fase 1 (escopo e decisões em `docs/escopo/Integracao-1on1-Vice-Presidencia.md`, EI-PA-003; migração `20261126170000`). Novas tabelas da Seção 7.5 (1:1, resumo compartilhável, conteúdo privado com transcrição, compromissos, objetivos com etapas e histórico, feedbacks, parâmetros da VP) com RLS por papel (equipe da VP, diretor da VP, diretor de outra diretoria só leitura, membro só o compartilhado). Agente A13 Analista de 1:1 na fila do n8n sem expor a transcrição na fila (`n8n_dados_1on1`, rota `/api/n8n/1on1/[id]`, fluxo 14). Telas Reuniões 1:1, Desenvolvimento, Feedbacks, Resumo dos membros e Relatórios da VP (com Excel) no menu da Vice-Presidência; job `notificacoes-1on1`. Roteiro de teste das permissões em `supabase/testes/vp_fase1_1on1.sql` |
 | 1.42 | 26/11/2026 | Leads Contak no funil e fim da tela Leads Contak (migração `20261126120000`). Os 628 leads de `stockfacil_leads` viraram empresa + card com a etiqueta SAAS, origem "Extração (Google)", detalhe "Contak" e R$ 1.800: 70 que já tinham empresa/card (mesmo telefone ou nome) ficaram como estavam; 140 já ligados (situação diferente de "novo" ou número nas chamadas da API4COM) foram para Lead não qualificado (motivo "Outro", 134) ou, se interessado/demonstração, para Oportunidade (6); nunca ligados com telefone e endereço foram para Coleta de dados concluída (405) e os demais para Enriquecimento (13, sem disparar o Enriquecedor). Responsável: o do lead ou quem ligou por último; sem avisos em massa. Cada card ganhou uma anotação com categoria, bairro, nota e link do Google Maps e as observações antigas. Os dados antigos ficam em `privado.contak_leads_arquivo`/`contak_buscas_arquivo`; tabelas, funções e o agente `stockfacil` foram removidos, a página `/contak` saiu do menu e `/contak` e `/stockfacil` redirecionam para o Funil. Ligações: as chamadas da API4COM que estavam paradas ("Nenhum negócio aberto…", 269) e as ligações sem card foram ligadas aos cards por telefone (sem aprovações nem transcrições); `privado.processar_eventos_api4com` passa a procurar o card pelo telefone também entre os encerrados (`privado.negocio_por_telefone`) e, sem card, registra a ligação sem card em vez de deixá-la parada. Etiqueta SAAS fora da cadência de e-mail (`privado.tem_etiqueta_saas`): não há redação (`enfileirar_redacao`), liberação da Coleta para E-mail nem aprovação de envio; marcar SAAS cancela o que estiver na fila de e-mail do card (gatilho `saas_fora_da_cadencia`). A reserva da fila (`n8n_reservar`) entrega `etiquetas` de cada trabalho e o fluxo A5 Redator ganhou o nó "Tem etiqueta SAAS?", que cancela pelo novo `POST /api/n8n/trabalhos/:id/cancelar` (`n8n_cancelar`) |
 | 1.41 | 26/11/2026 | KPI "Valor total do pipeline (hoje)" do Painel comercial passa a somar, sem ponderar, só os negócios ativos nas fases Diagnóstico agendado, Elaboração de escopo e Apresentação de proposta (chaves `diagnostico`, `escopo`, `proposta`) |

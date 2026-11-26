@@ -11,6 +11,9 @@ export const dynamic = "force-dynamic";
 
 type Atividade = { id: string; titulo: string; inicio: string; fim: string | null; local: string | null; link: string | null;
   status: string; tipo: string; empresa: string | null; atualizado: string };
+type EventoDiretoria = { id: string; titulo: string; inicio: string; fim: string | null; local: string | null; descricao: string | null;
+  diretoria: string; atualizado: string };
+type Reuniao1on1 = { id: string; titulo: string; inicio: string; duracao_min: number; local: string | null; atualizado: string };
 type Recorrente = { id: string; titulo: string; dia_semana: number; hora_inicio: string; hora_fim: string; local: string | null;
   valida_de: string; valida_ate: string | null };
 
@@ -42,7 +45,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
   if (error) return new Response("Erro ao montar a agenda", { status: 500 });
   if (!data) return new Response("Link inválido ou trocado. Gere um novo na Agenda do portal.", { status: 404 });
 
-  const agenda = data as { membro: string; atividades: Atividade[]; recorrentes: Recorrente[] };
+  const agenda = data as { membro: string; atividades: Atividade[]; recorrentes: Recorrente[]; eventos?: EventoDiretoria[];
+    reunioes_1on1?: Reuniao1on1[] };
   const agora = utc(new Date().toISOString());
   const eventos: string[] = [];
   for (const a of agenda.atividades) {
@@ -60,6 +64,36 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
       ...(a.local ? [linha("LOCATION", a.local)] : []),
       ...(a.link ? [linha("URL", a.link)] : []),
       `STATUS:${a.status === "pendente" ? "TENTATIVE" : "CONFIRMED"}`,
+      "END:VEVENT",
+    ].join("\r\n"));
+  }
+  // Calendários das diretorias que a pessoa vê (Vice-Presidência, EI-PA-003)
+  for (const e of agenda.eventos ?? []) {
+    const fim = e.fim ?? new Date(new Date(e.inicio).getTime() + 60 * 60 * 1000).toISOString();
+    eventos.push([
+      "BEGIN:VEVENT",
+      `UID:evento-${e.id}@portal-aprimora`,
+      `DTSTAMP:${agora}`,
+      `LAST-MODIFIED:${utc(e.atualizado)}`,
+      `DTSTART:${utc(e.inicio)}`,
+      `DTEND:${utc(fim)}`,
+      linha("SUMMARY", `${e.titulo} (${e.diretoria})`),
+      ...(e.descricao ? [linha("DESCRIPTION", e.descricao)] : []),
+      ...(e.local ? [linha("LOCATION", e.local)] : []),
+      "END:VEVENT",
+    ].join("\r\n"));
+  }
+  // Reuniões 1:1 em que a pessoa é o membro ou quem conduz
+  for (const r of agenda.reunioes_1on1 ?? []) {
+    eventos.push([
+      "BEGIN:VEVENT",
+      `UID:1on1-${r.id}@portal-aprimora`,
+      `DTSTAMP:${agora}`,
+      `LAST-MODIFIED:${utc(r.atualizado)}`,
+      `DTSTART:${utc(r.inicio)}`,
+      `DTEND:${utc(new Date(new Date(r.inicio).getTime() + r.duracao_min * 60 * 1000).toISOString())}`,
+      linha("SUMMARY", r.titulo),
+      ...(r.local ? [linha("LOCATION", r.local)] : []),
       "END:VEVENT",
     ].join("\r\n"));
   }

@@ -8,7 +8,7 @@ import {
   Bot, Building2, CalendarClock, Check, ChevronsLeftRight, ExternalLink, Flag, Inbox, ListChecks, Pencil, Plus, RotateCcw, Sparkles, Trash2, User,
 } from "@/components/ui/icones";
 import { BarraVisoes, BotaoFiltros, CampoBusca, useParametros } from "@/components/app/barra-visoes";
-import { Botao } from "@/components/ui/botao";
+import { Botao, classeBotao } from "@/components/ui/botao";
 import { Campo, Selecao } from "@/components/ui/campos";
 import { Dialogo } from "@/components/ui/dialogo";
 import { Avatar, Selo } from "@/components/ui/selo";
@@ -283,7 +283,9 @@ function DetalheTarefa({ tarefa: t, hoje, nome, nomesDiretorias, usuarioId, resu
         </dl>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-borda pt-4">
-          {podeMudar && !concluida && <Botao onClick={() => mudar("concluida", "Tarefa concluída.")} carregando={pendente}><Check className="h-4 w-4" /> Concluir</Botao>}
+          {podeMudar && !concluida && (t.exigeComprovante
+            ? <Link href={`/vice-presidencia/tarefas?t=${t.id}`} className={classeBotao()}><Check className="h-4 w-4" /> Concluir com comprovante</Link>
+            : <Botao onClick={() => mudar("concluida", "Tarefa concluída.")} carregando={pendente}><Check className="h-4 w-4" /> Concluir</Botao>)}
           {podeMudar && concluida && <Botao variante="secundario" onClick={() => mudar("pendente", "Tarefa reaberta.")} carregando={pendente}><RotateCcw className="h-4 w-4" /> Reabrir</Botao>}
           {podeMudar && t.status === "pendente" && (
             <Botao variante="secundario" onClick={() => mudar("em_andamento", "Tarefa em andamento.")} carregando={pendente}>Iniciar</Botao>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import {
-  BarChart3, Building2, CalendarDays, ChevronDown, ClipboardCheck, Gauge, Handshake, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
+  BarChart3, Building2, CalendarClock, CalendarDays, ChevronDown, ClipboardCheck, Gauge, Handshake, History, KanbanSquare, LayoutDashboard, ListChecks, LogOut, Menu, PanelLeftClose, PanelLeftOpen,
   MessageCircle, ShieldAlert, Sprout, Target, TrendingUp, Trophy, User, Users, X,
 } from "@/components/ui/icones";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,7 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
       { href: "/painel", rotulo: "Início", icone: LayoutDashboard },
       { href: "/tarefas", rotulo: "Tarefas", icone: ListChecks, contador: aprovacoesPendentes },
       { href: "/agenda", rotulo: "Agenda", icone: CalendarDays },
+      { href: "/calendario", rotulo: "Calendários", icone: CalendarClock },
     ],
     grupos: [
       { slug: "comercial", itens: !diretoriasVisiveis.includes("comercial") ? [] : [
@@ -59,6 +60,7 @@ function montarMenu({ ehDiretor, diretorDe, minhasDiretorias, diretoriasVisiveis
         { href: "/vice-presidencia/1on1", rotulo: "Reuniões 1:1", icone: MessageCircle },
         { href: "/vice-presidencia/desenvolvimento", rotulo: "Desenvolvimento", icone: Sprout },
         { href: "/vice-presidencia/feedbacks", rotulo: "Feedbacks", icone: Handshake },
+        { href: "/vice-presidencia/tarefas", rotulo: "Tarefas da VP", icone: ListChecks },
         // PDI de todas as diretorias: cada membro vê o seu; o diretor, os da diretoria; a VP, todos (RLS)
         { href: "/pdi", rotulo: "PDI", icone: ClipboardCheck },
         ...(ehDiretor || minhasDiretorias.includes("rh") ? [
