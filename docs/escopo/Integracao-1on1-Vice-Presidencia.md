@@ -58,7 +58,7 @@ só quem conduziu a 1:1 e o diretor da VP.
 | 2 | Rotina da VP: pontos e justificativas (D2), PDI para todos com gatilho (D3), tarefas com comprovante em foto, calendários por diretoria (D8) com lembretes e `.ics`, e-mail (D9) | Entregue em 27/11/2026 (e-mail depende de GMAIL_USER/GMAIL_APP_PASSWORD na Vercel; roteiro em `docs/testes/Roteiro-VP-Fase-2-rotina.md`) |
 | 3 | Engajamento: mural de elogios, moedas e lojinha (D10), Jornal da Apri | Entregue em 27/11/2026. Pedidos de moedas e da lojinha avisam os diretores no sino (a Caixa de aprovação é dos agentes) |
 | 4 | JAD: capacitações, conhecimento, projetos internos; objetivos anuais em Metas (D13) | Entregue em 27/11/2026 (JAD no menu da VP; objetivos anuais em `/metas/anuais`) |
-| 5 | Migração dos dados do 1on1 (dump SQL), conferência e desligamento do app antigo | A fazer (aguarda o dump) |
+| 5 | Migração dos dados do 1on1 (dump SQL), conferência e desligamento do app antigo | Pronta e testada com dados fictícios (`scripts/importar-1on1`); aguarda o dump de dados do 1on1 |
 
 ## 5. Pendências
 

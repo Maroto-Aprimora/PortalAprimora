@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Documento | DT-PA-001 — Documentação Técnica do Portal Aprimora |
-| Versão do documento | 1.49 |
+| Versão do documento | 1.50 |
 | Data | 09/10/2026 |
 | Versão do sistema descrita | `main` no commit `af20f1c` (mescla do PR #7, 05/10/2026) |
 | Repositório | `Maroto-Aprimora/PortalAprimora` (privado, GitHub; transferido de `AgenciaValkz/Aprimora`) |
@@ -103,7 +103,7 @@ Pipefy) e foi estruturado para receber as demais diretorias.
 | Vice-Presidência | Integração do 1on1, Fase 2: Pontuação no fluxo do 1on1 (pedido → VP define 1 a 6 → PDI aos 6), Justificativas, PDI para todas as diretorias, Tarefas da VP com comprovante em foto, Calendários por diretoria (anexos, lembretes, feed .ics), e-mail do sistema | EM PRODUÇÃO (e-mail depende de GMAIL_USER/GMAIL_APP_PASSWORD na Vercel) |
 | Vice-Presidência | Integração do 1on1, Fase 3: Mural de elogios (mensal, anônimo opcional), Moedas e lojinha (diretores dão moedas e aprovam; VP pede moedas), Jornal da Apri (edição mensal) | EM PRODUÇÃO |
 | Vice-Presidência | Integração do 1on1, Fase 4: JAD (capacitações com público e certificado, gestão do conhecimento, projetos internos) e Objetivos anuais em Metas (indicadores com histórico; metas, cursos e projetos ligados) | EM PRODUÇÃO |
-| Vice-Presidência | Integração do 1on1, Fase 5 (migração dos dados do app antigo) | A FAZER (aguarda o dump SQL) |
+| Vice-Presidência | Integração do 1on1, Fase 5: importação dos dados do app antigo (`scripts/importar-1on1`) | PRONTA E TESTADA com dados fictícios; aguarda o dump de dados do 1on1 para rodar em produção |
 | Comercial | Funil (kanban), Empresas e leads, Negócio, Anexos | EM PRODUÇÃO |
 | Comercial | Painel comercial (indicadores), Exportação xlsx/csv, Metas (automáticas e manuais) | EM PRODUÇÃO |
 | Comercial | Configurações do funil (fases, SLA, campos, cadastros auxiliares) | EM PRODUÇÃO |
@@ -837,6 +837,7 @@ Escopo v1.0 (Seção 14).
 | 1.2 | 12/10/2026 | v2 Fase 0, PR 1: portal exclusivo do Comercial no menu; `/painel` vira Início; Painel geral em `/vice-presidencia/painel-geral` |
 | 1.28 | 04/11/2026 | Ícones do portal refeitos a partir dos logos oficiais (só o símbolo, sem o nome cortado): `favicon.ico` 16/32/48 com traço engrossado para ficar legível na aba e nos favoritos, `icon.png`, `apple-icon.png`, `icone-192/512.png` e `icone-maskable-512.png` (margem para o recorte do Android, citado no `manifest.ts`). Tile `marca-app.png` no menu e no topo do celular; logo vertical transparente (`logo-vertical-branca.png`) no login. Gerados por `scripts/gerar-icones.py`; `logo-branca.png` e `logo-quadrada.jpg` removidos |
 | 1.27 | 04/11/2026 | Sistema de design: ícones trocados de Lucide para Tabler Icons (ponto único `src/components/ui/icones.tsx`); micro-interações em Lottie (`<Animacao>`: vazio e sucesso); base neutra (fundo, superfícies e menu lateral em cinza, sem gradiente; azul só em ações principais e item ativo, laranja só em sinais de atenção, botão `destaque` removido); 2 sombras, 2 raios, escala fechada de texto e de espaçamento, bordas de 1px; estados vazios padronizados com `<Vazio>` (bloco com animação/ícone ou linha compacta); painel do login sem formas coloridas |
+| 1.50 | 27/11/2026 | Integração do 1on1, Fase 5: importação em `scripts/importar-1on1` (`preparar.sh` recria o esquema do 1on1, carrega o dump de dados e gera a área `importacao` em jsonb; `importar.sql` mapeia para o Portal pelo e-mail, preserva ids, desliga os gatilhos de usuário durante a carga e gera `importacao.relatorio` e `importacao.sem_membro`). Testada com `supabase/testes/importacao_1on1_semente.sql`: sem avisos e idempotente. Arquivos do Storage do 1on1 não migram (só links) |
 | 1.49 | 27/11/2026 | Integração do 1on1, Fase 4 (migração `20261127180000`): JAD (Seção 7.8, menu Vice-Presidência → JAD) e Objetivos anuais fundidos em Metas (`/metas/anuais`, botão em Metas, campo no editor de metas). Roteiro de permissões em `supabase/testes/vp_fase4_jad.sql` |
 | 1.48 | 27/11/2026 | Painel geral da v1 (`/vice-presidencia/painel-geral`) eliminado: saiu do menu da Vice-Presidência e o endereço redireciona para o Mural |
 | 1.47 | 27/11/2026 | "Mural de elogios" passa a se chamar **Mural**, sai do menu da Vice-Presidência para a parte geral e vira a página inicial (`/mural`). A página Início (`/painel`, Minhas tarefas) foi eliminada; `/painel` e o endereço antigo do Mural redirecionam para `/mural`. As tarefas continuam em Tarefas |

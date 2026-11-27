@@ -30,3 +30,4 @@ npm-debug.log*
 
 # planilhas com dados reais (não versionar dados de clientes)
 dados-reais/
+scripts/importar-1on1/saida/
